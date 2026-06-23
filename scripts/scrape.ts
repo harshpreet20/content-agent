@@ -1,4 +1,5 @@
 import { ApifyClient } from "apify-client";
+import { createClient } from "@supabase/supabase-js";
 import { writeFileSync, mkdirSync } from "fs";
 import { resolve } from "path";
 import "dotenv/config";
@@ -88,6 +89,23 @@ async function scrapeProfiles() {
   const outPath = resolve(outDir, "data.json");
   writeFileSync(outPath, JSON.stringify(output, null, 2));
   console.log(`Data saved to ${outPath}`);
+
+  // Save to Supabase for production
+  const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const sbKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (sbUrl && sbKey) {
+    const supabase = createClient(sbUrl, sbKey);
+    const { error } = await supabase.from("content_agent_scrapes").insert({
+      my_handle: MY_HANDLE,
+      competitors: COMPETITORS,
+      data: output,
+    });
+    if (error) {
+      console.error("Failed to save to Supabase:", error.message);
+    } else {
+      console.log("Data also saved to Supabase");
+    }
+  }
 
   // Quick summary
   for (const [handle, posts] of Object.entries(grouped)) {
