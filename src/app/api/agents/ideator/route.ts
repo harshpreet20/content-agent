@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadData, getMyStats, getCompetitorStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
+import { saveReport } from "@/lib/supabase-server";
 
 const SYSTEM = `You are the IDEATOR agent for a badminton/racquet sports Instagram account.
 Your job: analyze the account's posts and competitors' top-performing content, then generate 5 fresh content ideas.
@@ -24,6 +25,7 @@ Generate 5 content ideas that could boost my engagement.`;
 
   try {
     const result = await askClaude(SYSTEM, context);
+    await saveReport("ideator", result);
     return NextResponse.json({ agent: "ideator", result });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });

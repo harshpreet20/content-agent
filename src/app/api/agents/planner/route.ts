@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadData, getMyStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
+import { saveReport } from "@/lib/supabase-server";
 
 const SYSTEM = `You are the PLANNER agent for a badminton/racquet sports Instagram account.
 Your job: create a 7-day content calendar.
@@ -26,6 +27,7 @@ Create a 7-day content calendar starting from tomorrow. Mix formats for maximum 
 
   try {
     const result = await askClaude(SYSTEM, context);
+    await saveReport("planner", result);
     return NextResponse.json({ agent: "planner", result });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });

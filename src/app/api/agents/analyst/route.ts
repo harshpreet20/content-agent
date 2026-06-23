@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadData, getMyStats, getCompetitorStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
+import { saveReport } from "@/lib/supabase-server";
 
 const SYSTEM = `You are the ANALYST agent for a badminton/racquet sports Instagram account.
 Your job: provide a data-driven performance report.
@@ -26,6 +27,7 @@ Analyze my performance and give actionable insights.`;
 
   try {
     const result = await askClaude(SYSTEM, context);
+    await saveReport("analyst", result);
     return NextResponse.json({ agent: "analyst", result });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });

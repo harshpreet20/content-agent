@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import AgentCard from "@/components/AgentCard";
 import StatsBar from "@/components/StatsBar";
 import CompetitorBar from "@/components/CompetitorBar";
+import { useAuth } from "@/components/AuthProvider";
 
 const AGENTS = [
   {
@@ -51,6 +53,7 @@ const AGENTS = [
 export default function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { user, signOut, loading: authLoading } = useAuth();
 
   useEffect(() => {
     fetch("/api/data")
@@ -65,17 +68,36 @@ export default function Dashboard() {
       {/* Top bar */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-black bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
-              Content Agent
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-400">
-              @racquetsclubcommunity
-            </span>
+          <h1 className="text-2xl font-black bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
+            Content Agent
+          </h1>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/reports"
+              className="text-sm font-semibold text-violet-600 hover:text-violet-800 transition"
+            >
+              Reports
+            </Link>
+            <span className="text-sm text-gray-400">@racquetsclubcommunity</span>
+            {!authLoading && (
+              user ? (
+                <button
+                  onClick={signOut}
+                  className="text-sm text-gray-400 hover:text-gray-600 transition"
+                >
+                  Sign Out
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="px-4 py-1.5 bg-violet-600 text-white text-sm rounded-lg font-semibold hover:bg-violet-700 transition"
+                >
+                  Sign In
+                </Link>
+              )
+            )}
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-pink-500 flex items-center justify-center text-white text-xs font-bold">
-              R
+              {user ? user.email?.[0].toUpperCase() : "R"}
             </div>
           </div>
         </div>
@@ -109,7 +131,15 @@ export default function Dashboard() {
 
             {/* Agents */}
             <section>
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Your Agents</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-gray-900">Your Agents</h2>
+                <Link
+                  href="/reports"
+                  className="text-sm text-violet-600 font-semibold hover:underline"
+                >
+                  View all reports &rarr;
+                </Link>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {AGENTS.map((agent) => (
                   <AgentCard key={agent.name} {...agent} />

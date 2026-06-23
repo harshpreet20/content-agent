@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadData, getMyStats, getCompetitorStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
+import { saveReport } from "@/lib/supabase-server";
 
 const SYSTEM = `You are the HOOK & SCRIPT agent for a badminton/racquet sports Instagram account.
 Your job: write 3 reel scripts with attention-grabbing hooks.
@@ -28,6 +29,7 @@ Write 3 reel scripts with hooks that would work for my badminton community accou
 
   try {
     const result = await askClaude(SYSTEM, context);
+    await saveReport("hooks", result);
     return NextResponse.json({ agent: "hooks", result });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });

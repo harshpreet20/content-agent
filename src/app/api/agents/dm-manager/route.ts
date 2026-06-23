@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadData, getMyStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
+import { saveReport } from "@/lib/supabase-server";
 
 const SYSTEM = `You are the DM MANAGER agent for a badminton/racquet sports community Instagram account.
 Your job: create DM templates for common scenarios.
@@ -22,6 +23,7 @@ Generate 5 DM templates that match my brand voice.`;
 
   try {
     const result = await askClaude(SYSTEM, context);
+    await saveReport("dm-manager", result);
     return NextResponse.json({ agent: "dm-manager", result });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
