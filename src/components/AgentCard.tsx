@@ -13,15 +13,23 @@ interface AgentCardProps {
 
 export default function AgentCard({ name, description, icon, color, bgColor, endpoint }: AgentCardProps) {
   const [result, setResult] = useState<string | null>(null);
+  const [reportId, setReportId] = useState<string | null>(null);
+  const [agentKey, setAgentKey] = useState<string>("");
+  const [learningsUsed, setLearningsUsed] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [runTime, setRunTime] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState<number | null>(null);
+  const [feedbackSending, setFeedbackSending] = useState(false);
 
   async function runAgent() {
     setLoading(true);
     setError(null);
     setResult(null);
     setRunTime(null);
+    setReportId(null);
+    setFeedback(null);
+    setLearningsUsed(0);
     const start = Date.now();
     try {
       const res = await fetch(endpoint, { method: "POST" });
@@ -31,11 +39,31 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
         setError(json.error);
       } else {
         setResult(json.result);
+        setReportId(json.reportId || null);
+        setAgentKey(json.agent || "");
+        setLearningsUsed(json.learningsUsed || 0);
       }
     } catch (e: any) {
       setError(e.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function sendFeedback(rating: number) {
+    if (!reportId || !agentKey) return;
+    setFeedbackSending(true);
+    try {
+      await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reportId, agentName: agentKey, rating }),
+      });
+      setFeedback(rating);
+    } catch {
+      // silent fail
+    } finally {
+      setFeedbackSending(false);
     }
   }
 
@@ -50,12 +78,22 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
           >
             {icon}
           </div>
-          {result && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full" style={{ color, backgroundColor: bgColor }}>
-              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
-              Done{runTime ? ` ${runTime}s` : ""}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {learningsUsed > 0 && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full bg-violet-50 text-violet-600">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                {learningsUsed} learnings
+              </span>
+            )}
+            {result && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full" style={{ color, backgroundColor: bgColor }}>
+                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+                Done{runTime ? ` ${runTime}s` : ""}
+              </span>
+            )}
+          </div>
         </div>
         <h3 className="text-base font-bold text-gray-900 leading-tight">{name}</h3>
         <p className="text-gray-400 text-sm mt-0.5 leading-snug">{description}</p>
@@ -70,9 +108,52 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
             </div>
           )}
           {result && (
-            <div className="bg-gray-50 rounded-xl p-4 text-xs text-gray-600 leading-relaxed max-h-72 overflow-y-auto whitespace-pre-wrap font-mono">
-              {result}
-            </div>
+            <>
+              <div className="bg-gray-50 rounded-xl p-4 text-xs text-gray-600 leading-relaxed max-h-72 overflow-y-auto whitespace-pre-wrap font-mono">
+                {result}
+              </div>
+              {/* Feedback buttons */}
+              {reportId && (
+                <div className="flex items-center gap-2 mt-3">
+                  <span className="text-[11px] text-gray-400 font-medium">Rate this output:</span>
+                  <button
+                    onClick={() => sendFeedback(1)}
+                    disabled={feedback !== null || feedbackSending}
+                    className={`p-1.5 rounded-lg transition text-sm ${
+                      feedback === 1
+                        ? "bg-green-100 text-green-600"
+                        : feedback !== null
+                        ? "opacity-30 cursor-default text-gray-300"
+                        : "hover:bg-green-50 text-gray-400 hover:text-green-600"
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => sendFeedback(-1)}
+                    disabled={feedback !== null || feedbackSending}
+                    className={`p-1.5 rounded-lg transition text-sm ${
+                      feedback === -1
+                        ? "bg-red-100 text-red-500"
+                        : feedback !== null
+                        ? "opacity-30 cursor-default text-gray-300"
+                        : "hover:bg-red-50 text-gray-400 hover:text-red-500"
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z" />
+                    </svg>
+                  </button>
+                  {feedback !== null && (
+                    <span className="text-[10px] text-gray-400 ml-1">
+                      {feedback === 1 ? "Thanks! This helps improve future outputs." : "Noted. This helps the agent learn."}
+                    </span>
+                  )}
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

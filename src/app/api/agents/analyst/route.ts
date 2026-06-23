@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { loadData, getMyStats, getCompetitorStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
 import { saveReport } from "@/lib/supabase-server";
+import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
 
-const SYSTEM = `You are the ANALYST agent for a badminton/racquet sports Instagram account.
+const BASE_SYSTEM = `You are the ANALYST agent for a badminton/racquet sports Instagram account.
 Your job: provide a data-driven performance report.
 Include: engagement rate analysis, best vs worst performing content, competitor comparison, growth opportunities.
 Be specific with numbers. Output as JSON with fields: summary, strengths, weaknesses, opportunities, competitorInsights.`;
@@ -14,6 +15,8 @@ export async function POST() {
 
   const me = getMyStats(data);
   const competitors = getCompetitorStats(data);
+  const learnings = await getLearnings("analyst");
+  const system = buildEnhancedPrompt(BASE_SYSTEM, learnings);
 
   const context = `MY ACCOUNT (@${me.handle}):
 - ${me.postCount} posts, ${me.totalLikes} total likes, ${me.totalComments} total comments
@@ -26,9 +29,9 @@ ${competitors.map((c) => `@${c.handle}: ${c.postCount} posts, avg ${c.avgLikes} 
 Analyze my performance and give actionable insights.`;
 
   try {
-    const result = await askClaude(SYSTEM, context);
-    await saveReport("analyst", result);
-    return NextResponse.json({ agent: "analyst", result });
+    const result = await askClaude(system, context);
+    const reportId = await saveReport("analyst", result);
+    return NextResponse.json({ agent: "analyst", result, reportId, learningsUsed: learnings.length });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

@@ -7,11 +7,16 @@ export function createServerClient() {
   );
 }
 
-export async function saveReport(agentName: string, result: string) {
+export async function saveReport(agentName: string, result: string): Promise<string | null> {
   const supabase = createServerClient();
-  const { error } = await supabase.from("content_agent_reports").insert({
-    agent_name: agentName,
-    result,
-  });
-  if (error) console.error("Failed to save report:", error.message);
+  const { data, error } = await supabase
+    .from("content_agent_reports")
+    .insert({ agent_name: agentName, result })
+    .select("id")
+    .single();
+  if (error) {
+    console.error("Failed to save report:", error.message);
+    return null;
+  }
+  return data?.id || null;
 }
