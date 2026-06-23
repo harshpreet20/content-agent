@@ -26,51 +26,47 @@ export default function LoginPage() {
 
     if (isSignUp) {
       const { error } = await supabase.auth.signUp({ email, password });
-      if (error) {
-        setError(error.message);
-      } else {
-        setMessage("Check your email for the confirmation link!");
-      }
+      if (error) setError(error.message);
+      else setMessage("Check your email for the confirmation link!");
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        setError(error.message);
-      } else {
-        router.push("/");
-      }
+      if (error) setError(error.message);
+      else router.push("/");
     }
     setLoading(false);
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] p-5">
+      <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-black bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
-            Content Agent
+          <h1 className="text-2xl font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent mb-1">
+            ContentAgent
           </h1>
-          <p className="text-gray-400 mt-2">Sign in to your dashboard</p>
+          <p className="text-sm text-gray-400">
+            {isSignUp ? "Create your account" : "Sign in to your dashboard"}
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 space-y-5">
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-gray-100 p-6 space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 outline-none transition text-gray-900"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 outline-none transition text-sm text-gray-900 placeholder:text-gray-300"
               placeholder="you@example.com"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 outline-none transition text-gray-900"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 outline-none transition text-sm text-gray-900 placeholder:text-gray-300"
               placeholder="At least 6 characters"
               required
               minLength={6}
@@ -78,21 +74,21 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">{error}</div>
+            <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-red-500 text-xs">{error}</div>
           )}
           {message && (
-            <div className="p-3 bg-green-50 border border-green-100 rounded-xl text-green-600 text-sm">{message}</div>
+            <div className="p-3 bg-green-50 border border-green-100 rounded-xl text-green-600 text-xs">{message}</div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-violet-600 to-pink-500 text-white rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50"
+            className="w-full py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition disabled:opacity-50 active:scale-[0.98]"
           >
             {loading ? "Loading..." : isSignUp ? "Create Account" : "Sign In"}
           </button>
 
-          <p className="text-center text-sm text-gray-400">
+          <p className="text-center text-xs text-gray-400 pt-1">
             {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
               type="button"
@@ -104,6 +100,6 @@ export default function LoginPage() {
           </p>
         </form>
       </div>
-    </main>
+    </div>
   );
 }

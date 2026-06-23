@@ -15,14 +15,18 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [runTime, setRunTime] = useState<number | null>(null);
 
   async function runAgent() {
     setLoading(true);
     setError(null);
     setResult(null);
+    setRunTime(null);
+    const start = Date.now();
     try {
       const res = await fetch(endpoint, { method: "POST" });
       const json = await res.json();
+      setRunTime(Math.round((Date.now() - start) / 1000));
       if (json.error) {
         setError(json.error);
       } else {
@@ -36,54 +40,69 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all overflow-hidden">
-      <div className="p-6">
-        <div className="flex items-center gap-3 mb-2">
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all flex flex-col">
+      {/* Header */}
+      <div className="p-5 pb-4">
+        <div className="flex items-start justify-between mb-3">
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-sm"
             style={{ backgroundColor: bgColor }}
           >
             {icon}
           </div>
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">{name}</h3>
-            <p className="text-gray-400 text-sm">{description}</p>
-          </div>
+          {result && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full" style={{ color, backgroundColor: bgColor }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+              Done{runTime ? ` ${runTime}s` : ""}
+            </span>
+          )}
         </div>
+        <h3 className="text-base font-bold text-gray-900 leading-tight">{name}</h3>
+        <p className="text-gray-400 text-sm mt-0.5 leading-snug">{description}</p>
+      </div>
 
+      {/* Output area */}
+      {(error || result) && (
+        <div className="px-5 pb-4 flex-1">
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-red-500 text-xs leading-relaxed">
+              {error}
+            </div>
+          )}
+          {result && (
+            <div className="bg-gray-50 rounded-xl p-4 text-xs text-gray-600 leading-relaxed max-h-72 overflow-y-auto whitespace-pre-wrap font-mono">
+              {result}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Action */}
+      <div className="p-5 pt-0 mt-auto">
         <button
           onClick={runAgent}
           disabled={loading}
-          className="w-full mt-4 py-3 rounded-xl font-semibold text-white text-sm transition-all disabled:opacity-60 hover:opacity-90 active:scale-[0.98]"
-          style={{ backgroundColor: color }}
+          className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 active:scale-[0.98]"
+          style={{
+            backgroundColor: loading ? bgColor : color,
+            color: loading ? color : "#fff",
+          }}
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
-              <span className="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-              Agent thinking...
+              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Thinking...
             </span>
+          ) : result ? (
+            "Run Again"
           ) : (
             "Run Agent"
           )}
         </button>
       </div>
-
-      {error && (
-        <div className="mx-6 mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
-          {error}
-        </div>
-      )}
-
-      {result && (
-        <div className="border-t border-gray-100 p-6">
-          <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
-            Agent Output
-          </div>
-          <div className="text-sm text-gray-700 leading-relaxed max-h-96 overflow-y-auto whitespace-pre-wrap bg-gray-50 rounded-xl p-4">
-            {result}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

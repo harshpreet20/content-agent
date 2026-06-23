@@ -10,41 +10,41 @@ import { useAuth } from "@/components/AuthProvider";
 const AGENTS = [
   {
     name: "Ideator",
-    description: "Scouts trending ideas from your niche",
-    icon: "💡",
-    color: "#D97706",
+    description: "Scout trending ideas from your niche & competitors",
+    icon: "\u{1F4A1}",
+    color: "#F59E0B",
     bgColor: "#FFFBEB",
     endpoint: "/api/agents/ideator",
   },
   {
     name: "Hook & Script",
-    description: "Writes scroll-stopping hooks & scripts",
-    icon: "🎬",
-    color: "#DB2777",
+    description: "Write scroll-stopping hooks and reel scripts",
+    icon: "\u{1F3AC}",
+    color: "#EC4899",
     bgColor: "#FDF2F8",
     endpoint: "/api/agents/hooks",
   },
   {
     name: "Planner",
-    description: "Plans your 7-day content calendar",
-    icon: "📅",
-    color: "#7C3AED",
+    description: "Plan your 7-day content calendar",
+    icon: "\u{1F4C5}",
+    color: "#8B5CF6",
     bgColor: "#F5F3FF",
     endpoint: "/api/agents/planner",
   },
   {
     name: "Analyst",
-    description: "Deep-dives your stats & performance",
-    icon: "📊",
-    color: "#059669",
+    description: "Deep-dive your stats and performance metrics",
+    icon: "\u{1F4CA}",
+    color: "#10B981",
     bgColor: "#ECFDF5",
     endpoint: "/api/agents/analyst",
   },
   {
     name: "DM Manager",
-    description: "Crafts DM templates for outreach",
-    icon: "💬",
-    color: "#2563EB",
+    description: "Craft DM templates for engagement & outreach",
+    icon: "\u{1F4AC}",
+    color: "#3B82F6",
     bgColor: "#EFF6FF",
     endpoint: "/api/agents/dm-manager",
   },
@@ -64,91 +64,104 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <main className="min-h-screen">
-      {/* Top bar */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-black bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
-            Content Agent
-          </h1>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/reports"
-              className="text-sm font-semibold text-violet-600 hover:text-violet-800 transition"
-            >
-              Reports
-            </Link>
-            <span className="text-sm text-gray-400">@racquetsclubcommunity</span>
+    <div className="min-h-screen bg-[#FAFAFA]">
+      {/* Navigation */}
+      <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <h1 className="text-lg font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
+              ContentAgent
+            </h1>
+            <div className="hidden sm:flex items-center gap-1">
+              <Link href="/" className="px-3 py-1.5 text-sm font-medium text-gray-900 bg-gray-100 rounded-lg">
+                Dashboard
+              </Link>
+              <Link href="/reports" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
+                Reports
+              </Link>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:block text-xs text-gray-400 font-medium">
+              @racquetsclubcommunity
+            </span>
             {!authLoading && (
               user ? (
                 <button
                   onClick={signOut}
-                  className="text-sm text-gray-400 hover:text-gray-600 transition"
+                  className="text-xs text-gray-400 hover:text-gray-600 font-medium transition"
                 >
-                  Sign Out
+                  Sign out
                 </button>
               ) : (
                 <Link
                   href="/login"
-                  className="px-4 py-1.5 bg-violet-600 text-white text-sm rounded-lg font-semibold hover:bg-violet-700 transition"
+                  className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition"
                 >
-                  Sign In
+                  Sign in
                 </Link>
               )
             )}
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-pink-500 flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 via-pink-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
               {user ? user.email?.[0].toUpperCase() : "R"}
             </div>
           </div>
         </div>
-      </header>
+      </nav>
 
-      <div className="max-w-7xl mx-auto px-6 py-8 space-y-10">
+      {/* Content */}
+      <main className="max-w-6xl mx-auto px-5 py-8">
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin w-8 h-8 border-4 border-violet-500 border-t-transparent rounded-full" />
+            <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
-          <>
-            {/* Stats */}
-            <section>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-gray-900">Your Performance</h2>
+          <div className="space-y-8">
+            {/* Page title */}
+            <div>
+              <h2 className="text-2xl font-extrabold text-gray-900">Dashboard</h2>
+              <p className="text-sm text-gray-400 mt-0.5">
+                Your content performance at a glance
                 {data?.scrapedAt && (
-                  <span className="text-xs text-gray-400">
-                    Updated {new Date(data.scrapedAt).toLocaleDateString()}
-                  </span>
+                  <> &middot; Updated {new Date(data.scrapedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</>
                 )}
-              </div>
+              </p>
+            </div>
+
+            {/* Stats row */}
+            <section>
               <StatsBar stats={data?.me || null} />
             </section>
 
             {/* Competitors */}
             <section>
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Competitors</h2>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Competitors</h3>
+              </div>
               <CompetitorBar competitors={data?.competitors || []} />
             </section>
 
             {/* Agents */}
             <section>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-gray-900">Your Agents</h2>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">AI Agents</h3>
                 <Link
                   href="/reports"
-                  className="text-sm text-violet-600 font-semibold hover:underline"
+                  className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition"
                 >
-                  View all reports &rarr;
+                  View history &rarr;
                 </Link>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {AGENTS.map((agent) => (
                   <AgentCard key={agent.name} {...agent} />
                 ))}
               </div>
             </section>
-          </>
+          </div>
         )}
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

@@ -5,12 +5,12 @@ import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const AGENT_META: Record<string, { icon: string; color: string; label: string }> = {
-  ideator: { icon: "💡", color: "#D97706", label: "Ideator" },
-  hooks: { icon: "🎬", color: "#DB2777", label: "Hook & Script" },
-  planner: { icon: "📅", color: "#7C3AED", label: "Planner" },
-  analyst: { icon: "📊", color: "#059669", label: "Analyst" },
-  "dm-manager": { icon: "💬", color: "#2563EB", label: "DM Manager" },
+const AGENT_META: Record<string, { icon: string; color: string; bgColor: string; label: string }> = {
+  ideator:      { icon: "\u{1F4A1}", color: "#F59E0B", bgColor: "#FFFBEB", label: "Ideator" },
+  hooks:        { icon: "\u{1F3AC}", color: "#EC4899", bgColor: "#FDF2F8", label: "Hook & Script" },
+  planner:      { icon: "\u{1F4C5}", color: "#8B5CF6", bgColor: "#F5F3FF", label: "Planner" },
+  analyst:      { icon: "\u{1F4CA}", color: "#10B981", bgColor: "#ECFDF5", label: "Analyst" },
+  "dm-manager": { icon: "\u{1F4AC}", color: "#3B82F6", bgColor: "#EFF6FF", label: "DM Manager" },
 };
 
 interface Report {
@@ -45,118 +45,128 @@ export default function ReportsPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin w-8 h-8 border-4 border-violet-500 border-t-transparent rounded-full" />
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
+        <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="text-2xl font-black bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
-              Content Agent
+    <div className="min-h-screen bg-[#FAFAFA]">
+      {/* Navigation */}
+      <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-5 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <Link href="/" className="text-lg font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
+              ContentAgent
             </Link>
-            <span className="text-gray-300">|</span>
-            <span className="text-gray-600 font-semibold">Reports</span>
+            <div className="hidden sm:flex items-center gap-1">
+              <Link href="/" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
+                Dashboard
+              </Link>
+              <Link href="/reports" className="px-3 py-1.5 text-sm font-medium text-gray-900 bg-gray-100 rounded-lg">
+                Reports
+              </Link>
+            </div>
           </div>
-          <Link
-            href="/"
-            className="text-sm text-violet-600 font-semibold hover:underline"
-          >
-            Back to Dashboard
-          </Link>
         </div>
-      </header>
+      </nav>
 
-      <div className="max-w-5xl mx-auto px-6 py-8">
-        {/* Filter tabs */}
-        <div className="flex gap-2 mb-8 flex-wrap">
+      <main className="max-w-4xl mx-auto px-5 py-8">
+        {/* Header */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-extrabold text-gray-900">Reports</h2>
+          <p className="text-sm text-gray-400 mt-0.5">History of all agent outputs</p>
+        </div>
+
+        {/* Filter pills */}
+        <div className="flex gap-2 mb-6 flex-wrap">
           <button
-            onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
+            onClick={() => { setFilter("all"); setLoading(true); }}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition ${
               filter === "all"
-                ? "bg-gray-900 text-white"
-                : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"
+                ? "bg-gray-900 text-white shadow-sm"
+                : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300"
             }`}
           >
-            All Reports
+            All
           </button>
           {Object.entries(AGENT_META).map(([key, meta]) => (
             <button
               key={key}
-              onClick={() => setFilter(key)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5 ${
+              onClick={() => { setFilter(key); setLoading(true); }}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
                 filter === key
-                  ? "text-white"
-                  : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"
+                  ? "text-white shadow-sm"
+                  : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300"
               }`}
               style={filter === key ? { backgroundColor: meta.color } : {}}
             >
-              <span>{meta.icon}</span>
+              <span className="text-sm">{meta.icon}</span>
               {meta.label}
             </button>
           ))}
         </div>
 
+        {/* Reports list */}
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="animate-spin w-8 h-8 border-4 border-violet-500 border-t-transparent rounded-full" />
+            <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : reports.length === 0 ? (
           <div className="text-center py-20">
-            <div className="text-5xl mb-4">📭</div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">No reports yet</h3>
-            <p className="text-gray-400">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-2xl flex items-center justify-center text-2xl">
+              {"\u{1F4ED}"}
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-1">No reports yet</h3>
+            <p className="text-sm text-gray-400">
               Run an agent from the{" "}
-              <Link href="/" className="text-violet-600 hover:underline">dashboard</Link>{" "}
+              <Link href="/" className="text-violet-600 hover:underline font-medium">dashboard</Link>{" "}
               to generate your first report.
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {reports.map((report) => {
-              const meta = AGENT_META[report.agent_name] || { icon: "🤖", color: "#6B7280", label: report.agent_name };
+              const meta = AGENT_META[report.agent_name] || { icon: "\u{1F916}", color: "#6B7280", bgColor: "#F3F4F6", label: report.agent_name };
               const isExpanded = expandedId === report.id;
 
               return (
                 <div
                   key={report.id}
-                  className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+                  className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden"
                 >
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : report.id)}
-                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition text-left"
+                    className="w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50/50 transition text-left"
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
-                        style={{ backgroundColor: meta.color + "15" }}
+                        className="w-9 h-9 rounded-lg flex items-center justify-center text-base"
+                        style={{ backgroundColor: meta.bgColor }}
                       >
                         {meta.icon}
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">{meta.label}</div>
-                        <div className="text-xs text-gray-400">
-                          {new Date(report.created_at).toLocaleString()}
+                        <div className="font-semibold text-gray-900 text-sm">{meta.label}</div>
+                        <div className="text-[11px] text-gray-400">
+                          {new Date(report.created_at).toLocaleString("en-US", {
+                            month: "short", day: "numeric", hour: "numeric", minute: "2-digit"
+                          })}
                         </div>
                       </div>
                     </div>
                     <svg
-                      className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? "rotate-180" : ""}`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                      className={`w-4 h-4 text-gray-300 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
 
                   {isExpanded && (
-                    <div className="px-6 pb-6 border-t border-gray-100">
-                      <div className="mt-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap bg-gray-50 rounded-xl p-5 max-h-[500px] overflow-y-auto">
+                    <div className="px-5 pb-5 border-t border-gray-50">
+                      <div className="mt-4 text-xs text-gray-600 leading-relaxed whitespace-pre-wrap bg-gray-50 rounded-xl p-4 max-h-[500px] overflow-y-auto font-mono">
                         {report.result}
                       </div>
                     </div>
@@ -166,7 +176,7 @@ export default function ReportsPage() {
             })}
           </div>
         )}
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }
