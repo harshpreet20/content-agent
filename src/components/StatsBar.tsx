@@ -4,13 +4,14 @@ interface StatProps {
   label: string;
   value: string | number;
   color: string;
+  bgColor: string;
 }
 
-function Stat({ label, value, color }: StatProps) {
+function Stat({ label, value, color, bgColor }: StatProps) {
   return (
-    <div className="text-center">
+    <div className="rounded-2xl p-5 text-center" style={{ backgroundColor: bgColor }}>
       <div className="text-3xl font-black" style={{ color }}>{value}</div>
-      <div className="text-gray-400 text-xs uppercase tracking-wider mt-1">{label}</div>
+      <div className="text-gray-500 text-xs uppercase tracking-wider font-semibold mt-1">{label}</div>
     </div>
   );
 }
@@ -30,12 +31,12 @@ export default function StatsBar({ stats }: StatsBarProps) {
   if (!stats) return null;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-6 bg-gray-900/50 rounded-2xl border border-gray-800">
-      <Stat label="Posts" value={stats.postCount} color="#F59E0B" />
-      <Stat label="Avg Likes" value={stats.avgLikes} color="#EC4899" />
-      <Stat label="Avg Comments" value={stats.avgComments} color="#8B5CF6" />
-      <Stat label="Total Likes" value={stats.totalLikes.toLocaleString()} color="#10B981" />
-      <Stat label="Total Views" value={stats.totalViews.toLocaleString()} color="#3B82F6" />
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <Stat label="Posts" value={stats.postCount} color="#D97706" bgColor="#FFFBEB" />
+      <Stat label="Avg Likes" value={stats.avgLikes} color="#DB2777" bgColor="#FDF2F8" />
+      <Stat label="Avg Comments" value={stats.avgComments} color="#7C3AED" bgColor="#F5F3FF" />
+      <Stat label="Total Likes" value={stats.totalLikes.toLocaleString()} color="#059669" bgColor="#ECFDF5" />
+      <Stat label="Total Views" value={stats.totalViews.toLocaleString()} color="#2563EB" bgColor="#EFF6FF" />
     </div>
   );
 }
