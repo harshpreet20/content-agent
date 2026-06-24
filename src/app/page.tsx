@@ -13,7 +13,7 @@ import { useAuth } from "@/components/AuthProvider";
 const AGENTS = [
   {
     name: "Ideator",
-    description: "Scout trending ideas from your niche & competitors",
+    description: "Scout ideas & classify as AI Reel / Real / UGC",
     icon: "\u{1F4A1}",
     color: "#F59E0B",
     bgColor: "#FFFBEB",
@@ -29,7 +29,7 @@ const AGENTS = [
   },
   {
     name: "AI Reel Prompt",
-    description: "Classify reels as AI/Real and write full AI production prompts",
+    description: "Write detailed AI video production prompts ready to paste",
     icon: "\u{1F3A8}",
     color: "#F97316",
     bgColor: "#FFF7ED",

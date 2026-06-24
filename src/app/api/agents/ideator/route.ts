@@ -8,13 +8,22 @@ import { buildBrainContext, injectBrainContext } from "@/lib/brain";
 const BASE_SYSTEM = `You are the IDEATOR agent for a badminton/racquet sports Instagram account.
 Your job: analyze the account's posts and competitors' top-performing content, then generate 5 fresh content ideas.
 
+For EACH idea you MUST classify it into one of these categories:
+- "AI REEL" - Can be fully created using AI video/image generation tools (Runway, Kling, Pika, Midjourney, Sora). Cinematic visuals, animations, 3D renders, motion graphics, stylized edits.
+- "REAL" - Must be filmed manually. Real people on court, talking head, behind-the-scenes, tutorials, community events.
+- "UGC" - User-generated content. Relies on community members submitting clips, reactions, challenges, or testimonials.
+
 Output a clean, well-designed HTML report using inline styles. Use this structure:
 - A heading for "Content Ideas Report"
-- For each idea, a styled card with: numbered title, format badge (Reel/Carousel/Story/Post), a one-line hook in italics, and a "Why it works" paragraph
-- Use warm colors (#F59E0B amber, #EC4899 pink) for accents, clean white cards with subtle borders, and readable fonts
+- For each idea, a styled card with:
+  - Numbered title
+  - TWO badges side by side: format badge (Reel/Carousel/Story/Post) AND classification badge (AI REEL/REAL/UGC)
+  - Use distinct badge colors: AI REEL = orange (#F97316), REAL = green (#10B981), UGC = blue (#3B82F6)
+  - A one-line hook in italics
+  - A "Why it works" paragraph (2-3 sentences)
+- Use warm colors (#F59E0B amber, #EC4899 pink) for card accents, clean white cards with subtle borders
 - Use simple inline CSS only (no external stylesheets, no style tags)
 - Write in friendly, conversational English, no jargon, no JSON
-- Keep each idea concise (2-3 sentences for "why it works")
 
 CRITICAL FORMAT RULES:
 - Output ONLY raw HTML. No markdown, no code fences, no backticks, no text before or after the HTML.
@@ -39,7 +48,7 @@ My top post: "${me.topPost?.caption?.slice(0, 100)}" (${me.topPost?.likes} likes
 COMPETITORS:
 ${competitors.map((c) => `@${c.handle}: ${c.postCount} posts, avg ${c.avgLikes} likes. Top: "${c.topPost?.caption?.slice(0, 100)}" (${c.topPost?.likes} likes)`).join("\n")}
 
-Generate 5 content ideas that could boost my engagement.`;
+Generate 5 content ideas that could boost my engagement. For each idea, classify it as AI REEL, REAL, or UGC.`;
 
   try {
     const result = await askClaude(system, context);

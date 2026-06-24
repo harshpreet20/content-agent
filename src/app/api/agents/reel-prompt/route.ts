@@ -7,14 +7,9 @@ import { buildBrainContext, injectBrainContext } from "@/lib/brain";
 
 const BASE_SYSTEM = `You are the AI REEL PROMPT agent for a badminton/racquet sports Instagram account.
 
-Your job has TWO parts:
+Your job: Take reel concepts and write DETAILED AI production prompts ready to paste into AI video/image generation tools. Focus exclusively on crafting the best possible prompts for AI-generated content.
 
-PART 1 - CLASSIFY each reel idea from Hook & Script output (or generate your own if none provided):
-For each reel concept, decide:
-- "AI REEL" - Can be fully created using AI video/image generation tools (Runway, Kling, Pika, Midjourney, DALL-E, Sora). These are reels with cinematic visuals, animations, 3D renders, motion graphics, stylized edits.
-- "REAL REEL" - Must be filmed manually. These involve real people playing badminton, real court footage, talking head, behind-the-scenes, tutorials with actual demonstrations, community events.
-
-PART 2 - For each reel classified as "AI REEL", write a COMPLETE production prompt covering:
+For each reel concept, write a COMPLETE production prompt covering ALL of these specs:
 - VISUAL STYLE: Photorealistic / 3D Render / Motion Graphics / Anime / Cinematic / Flat Vector
 - CAMERA: Shot type (wide/close-up/drone/tracking), movement (pan/dolly/orbit/static), angle (low/high/eye-level)
 - LIGHTING: Key light direction, color temperature, mood (golden hour/studio/neon/dramatic shadows)
@@ -25,13 +20,15 @@ PART 2 - For each reel classified as "AI REEL", write a COMPLETE production prom
 - CGI ELEMENTS: 3D objects, shuttlecocks in flight, court renders, equipment close-ups
 - COLOR PALETTE: Primary and accent colors, mood board reference
 - SOUND DESIGN NOTES: Suggested music style, SFX cues
-- TOOL RECOMMENDATION: Which AI tool to use (Runway Gen-3, Kling 1.5, Pika, Midjourney + video, etc.)
-- THE ACTUAL PROMPT: A ready-to-paste prompt for the recommended tool
+- TOOL RECOMMENDATION: Which AI tool to use (Runway Gen-3, Kling 1.5, Pika, Midjourney + video, Sora, etc.) and why
+- THE ACTUAL PROMPT: A ready-to-paste prompt for the recommended tool, optimized for that tool's syntax
+
+Generate 4-5 AI reel production prompts. Each should be a completely different visual concept for badminton/racquet sports content. Think cinematic, eye-catching, scroll-stopping visuals that would stand out on Instagram.
 
 Output a clean HTML report with inline styles:
-- Section 1: Classification table showing all reels with AI/REAL badges
-- Section 2: For each AI REEL, a detailed production card with all specs above
-- For REAL REELs, a short note on what to film and tips
+- A heading "AI Reel Production Prompts"
+- For each reel, a detailed production card with all specs above laid out clearly
+- Include a "Copy-Paste Prompt" section at the bottom of each card in a monospace styled box
 - Use orange (#F97316) and violet (#8B5CF6) accents
 - Clean white cards with subtle borders and shadows
 
@@ -70,7 +67,7 @@ ${me.posts
   .map((p) => `[${p.type}] "${p.caption?.slice(0, 100)}" - ${p.likes} likes`)
   .join("\n")}
 
-Generate 4-5 reel concepts for my badminton community account. Classify each as AI REEL or REAL REEL. For AI reels, write complete production prompts ready to paste into AI video tools.`;
+Generate 4-5 visually distinct AI reel concepts for my badminton community account. For each one, write a complete production prompt with all visual specs, ready to paste into AI video tools.`;
 
   try {
     const result = await askClaude(system, context);
