@@ -12,7 +12,7 @@ const COMPETITORS = (process.env.COMPETITOR_HANDLES || DEFAULT_COMPETITORS)
   .filter(Boolean);
 const ALL_HANDLES = [MY_HANDLE, ...COMPETITORS];
 
-async function runScrape() {
+async function startScrape() {
   const apifyToken = process.env.APIFY_API_TOKEN;
   if (!apifyToken) throw new Error("Missing APIFY_API_TOKEN");
 
@@ -26,11 +26,35 @@ async function runScrape() {
     searchLimit: 1,
   };
 
-  const run = await client.actor("apify/instagram-scraper").call(input, {
-    waitSecs: 300,
-  });
+  const run = await client.actor("apify/instagram-scraper").start(input);
 
-  const { items } = await client.dataset(run.defaultDatasetId).listItems();
+  const supabase = createServerClient();
+  await supabase.from("content_agent_scrape_runs").upsert(
+    {
+      id: "latest",
+      run_id: run.id,
+      dataset_id: run.defaultDatasetId,
+      status: "RUNNING",
+      started_at: new Date().toISOString(),
+      handles: ALL_HANDLES,
+    },
+    { onConflict: "id" }
+  );
+
+  return {
+    success: true,
+    status: "RUNNING",
+    runId: run.id,
+    message: `Scraping ${ALL_HANDLES.length} handles — check back in a few minutes`,
+  };
+}
+
+async function collectResults(runId: string, datasetId: string) {
+  const apifyToken = process.env.APIFY_API_TOKEN;
+  if (!apifyToken) throw new Error("Missing APIFY_API_TOKEN");
+
+  const client = new ApifyClient({ token: apifyToken });
+  const { items } = await client.dataset(datasetId).listItems();
 
   const grouped: Record<string, any[]> = {};
   for (const handle of ALL_HANDLES) {
@@ -90,12 +114,39 @@ async function runScrape() {
 
   if (error) throw new Error(`Supabase save failed: ${error.message}`);
 
+  await supabase.from("content_agent_scrape_runs").upsert(
+    { id: "latest", status: "SUCCEEDED", finished_at: new Date().toISOString() },
+    { onConflict: "id" }
+  );
+
   return {
     success: true,
+    status: "SUCCEEDED",
     totalPosts: items.length,
     handles: ALL_HANDLES,
     scrapedAt: output.scrapedAt,
   };
+}
+
+async function runScrapeSync() {
+  const apifyToken = process.env.APIFY_API_TOKEN;
+  if (!apifyToken) throw new Error("Missing APIFY_API_TOKEN");
+
+  const client = new ApifyClient({ token: apifyToken });
+
+  const input = {
+    directUrls: ALL_HANDLES.map((h) => `https://www.instagram.com/${h}/`),
+    resultsType: "posts",
+    resultsLimit: 30,
+    searchType: "hashtag",
+    searchLimit: 1,
+  };
+
+  const run = await client.actor("apify/instagram-scraper").call(input, {
+    waitSecs: 280,
+  });
+
+  return collectResults(run.id, run.defaultDatasetId);
 }
 
 export async function GET(request: Request) {
@@ -105,7 +156,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await runScrape();
+    const result = await runScrapeSync();
     return NextResponse.json(result);
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
@@ -114,7 +165,7 @@ export async function GET(request: Request) {
 
 export async function POST() {
   try {
-    const result = await runScrape();
+    const result = await startScrape();
     return NextResponse.json(result);
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });

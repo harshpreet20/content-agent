@@ -57,6 +57,7 @@ export default function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [scrapeMsg, setScrapeMsg] = useState<string | null>(null);
   const { user, status, loading: authLoading } = useAuth();
   const router = useRouter();
 
@@ -80,17 +81,49 @@ export default function Dashboard() {
 
   async function handleRefresh() {
     setRefreshing(true);
+    setScrapeMsg("Starting scrape...");
     try {
       const res = await fetch("/api/cron/scrape", { method: "POST" });
       const json = await res.json();
-      if (json.success) {
-        await loadDashboardData();
+      if (json.error) {
+        setScrapeMsg(`Error: ${json.error}`);
+        setRefreshing(false);
+        return;
       }
-    } catch {
-      // silent
-    } finally {
+      setScrapeMsg("Scraping 9 profiles — this takes 2-4 min...");
+      pollScrapeStatus();
+    } catch (e: any) {
+      setScrapeMsg(`Error: ${e.message}`);
       setRefreshing(false);
     }
+  }
+
+  async function pollScrapeStatus() {
+    const maxAttempts = 30;
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise((r) => setTimeout(r, 10_000));
+      try {
+        const res = await fetch("/api/scrape-status");
+        const json = await res.json();
+        if (json.status === "SUCCEEDED") {
+          setScrapeMsg("Scrape complete!");
+          await loadDashboardData();
+          setTimeout(() => setScrapeMsg(null), 3000);
+          setRefreshing(false);
+          return;
+        }
+        if (json.status === "FAILED" || json.status === "ERROR") {
+          setScrapeMsg(`Scrape failed: ${json.message || "Unknown error"}`);
+          setRefreshing(false);
+          return;
+        }
+        setScrapeMsg(`Scraping in progress... (${Math.round((i + 1) * 10 / 60)}m elapsed)`);
+      } catch {
+        // network blip, keep polling
+      }
+    }
+    setScrapeMsg("Scrape is taking longer than expected. Check back later.");
+    setRefreshing(false);
   }
 
   if (authLoading || !user || status !== "approved") {
@@ -136,6 +169,21 @@ export default function Dashboard() {
                 {refreshing ? "Scraping..." : "Refresh Data"}
               </button>
             </div>
+
+            {scrapeMsg && (
+              <div className={`p-3 rounded-xl text-sm font-medium ${
+                scrapeMsg.startsWith("Error") || scrapeMsg.startsWith("Scrape failed")
+                  ? "bg-red-50 text-red-600 border border-red-100"
+                  : scrapeMsg === "Scrape complete!"
+                  ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                  : "bg-amber-50 text-amber-700 border border-amber-100"
+              }`}>
+                {refreshing && !scrapeMsg.startsWith("Error") && (
+                  <span className="inline-block w-3 h-3 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mr-2 align-middle" />
+                )}
+                {scrapeMsg}
+              </div>
+            )}
 
             <section>
               <div className="flex items-center justify-between mb-3">
