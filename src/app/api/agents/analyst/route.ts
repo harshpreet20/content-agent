@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { loadData, getMyStats, getCompetitorStats } from "@/lib/data";
+import { loadDataWithFallback, getMyStats, getCompetitorStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
 import { saveReport } from "@/lib/supabase-server";
 import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
@@ -10,8 +10,8 @@ Include: engagement rate analysis, best vs worst performing content, competitor 
 Be specific with numbers. Output as JSON with fields: summary, strengths, weaknesses, opportunities, competitorInsights.`;
 
 export async function POST() {
-  const data = loadData();
-  if (!data) return NextResponse.json({ error: "No data" }, { status: 404 });
+  const data = await loadDataWithFallback();
+  if (!data) return NextResponse.json({ error: "No data. Run: npm run scrape" }, { status: 404 });
 
   const me = getMyStats(data);
   const competitors = getCompetitorStats(data);

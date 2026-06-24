@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { loadData, getMyStats } from "@/lib/data";
+import { loadDataWithFallback, getMyStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
 import { saveReport } from "@/lib/supabase-server";
 import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
@@ -10,8 +10,8 @@ Generate 5 templates: welcome new follower, reply to collaboration request, prom
 Each template should feel personal, not spammy. Output as JSON array with fields: scenario, template, tone.`;
 
 export async function POST() {
-  const data = loadData();
-  if (!data) return NextResponse.json({ error: "No data" }, { status: 404 });
+  const data = await loadDataWithFallback();
+  if (!data) return NextResponse.json({ error: "No data. Run: npm run scrape" }, { status: 404 });
 
   const me = getMyStats(data);
   const learnings = await getLearnings("dm-manager");

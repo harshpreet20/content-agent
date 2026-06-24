@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { loadData, getMyStats, getCompetitorStats } from "@/lib/data";
+import { loadDataWithFallback, getMyStats, getCompetitorStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
 import { saveReport } from "@/lib/supabase-server";
 import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
@@ -10,8 +10,8 @@ Each idea must include: a working title, content format (reel/carousel/story/pos
 Be specific to badminton/racquet sports. Output as JSON array.`;
 
 export async function POST() {
-  const data = loadData();
-  if (!data) return NextResponse.json({ error: "No data" }, { status: 404 });
+  const data = await loadDataWithFallback();
+  if (!data) return NextResponse.json({ error: "No data. Run: npm run scrape" }, { status: 404 });
 
   const me = getMyStats(data);
   const competitors = getCompetitorStats(data);

@@ -1,5 +1,6 @@
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
+import { createClient } from "@supabase/supabase-js";
 
 export interface Post {
   id: string;
@@ -28,6 +29,34 @@ export function loadData(): ScrapedData | null {
   if (!existsSync(dataPath)) return null;
   const raw = readFileSync(dataPath, "utf-8");
   return JSON.parse(raw);
+}
+
+export async function loadDataWithFallback(): Promise<ScrapedData | null> {
+  const local = loadData();
+  if (local) return local;
+
+  const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const sbKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!sbUrl || !sbKey) return null;
+
+  const supabase = createClient(sbUrl, sbKey);
+  const { data, error } = await supabase
+    .from("content_agent_scrapes")
+    .select("*")
+    .order("scraped_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (error || !data) return null;
+
+  const scraped = data.data;
+  return {
+    scrapedAt: data.scraped_at,
+    myHandle: data.my_handle,
+    competitors: data.competitors,
+    profiles: scraped.profiles || scraped,
+    totalPosts: scraped.totalPosts || 0,
+  };
 }
 
 export function getMyStats(data: ScrapedData) {
