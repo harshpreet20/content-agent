@@ -18,9 +18,14 @@ Output a clean, well-designed HTML report using inline styles. Use this structur
   - Brief description (1-2 sentences)
 - A summary section at the bottom with posting tips
 - Use violet (#8B5CF6) as the primary accent, clean white cards with subtle borders
-- Use simple inline CSS only (no external stylesheets, no <style> tags)
-- Write in friendly, conversational English — like a social media manager briefing
-- Make it feel like a real content calendar you'd print out`;
+- Use simple inline CSS only (no external stylesheets, no style tags)
+- Write in friendly, conversational English, like a social media manager briefing
+- Make it feel like a real content calendar you'd print out
+
+CRITICAL FORMAT RULES:
+- Output ONLY raw HTML. No markdown, no code fences, no backticks, no text before or after the HTML.
+- Never use em dashes or en dashes. Use " - " (space hyphen space) instead.
+- Your entire response must start with < and end with >. Nothing else.`;
 
 export async function POST() {
   const data = await loadDataWithFallback();

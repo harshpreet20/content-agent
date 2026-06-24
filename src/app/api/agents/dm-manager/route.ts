@@ -17,9 +17,14 @@ Output a clean, well-designed HTML report using inline styles. Use this structur
   - A "PRO TIP" line in small italic text explaining when/how to use it
 - The 5 scenarios: welcome new follower, reply to collab request, promote upcoming event, re-engage inactive follower, thank someone for sharing
 - Use blue (#3B82F6) as the primary accent, clean white cards with subtle borders
-- Use simple inline CSS only (no external stylesheets, no <style> tags)
-- Write templates that feel personal and genuine — not corporate or spammy
-- Include placeholder markers like [Name] or [Event] where personalization goes`;
+- Use simple inline CSS only (no external stylesheets, no style tags)
+- Write templates that feel personal and genuine, not corporate or spammy
+- Include placeholder markers like [Name] or [Event] where personalization goes
+
+CRITICAL FORMAT RULES:
+- Output ONLY raw HTML. No markdown, no code fences, no backticks, no text before or after the HTML.
+- Never use em dashes or en dashes. Use " - " (space hyphen space) instead.
+- Your entire response must start with < and end with >. Nothing else.`;
 
 export async function POST() {
   const data = await loadDataWithFallback();

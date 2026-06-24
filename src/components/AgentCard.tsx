@@ -2,6 +2,20 @@
 
 import { useState } from "react";
 
+function sanitizeReport(raw: string): string {
+  let text = raw.trim();
+  text = text.replace(/^```(?:html)?\s*/i, "").replace(/\s*```\s*$/, "");
+  const firstTag = text.indexOf("<");
+  const lastTag = text.lastIndexOf(">");
+  if (firstTag !== -1 && lastTag !== -1 && lastTag > firstTag) {
+    text = text.substring(firstTag, lastTag + 1);
+  }
+  if (!text.startsWith("<")) {
+    text = `<div style="font-family:-apple-system,sans-serif;font-size:14px;line-height:1.7;color:#374151;white-space:pre-wrap">${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
+  }
+  return text;
+}
+
 interface AgentCardProps {
   name: string;
   description: string;
@@ -111,7 +125,7 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
             <>
               <div
                 className="bg-white rounded-xl p-4 text-sm text-gray-700 leading-relaxed max-h-[500px] overflow-y-auto report-html"
-                dangerouslySetInnerHTML={{ __html: result }}
+                dangerouslySetInnerHTML={{ __html: sanitizeReport(result) }}
               />
               {/* Feedback buttons */}
               {reportId && (

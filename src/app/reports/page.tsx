@@ -5,6 +5,20 @@ import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+function sanitizeReport(raw: string): string {
+  let text = raw.trim();
+  text = text.replace(/^```(?:html)?\s*/i, "").replace(/\s*```\s*$/, "");
+  const firstTag = text.indexOf("<");
+  const lastTag = text.lastIndexOf(">");
+  if (firstTag !== -1 && lastTag !== -1 && lastTag > firstTag) {
+    text = text.substring(firstTag, lastTag + 1);
+  }
+  if (!text.startsWith("<")) {
+    text = `<div style="font-family:-apple-system,sans-serif;font-size:14px;line-height:1.7;color:#374151;white-space:pre-wrap">${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
+  }
+  return text;
+}
+
 const AGENT_META: Record<string, { icon: string; color: string; bgColor: string; label: string }> = {
   ideator:      { icon: "\u{1F4A1}", color: "#F59E0B", bgColor: "#FFFBEB", label: "Ideator" },
   hooks:        { icon: "\u{1F3AC}", color: "#EC4899", bgColor: "#FDF2F8", label: "Hook & Script" },
@@ -54,7 +68,7 @@ export default function ReportsPage() {
     const date = new Date(report.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     const html = `<div class="section">
       <div class="section-header"><span class="badge" style="background:${meta.color}">${meta.label}</span><span class="date">${date}</span></div>
-      ${report.result}
+      ${sanitizeReport(report.result)}
     </div>`;
     downloadHtml(`${meta.label}-Report-${date.replace(/\s/g, "-")}`, html);
   }
@@ -75,7 +89,7 @@ export default function ReportsPage() {
       const rDate = new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
       return `<div class="section">
         <div class="section-header"><span class="badge" style="background:${meta.color}">${meta.label}</span><span class="date">${rDate}</span></div>
-        ${r.result}
+        ${sanitizeReport(r.result)}
       </div>`;
     }).join("\n");
     const header = `<div style="text-align:center;margin-bottom:32px">
@@ -257,7 +271,7 @@ export default function ReportsPage() {
                     <div className="px-5 pb-5 border-t border-gray-50">
                       <div
                         className="mt-4 text-sm text-gray-700 leading-relaxed bg-white rounded-xl p-4 max-h-[600px] overflow-y-auto report-html"
-                        dangerouslySetInnerHTML={{ __html: report.result }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeReport(report.result) }}
                       />
                       <div className="mt-3 flex justify-end gap-2">
                         <button

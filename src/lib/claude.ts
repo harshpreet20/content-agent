@@ -20,6 +20,18 @@ export async function askClaude(systemPrompt: string, userMessage: string): Prom
     messages: [{ role: "user", content: userMessage }],
   });
   const block = response.content[0];
-  if (block.type === "text") return block.text;
+  if (block.type === "text") return cleanHtmlOutput(block.text);
   return "";
+}
+
+function cleanHtmlOutput(raw: string): string {
+  let text = raw.trim();
+  text = text.replace(/^```(?:html)?\s*/i, "").replace(/\s*```\s*$/, "");
+  const firstTag = text.indexOf("<");
+  const lastTag = text.lastIndexOf(">");
+  if (firstTag !== -1 && lastTag !== -1 && lastTag > firstTag) {
+    text = text.substring(firstTag, lastTag + 1);
+  }
+  text = text.replace(/—/g, " - ").replace(/–/g, " - ");
+  return text;
 }

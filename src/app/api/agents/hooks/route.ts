@@ -16,9 +16,14 @@ Output a clean, well-designed HTML report using inline styles. Use this structur
   - "CALL TO ACTION" — in a separate highlighted row
   - Estimated length badge
 - Use pink (#EC4899) and violet (#8B5CF6) accents, clean white cards with subtle borders
-- Use simple inline CSS only (no external stylesheets, no <style> tags)
-- Write in friendly, conversational English — like you're briefing a content creator
-- Make the hooks punchy and scroll-stopping`;
+- Use simple inline CSS only (no external stylesheets, no style tags)
+- Write in friendly, conversational English, like you're briefing a content creator
+- Make the hooks punchy and scroll-stopping
+
+CRITICAL FORMAT RULES:
+- Output ONLY raw HTML. No markdown, no code fences, no backticks, no text before or after the HTML.
+- Never use em dashes or en dashes. Use " - " (space hyphen space) instead.
+- Your entire response must start with < and end with >. Nothing else.`;
 
 export async function POST() {
   const data = await loadDataWithFallback();

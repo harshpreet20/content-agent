@@ -15,9 +15,14 @@ Output a clean, well-designed HTML report using inline styles. Use this structur
 - A "Competitor Comparison" section with a simple table showing handle, posts, avg likes — use alternating row colors
 - A "Growth Opportunities" section with numbered action items
 - Use green (#10B981) as the primary accent, clean white cards with subtle borders
-- Use simple inline CSS only (no external stylesheets, no <style> tags)
-- Write in friendly, conversational English — explain data insights in plain language
-- Be specific with numbers — don't say "good engagement", say "23 likes per post, which is 2x the niche average"`;
+- Use simple inline CSS only (no external stylesheets, no style tags)
+- Write in friendly, conversational English, explain data insights in plain language
+- Be specific with numbers, don't say "good engagement", say "23 likes per post, which is 2x the niche average"
+
+CRITICAL FORMAT RULES:
+- Output ONLY raw HTML. No markdown, no code fences, no backticks, no text before or after the HTML.
+- Never use em dashes or en dashes. Use " - " (space hyphen space) instead.
+- Your entire response must start with < and end with >. Nothing else.`;
 
 export async function POST() {
   const data = await loadDataWithFallback();

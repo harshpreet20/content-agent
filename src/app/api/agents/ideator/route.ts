@@ -11,9 +11,14 @@ Output a clean, well-designed HTML report using inline styles. Use this structur
 - A heading for "Content Ideas Report"
 - For each idea, a styled card with: numbered title, format badge (Reel/Carousel/Story/Post), a one-line hook in italics, and a "Why it works" paragraph
 - Use warm colors (#F59E0B amber, #EC4899 pink) for accents, clean white cards with subtle borders, and readable fonts
-- Use simple inline CSS only (no external stylesheets, no <style> tags)
-- Write in friendly, conversational English — no jargon, no JSON
-- Keep each idea concise (2-3 sentences for "why it works")`;
+- Use simple inline CSS only (no external stylesheets, no style tags)
+- Write in friendly, conversational English, no jargon, no JSON
+- Keep each idea concise (2-3 sentences for "why it works")
+
+CRITICAL FORMAT RULES:
+- Output ONLY raw HTML. No markdown, no code fences, no backticks, no text before or after the HTML.
+- Never use em dashes or en dashes. Use " - " (space hyphen space) instead.
+- Your entire response must start with < and end with >. Nothing else.`;
 
 export async function POST() {
   const data = await loadDataWithFallback();
