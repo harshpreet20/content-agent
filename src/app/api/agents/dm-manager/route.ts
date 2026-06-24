@@ -3,6 +3,7 @@ import { loadDataWithFallback, getMyStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
 import { saveReport } from "@/lib/supabase-server";
 import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
+import { buildBrainContext, injectBrainContext } from "@/lib/brain";
 
 const BASE_SYSTEM = `You are the DM MANAGER agent for a badminton/racquet sports community Instagram account.
 Your job: create DM templates for common scenarios.
@@ -31,8 +32,11 @@ export async function POST() {
   if (!data) return NextResponse.json({ error: "No data. Run: npm run scrape" }, { status: 404 });
 
   const me = getMyStats(data);
-  const learnings = await getLearnings("dm-manager");
-  const system = buildEnhancedPrompt(BASE_SYSTEM, learnings);
+  const [learnings, brain] = await Promise.all([
+    getLearnings("dm-manager"),
+    buildBrainContext(),
+  ]);
+  const system = injectBrainContext(buildEnhancedPrompt(BASE_SYSTEM, learnings), brain);
 
   const context = `MY ACCOUNT (@${me.handle}): A badminton/racquet sports community.
 - ${me.postCount} posts, avg ${me.avgLikes} likes

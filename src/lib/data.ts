@@ -27,8 +27,12 @@ export interface ScrapedData {
 export function loadData(): ScrapedData | null {
   const dataPath = resolve(process.cwd(), "dashboard/data/data.json");
   if (!existsSync(dataPath)) return null;
-  const raw = readFileSync(dataPath, "utf-8");
-  return JSON.parse(raw);
+  try {
+    const raw = readFileSync(dataPath, "utf-8");
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
 }
 
 export async function loadDataWithFallback(): Promise<ScrapedData | null> {

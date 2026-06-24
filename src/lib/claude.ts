@@ -20,7 +20,7 @@ export async function askClaude(systemPrompt: string, userMessage: string): Prom
     messages: [{ role: "user", content: userMessage }],
   });
   const block = response.content[0];
-  if (block.type === "text") return cleanHtmlOutput(block.text);
+  if (block && block.type === "text") return cleanHtmlOutput(block.text);
   return "";
 }
 

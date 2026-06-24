@@ -3,6 +3,7 @@ import { loadDataWithFallback, getMyStats, getCompetitorStats } from "@/lib/data
 import { askClaude } from "@/lib/claude";
 import { saveReport } from "@/lib/supabase-server";
 import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
+import { buildBrainContext, injectBrainContext } from "@/lib/brain";
 
 const BASE_SYSTEM = `You are the HOOK & SCRIPT agent for a badminton/racquet sports Instagram account.
 Your job: write 3 reel scripts with attention-grabbing hooks.
@@ -31,8 +32,11 @@ export async function POST() {
 
   const me = getMyStats(data);
   const competitors = getCompetitorStats(data);
-  const learnings = await getLearnings("hooks");
-  const system = buildEnhancedPrompt(BASE_SYSTEM, learnings);
+  const [learnings, brain] = await Promise.all([
+    getLearnings("hooks"),
+    buildBrainContext(),
+  ]);
+  const system = injectBrainContext(buildEnhancedPrompt(BASE_SYSTEM, learnings), brain);
 
   const topCompetitorPosts = competitors
     .flatMap((c) => c.posts.slice(0, 5))

@@ -3,6 +3,7 @@ import { loadDataWithFallback, getMyStats, getCompetitorStats } from "@/lib/data
 import { askClaude } from "@/lib/claude";
 import { saveReport } from "@/lib/supabase-server";
 import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
+import { buildBrainContext, injectBrainContext } from "@/lib/brain";
 
 const BASE_SYSTEM = `You are the IDEATOR agent for a badminton/racquet sports Instagram account.
 Your job: analyze the account's posts and competitors' top-performing content, then generate 5 fresh content ideas.
@@ -26,8 +27,11 @@ export async function POST() {
 
   const me = getMyStats(data);
   const competitors = getCompetitorStats(data);
-  const learnings = await getLearnings("ideator");
-  const system = buildEnhancedPrompt(BASE_SYSTEM, learnings);
+  const [learnings, brain] = await Promise.all([
+    getLearnings("ideator"),
+    buildBrainContext(),
+  ]);
+  const system = injectBrainContext(buildEnhancedPrompt(BASE_SYSTEM, learnings), brain);
 
   const context = `MY ACCOUNT (@${me.handle}): ${me.postCount} posts, avg ${me.avgLikes} likes.
 My top post: "${me.topPost?.caption?.slice(0, 100)}" (${me.topPost?.likes} likes)

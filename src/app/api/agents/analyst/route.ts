@@ -3,6 +3,7 @@ import { loadDataWithFallback, getMyStats, getCompetitorStats } from "@/lib/data
 import { askClaude } from "@/lib/claude";
 import { saveReport } from "@/lib/supabase-server";
 import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
+import { buildBrainContext, injectBrainContext } from "@/lib/brain";
 
 const BASE_SYSTEM = `You are the ANALYST agent for a badminton/racquet sports Instagram account.
 Your job: provide a data-driven performance report.
@@ -30,8 +31,11 @@ export async function POST() {
 
   const me = getMyStats(data);
   const competitors = getCompetitorStats(data);
-  const learnings = await getLearnings("analyst");
-  const system = buildEnhancedPrompt(BASE_SYSTEM, learnings);
+  const [learnings, brain] = await Promise.all([
+    getLearnings("analyst"),
+    buildBrainContext(),
+  ]);
+  const system = injectBrainContext(buildEnhancedPrompt(BASE_SYSTEM, learnings), brain);
 
   const context = `MY ACCOUNT (@${me.handle}):
 - ${me.postCount} posts, ${me.totalLikes} total likes, ${me.totalComments} total comments, ${me.totalViews} total views

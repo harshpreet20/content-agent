@@ -3,6 +3,7 @@ import { loadDataWithFallback, getMyStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
 import { saveReport } from "@/lib/supabase-server";
 import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
+import { buildBrainContext, injectBrainContext } from "@/lib/brain";
 
 const BASE_SYSTEM = `You are the PLANNER agent for a badminton/racquet sports Instagram account.
 Your job: create a 7-day content calendar.
@@ -32,8 +33,11 @@ export async function POST() {
   if (!data) return NextResponse.json({ error: "No data. Run: npm run scrape" }, { status: 404 });
 
   const me = getMyStats(data);
-  const learnings = await getLearnings("planner");
-  const system = buildEnhancedPrompt(BASE_SYSTEM, learnings);
+  const [learnings, brain] = await Promise.all([
+    getLearnings("planner"),
+    buildBrainContext(),
+  ]);
+  const system = injectBrainContext(buildEnhancedPrompt(BASE_SYSTEM, learnings), brain);
 
   const recentPosts = me.posts
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())

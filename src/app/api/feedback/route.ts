@@ -2,10 +2,15 @@ import { NextResponse } from "next/server";
 import { saveFeedback } from "@/lib/micro-intel";
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const { reportId, agentName, rating } = body;
 
-  if (!reportId || !agentName || ![1, -1].includes(rating)) {
+  if (!reportId || !agentName || typeof rating !== "number" || ![1, -1].includes(rating)) {
     return NextResponse.json(
       { error: "reportId, agentName, and rating (1 or -1) are required" },
       { status: 400 }
