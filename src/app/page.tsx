@@ -77,7 +77,6 @@ export default function Dashboard() {
     loadDashboardData();
   }, [user, status]);
 
-
   if (authLoading || !user || status !== "approved") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
