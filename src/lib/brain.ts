@@ -31,7 +31,7 @@ Analyze the data and produce a structured brief covering:
 1. CURRENT POSITION - Where does the account stand? Strengths, weaknesses in plain language with specific numbers.
 2. COMPETITIVE LANDSCAPE - How do we compare to competitors? Who's winning and why? What content formats/topics work for them?
 3. CONTENT PATTERNS - What types of our content perform best? What topics get engagement? What falls flat?
-4. AUDIENCE SENTIMENT - Based on reviews and engagement, what does the audience care about?
+4. AUDIENCE SENTIMENT - Analyze Trustpilot and Google Business reviews in detail. What do customers praise? What do they complain about? Extract recurring themes, specific pain points, and positive highlights. Use exact quotes where impactful. This feedback should directly inform content strategy.
 5. STRATEGIC PRIORITIES - The top 3 things to focus on right now, based on all the data.
 6. OPPORTUNITIES - Gaps competitors aren't covering, trending formats to try, untapped topics.
 
