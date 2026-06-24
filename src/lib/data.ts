@@ -69,6 +69,11 @@ export function getMyStats(data: ScrapedData) {
 
   const topPost = myPosts.sort((a, b) => b.likes - a.likes)[0] || null;
 
+  const totalEngagements = totalLikes + totalComments;
+  const engagementRate = myPosts.length > 0
+    ? (totalEngagements / myPosts.length / Math.max(avgLikes * 10, 1)) * 100
+    : 0;
+
   return {
     handle: data.myHandle,
     postCount: myPosts.length,
@@ -77,6 +82,7 @@ export function getMyStats(data: ScrapedData) {
     totalViews,
     avgLikes,
     avgComments,
+    engagementRate: Math.round(engagementRate * 10) / 10,
     topPost,
     posts: myPosts,
   };

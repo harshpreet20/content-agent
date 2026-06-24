@@ -50,6 +50,11 @@ export async function GET() {
       return { handle, postCount: posts.length, avgLikes: al, totalLikes: tl, topPost: tp, posts };
     });
 
+    const totalEngagements = totalLikes + totalComments;
+    const engagementRate = myPosts.length > 0
+      ? (totalEngagements / myPosts.length / Math.max(avgLikes * 10, 1)) * 100
+      : 0;
+
     return NextResponse.json({
       scrapedAt: data.scraped_at,
       me: {
@@ -60,6 +65,7 @@ export async function GET() {
         totalViews,
         avgLikes,
         avgComments,
+        engagementRate: Math.round(engagementRate * 10) / 10,
         topPost,
         posts: myPosts,
       },

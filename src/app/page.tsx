@@ -54,6 +54,7 @@ const AGENTS = [
 export default function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const { user, signOut, loading: authLoading } = useAuth();
   const router = useRouter();
 
@@ -63,14 +64,33 @@ export default function Dashboard() {
     }
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    if (!user) return;
-    fetch("/api/data")
+  function loadDashboardData() {
+    return fetch("/api/data")
       .then((r) => r.json())
       .then(setData)
       .catch(console.error)
       .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    if (!user) return;
+    loadDashboardData();
   }, [user]);
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    try {
+      const res = await fetch("/api/cron/scrape", { method: "POST" });
+      const json = await res.json();
+      if (json.success) {
+        await loadDashboardData();
+      }
+    } catch {
+      // silent
+    } finally {
+      setRefreshing(false);
+    }
+  }
 
   if (authLoading || !user) {
     return (
@@ -139,14 +159,29 @@ export default function Dashboard() {
         ) : (
           <div className="space-y-8">
             {/* Page title */}
-            <div>
-              <h2 className="text-2xl font-extrabold text-gray-900">Dashboard</h2>
-              <p className="text-sm text-gray-400 mt-0.5">
-                Your content performance at a glance
-                {data?.scrapedAt && (
-                  <> &middot; Updated {new Date(data.scrapedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</>
-                )}
-              </p>
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-2xl font-extrabold text-gray-900">Dashboard</h2>
+                <p className="text-sm text-gray-400 mt-0.5">
+                  Your content performance at a glance
+                  {data?.scrapedAt && (
+                    <> &middot; Updated {new Date(data.scrapedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</>
+                  )}
+                </p>
+              </div>
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-xs font-semibold rounded-xl hover:bg-gray-800 transition active:scale-[0.98] shadow-sm disabled:opacity-60"
+              >
+                <svg
+                  className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                {refreshing ? "Scraping..." : "Refresh Data"}
+              </button>
             </div>
 
             {/* Stats row */}
