@@ -67,7 +67,7 @@ async function saveTrustpilotReviews(items: any[]) {
 
   const supabase = createServerClient();
   const { data: existing } = await supabase
-    .from("content_agent_reviews")
+    .from("reviews")
     .select("review_text")
     .eq("source", "trustpilot");
 
@@ -75,7 +75,7 @@ async function saveTrustpilotReviews(items: any[]) {
   const newReviews = reviews.filter((r) => r.review_text && !existingTexts.has(r.review_text));
 
   if (newReviews.length > 0) {
-    await supabase.from("content_agent_reviews").insert(
+    await supabase.from("reviews").insert(
       newReviews.map((r) => ({ source: "trustpilot" as const, ...r }))
     );
   }
@@ -100,7 +100,7 @@ async function saveGoogleReviews(items: any[]) {
 
   const supabase = createServerClient();
   const { data: existing } = await supabase
-    .from("content_agent_reviews")
+    .from("reviews")
     .select("review_text")
     .eq("source", "google");
 
@@ -108,7 +108,7 @@ async function saveGoogleReviews(items: any[]) {
   const newReviews = reviews.filter((r) => r.review_text && !existingTexts.has(r.review_text));
 
   if (newReviews.length > 0) {
-    await supabase.from("content_agent_reviews").insert(
+    await supabase.from("reviews").insert(
       newReviews.map((r) => ({ source: "google" as const, ...r }))
     );
   }
@@ -221,7 +221,7 @@ export async function scrapeGoogleReviews(): Promise<{
 export async function getStoredReviews(source?: string) {
   const supabase = createServerClient();
   let query = supabase
-    .from("content_agent_reviews")
+    .from("reviews")
     .select("*")
     .order("scraped_at", { ascending: false })
     .limit(100);

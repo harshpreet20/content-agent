@@ -9,7 +9,7 @@ export async function GET() {
 
     // Get latest scrape
     const { data: latest, error } = await supabase
-      .from("content_agent_scrapes")
+      .from("scrapes")
       .select("*")
       .order("scraped_at", { ascending: false })
       .limit(1)

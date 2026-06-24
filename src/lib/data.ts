@@ -45,7 +45,7 @@ export async function loadDataWithFallback(): Promise<ScrapedData | null> {
 
   const supabase = createClient(sbUrl, sbKey);
   const { data, error } = await supabase
-    .from("content_agent_scrapes")
+    .from("scrapes")
     .select("*")
     .order("scraped_at", { ascending: false })
     .limit(1)

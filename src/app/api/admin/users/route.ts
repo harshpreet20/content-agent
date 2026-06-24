@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const supabase = createServerClient();
     const { data, error } = await supabase
-      .from("content_agent_app_users")
+      .from("app_users")
       .select("*")
       .order("created_at", { ascending: true });
 
@@ -42,7 +42,7 @@ export async function PATCH(request: Request) {
     }
 
     const { error } = await supabase
-      .from("content_agent_app_users")
+      .from("app_users")
       .update(updates)
       .eq("id", userId);
 
@@ -64,7 +64,7 @@ export async function DELETE(request: Request) {
   try {
     const supabase = createServerClient();
     const { error } = await supabase
-      .from("content_agent_app_users")
+      .from("app_users")
       .delete()
       .eq("id", userId);
 

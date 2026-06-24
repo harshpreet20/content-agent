@@ -8,7 +8,7 @@ export async function GET(request: Request) {
 
   const supabase = createServerClient();
   let query = supabase
-    .from("content_agent_reports")
+    .from("reports")
     .select("*")
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -36,7 +36,7 @@ export async function DELETE(request: Request) {
 
   const supabase = createServerClient();
   const { error } = await supabase
-    .from("content_agent_reports")
+    .from("reports")
     .delete()
     .eq("id", id);
 

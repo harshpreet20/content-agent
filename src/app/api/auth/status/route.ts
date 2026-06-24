@@ -19,22 +19,42 @@ export async function POST(request: Request) {
   try {
     const supabase = createServerClient();
 
-    const { data: existing } = await supabase
-      .from("content_agent_app_users")
+    const { data: byAuthId } = await supabase
+      .from("app_users")
       .select("*")
       .eq("auth_user_id", authUserId)
       .single();
 
-    if (existing) {
+    if (byAuthId) {
       return NextResponse.json({
-        role: existing.role,
-        status: existing.status,
-        userId: existing.id,
+        role: byAuthId.role,
+        status: byAuthId.status,
+        userId: byAuthId.id,
+      });
+    }
+
+    // Match by email for migrated users whose auth_user_id changed
+    const { data: byEmail } = await supabase
+      .from("app_users")
+      .select("*")
+      .eq("email", email)
+      .single();
+
+    if (byEmail) {
+      await supabase
+        .from("app_users")
+        .update({ auth_user_id: authUserId, updated_at: new Date().toISOString() })
+        .eq("id", byEmail.id);
+
+      return NextResponse.json({
+        role: byEmail.role,
+        status: byEmail.status,
+        userId: byEmail.id,
       });
     }
 
     const { data: newUser, error } = await supabase
-      .from("content_agent_app_users")
+      .from("app_users")
       .insert({
         auth_user_id: authUserId,
         email,

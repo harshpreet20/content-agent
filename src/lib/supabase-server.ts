@@ -10,7 +10,7 @@ export function createServerClient() {
 export async function saveReport(agentName: string, result: string): Promise<string | null> {
   const supabase = createServerClient();
   const { data, error } = await supabase
-    .from("content_agent_reports")
+    .from("reports")
     .insert({ agent_name: agentName, result })
     .select("id")
     .single();

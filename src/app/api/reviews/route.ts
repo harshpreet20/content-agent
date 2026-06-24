@@ -60,7 +60,7 @@ export async function DELETE(request: Request) {
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
   const supabase = createServerClient();
-  const { error } = await supabase.from("content_agent_reviews").delete().eq("id", id);
+  const { error } = await supabase.from("reviews").delete().eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });

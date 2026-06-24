@@ -22,7 +22,7 @@ export async function GET() {
   try {
     const supabase = createServerClient();
     const { data, error } = await supabase
-      .from("content_agent_scrapes")
+      .from("scrapes")
       .select("*")
       .order("scraped_at", { ascending: false })
       .limit(1)

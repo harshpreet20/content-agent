@@ -19,7 +19,7 @@ export async function POST() {
 async function collectLatestRun() {
   const supabase = createServerClient();
   const { data: runData } = await supabase
-    .from("content_agent_scrape_runs")
+    .from("scrape_runs")
     .select("*")
     .eq("id", "latest")
     .single();
@@ -45,7 +45,7 @@ async function collectLatestRun() {
     const run = await client.run(runData.run_id).get();
 
     if (!run) {
-      await supabase.from("content_agent_scrape_runs").upsert(
+      await supabase.from("scrape_runs").upsert(
         { id: "latest", status: "FAILED", finished_at: new Date().toISOString() },
         { onConflict: "id" }
       );
@@ -103,13 +103,13 @@ async function collectLatestRun() {
         totalPosts: items.length,
       };
 
-      await supabase.from("content_agent_scrapes").insert({
+      await supabase.from("scrapes").insert({
         my_handle: MY_HANDLE,
         competitors: COMPETITORS,
         data: output,
       });
 
-      await supabase.from("content_agent_scrape_runs").upsert(
+      await supabase.from("scrape_runs").upsert(
         { id: "latest", status: "SUCCEEDED", finished_at: new Date().toISOString() },
         { onConflict: "id" }
       );
@@ -122,7 +122,7 @@ async function collectLatestRun() {
     }
 
     if (run.status === "FAILED" || run.status === "ABORTED" || run.status === "TIMED-OUT") {
-      await supabase.from("content_agent_scrape_runs").upsert(
+      await supabase.from("scrape_runs").upsert(
         { id: "latest", status: "FAILED", finished_at: new Date().toISOString() },
         { onConflict: "id" }
       );

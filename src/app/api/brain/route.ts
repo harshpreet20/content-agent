@@ -29,7 +29,7 @@ export async function GET() {
     const { createServerClient } = await import("@/lib/supabase-server");
     const supabase = createServerClient();
     const { data } = await supabase
-      .from("content_agent_analytics")
+      .from("analytics")
       .select("data, fetched_at")
       .eq("metric_type", "brain_context")
       .order("fetched_at", { ascending: false })

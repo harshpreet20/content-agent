@@ -36,7 +36,7 @@ async function startScrape() {
   });
 
   const supabase = createServerClient();
-  await supabase.from("content_agent_scrape_runs").upsert(
+  await supabase.from("scrape_runs").upsert(
     {
       id: "latest",
       run_id: run.id,
@@ -121,7 +121,7 @@ async function collectResults(runId: string, datasetId: string) {
   };
 
   const supabase = createServerClient();
-  const { error } = await supabase.from("content_agent_scrapes").insert({
+  const { error } = await supabase.from("scrapes").insert({
     my_handle: MY_HANDLE,
     competitors: COMPETITORS,
     data: output,
@@ -129,7 +129,7 @@ async function collectResults(runId: string, datasetId: string) {
 
   if (error) throw new Error(`Supabase save failed: ${error.message}`);
 
-  await supabase.from("content_agent_scrape_runs").upsert(
+  await supabase.from("scrape_runs").upsert(
     { id: "latest", status: "SUCCEEDED", finished_at: new Date().toISOString() },
     { onConflict: "id" }
   );

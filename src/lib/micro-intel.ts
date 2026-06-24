@@ -4,7 +4,7 @@ import { askClaude } from "./claude";
 export async function getLearnings(agentName: string): Promise<string[]> {
   const supabase = createServerClient();
   const { data } = await supabase
-    .from("content_agent_learnings")
+    .from("learnings")
     .select("learning, score")
     .eq("agent_name", agentName)
     .eq("active", true)
@@ -36,7 +36,7 @@ export async function saveFeedback(
   rating: number
 ) {
   const supabase = createServerClient();
-  const { error } = await supabase.from("content_agent_feedback").insert({
+  const { error } = await supabase.from("feedback").insert({
     report_id: reportId,
     agent_name: agentName,
     rating,
@@ -44,7 +44,7 @@ export async function saveFeedback(
   if (error) throw new Error(error.message);
 
   const { count } = await supabase
-    .from("content_agent_feedback")
+    .from("feedback")
     .select("*", { count: "exact", head: true })
     .eq("agent_name", agentName);
 
@@ -57,7 +57,7 @@ export async function retrain(agentName: string) {
   const supabase = createServerClient();
 
   const { data: feedback } = await supabase
-    .from("content_agent_feedback")
+    .from("feedback")
     .select("rating, report_id")
     .eq("agent_name", agentName)
     .order("created_at", { ascending: false })
@@ -67,7 +67,7 @@ export async function retrain(agentName: string) {
 
   const reportIds = feedback.map((f) => f.report_id);
   const { data: reports } = await supabase
-    .from("content_agent_reports")
+    .from("reports")
     .select("id, result")
     .in("id", reportIds);
 
@@ -85,7 +85,7 @@ export async function retrain(agentName: string) {
     .filter(Boolean);
 
   const { data: existingLearnings } = await supabase
-    .from("content_agent_learnings")
+    .from("learnings")
     .select("learning")
     .eq("agent_name", agentName)
     .eq("active", true);
@@ -120,7 +120,7 @@ Output as a JSON array of strings. Example: ["Use specific numbers instead of va
   }
 
   await supabase
-    .from("content_agent_learnings")
+    .from("learnings")
     .update({ active: false, updated_at: new Date().toISOString() })
     .eq("agent_name", agentName)
     .eq("active", true);
@@ -133,5 +133,5 @@ Output as a JSON array of strings. Example: ["Use specific numbers instead of va
     active: true,
   }));
 
-  await supabase.from("content_agent_learnings").insert(rows);
+  await supabase.from("learnings").insert(rows);
 }

@@ -10,7 +10,7 @@ export async function GET() {
   const sbStart = Date.now();
   try {
     const supabase = createServerClient();
-    const { error } = await supabase.from("content_agent_scrapes").select("id").limit(1);
+    const { error } = await supabase.from("scrapes").select("id").limit(1);
     checks.database = error
       ? { status: "error", error: error.message, latency: Date.now() - sbStart }
       : { status: "ok", latency: Date.now() - sbStart };
@@ -55,7 +55,7 @@ export async function GET() {
   try {
     const supabase = createServerClient();
     const { data } = await supabase
-      .from("content_agent_scrapes")
+      .from("scrapes")
       .select("scraped_at")
       .order("scraped_at", { ascending: false })
       .limit(1)
@@ -78,7 +78,7 @@ export async function GET() {
   try {
     const supabase = createServerClient();
     const { data } = await supabase
-      .from("content_agent_analytics")
+      .from("analytics")
       .select("fetched_at")
       .eq("metric_type", "brain_context")
       .order("fetched_at", { ascending: false })

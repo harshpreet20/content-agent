@@ -150,14 +150,14 @@ async function getReviewsSummary(): Promise<string> {
     const supabase = createServerClient();
 
     const { data: trustpilotData } = await supabase
-      .from("content_agent_reviews")
+      .from("reviews")
       .select("source, rating, title, review_text")
       .eq("source", "trustpilot")
       .order("scraped_at", { ascending: false })
       .limit(10);
 
     const { data: googleData } = await supabase
-      .from("content_agent_reviews")
+      .from("reviews")
       .select("source, rating, title, review_text")
       .eq("source", "google")
       .order("scraped_at", { ascending: false })
@@ -194,7 +194,7 @@ async function getRecentReportInsights(): Promise<string> {
   try {
     const supabase = createServerClient();
     const { data } = await supabase
-      .from("content_agent_reports")
+      .from("reports")
       .select("agent_name, result, created_at")
       .order("created_at", { ascending: false })
       .limit(5);
@@ -216,7 +216,7 @@ async function getAllLearnings(): Promise<string> {
   try {
     const supabase = createServerClient();
     const { data } = await supabase
-      .from("content_agent_learnings")
+      .from("learnings")
       .select("agent_name, learning")
       .eq("active", true)
       .order("score", { ascending: false })
@@ -236,7 +236,7 @@ async function getCachedBrief(): Promise<BrainContext | null> {
   try {
     const supabase = createServerClient();
     const { data } = await supabase
-      .from("content_agent_analytics")
+      .from("analytics")
       .select("data, fetched_at")
       .eq("metric_type", "brain_context")
       .order("fetched_at", { ascending: false })
@@ -258,7 +258,7 @@ async function getCachedBrief(): Promise<BrainContext | null> {
 async function cacheBrief(context: BrainContext): Promise<void> {
   try {
     const supabase = createServerClient();
-    await supabase.from("content_agent_analytics").insert({
+    await supabase.from("analytics").insert({
       metric_type: "brain_context",
       data: context,
       period: "snapshot",
