@@ -12,7 +12,11 @@ const COMPETITORS = (process.env.COMPETITOR_HANDLES || DEFAULT_COMPETITORS)
   .filter(Boolean);
 const ALL_HANDLES = [MY_HANDLE, ...COMPETITORS];
 
-export async function GET() {
+export async function POST() {
+  return collectLatestRun();
+}
+
+async function collectLatestRun() {
   const supabase = createServerClient();
   const { data: runData } = await supabase
     .from("content_agent_scrape_runs")
@@ -135,4 +139,8 @@ export async function GET() {
   } catch (e: any) {
     return NextResponse.json({ status: "ERROR", message: e.message });
   }
+}
+
+export async function GET() {
+  return collectLatestRun();
 }

@@ -26,7 +26,13 @@ async function startScrape() {
     searchLimit: 1,
   };
 
-  const run = await client.actor("apify/instagram-scraper").start(input);
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://content-agent-gamma.vercel.app";
+  const run = await client.actor("apify/instagram-scraper").start(input, {
+    webhooks: [{
+      eventTypes: ["ACTOR.RUN.SUCCEEDED"],
+      requestUrl: `${baseUrl}/api/scrape-status?collect=true`,
+    }],
+  });
 
   const supabase = createServerClient();
   await supabase.from("content_agent_scrape_runs").upsert(
@@ -128,27 +134,6 @@ async function collectResults(runId: string, datasetId: string) {
   };
 }
 
-async function runScrapeSync() {
-  const apifyToken = process.env.APIFY_API_TOKEN;
-  if (!apifyToken) throw new Error("Missing APIFY_API_TOKEN");
-
-  const client = new ApifyClient({ token: apifyToken });
-
-  const input = {
-    directUrls: ALL_HANDLES.map((h) => `https://www.instagram.com/${h}/`),
-    resultsType: "posts",
-    resultsLimit: 30,
-    searchType: "hashtag",
-    searchLimit: 1,
-  };
-
-  const run = await client.actor("apify/instagram-scraper").call(input, {
-    waitSecs: 280,
-  });
-
-  return collectResults(run.id, run.defaultDatasetId);
-}
-
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -156,7 +141,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await runScrapeSync();
+    const result = await startScrape();
     return NextResponse.json(result);
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
