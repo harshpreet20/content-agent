@@ -5,8 +5,9 @@ import { createServerClient } from "@/lib/supabase-server";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
+const DEFAULT_COMPETITORS = "wtfpuneet,badmintonclubx,shuttlify,delhibadmintonclub,badmintonclubofindia,eastdelhisportsclub,kanikaaaa108,vibewithkanika_";
 const MY_HANDLE = process.env.INSTAGRAM_HANDLE || "racquetsclubcommunity";
-const COMPETITORS = (process.env.COMPETITOR_HANDLES || "")
+const COMPETITORS = (process.env.COMPETITOR_HANDLES || DEFAULT_COMPETITORS)
   .split(",")
   .filter(Boolean);
 const ALL_HANDLES = [MY_HANDLE, ...COMPETITORS];

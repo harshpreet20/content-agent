@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import AgentCard from "@/components/AgentCard";
 import StatsBar from "@/components/StatsBar";
 import CompetitorBar from "@/components/CompetitorBar";
+import StatusBar from "@/components/StatusBar";
 import Nav from "@/components/Nav";
 import { useAuth } from "@/components/AuthProvider";
 
@@ -135,6 +136,13 @@ export default function Dashboard() {
                 {refreshing ? "Scraping..." : "Refresh Data"}
               </button>
             </div>
+
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">System Status</h3>
+              </div>
+              <StatusBar />
+            </section>
 
             <section>
               <StatsBar stats={data?.me || null} />
