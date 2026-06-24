@@ -75,7 +75,7 @@ export default function ReportsPage() {
         <div className="max-w-4xl mx-auto px-5 h-14 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2">
-              <img src="/logo.svg" alt="RCC" className="w-8 h-8 rounded-full object-cover" />
+              <img src="/rcc-crest.webp" alt="RCC" className="w-8 h-8 rounded-full object-cover" />
               <span className="text-lg font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
                 ContentAgent
               </span>
