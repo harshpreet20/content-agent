@@ -28,6 +28,14 @@ const AGENTS = [
     endpoint: "/api/agents/hooks",
   },
   {
+    name: "AI Reel Prompt",
+    description: "Classify reels as AI/Real and write full AI production prompts",
+    icon: "\u{1F3A8}",
+    color: "#F97316",
+    bgColor: "#FFF7ED",
+    endpoint: "/api/agents/reel-prompt",
+  },
+  {
     name: "Planner",
     description: "Plan your 7-day content calendar",
     icon: "\u{1F4C5}",
