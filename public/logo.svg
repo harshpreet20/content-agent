@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D4A843"/>
+      <stop offset="50%" style="stop-color:#C8962E"/>
+      <stop offset="100%" style="stop-color:#B8860B"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="96" fill="white" stroke="url(#gold)" stroke-width="3"/>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="url(#gold)" stroke-width="1.5"/>
+  <text x="100" y="118" text-anchor="middle" font-family="Georgia, serif" font-size="72" font-weight="bold" fill="url(#gold)">RCC</text>
+  <text x="100" y="160" text-anchor="middle" font-family="Georgia, serif" font-size="16" font-weight="bold" fill="#8B1A1A" letter-spacing="6">DELHI</text>
+  <text x="100" y="55" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="url(#gold)" letter-spacing="8">RACQUETS CLUB</text>
+</svg>

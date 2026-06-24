@@ -109,9 +109,10 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
           )}
           {result && (
             <>
-              <div className="bg-gray-50 rounded-xl p-4 text-xs text-gray-600 leading-relaxed max-h-72 overflow-y-auto whitespace-pre-wrap font-mono">
-                {result}
-              </div>
+              <div
+                className="bg-white rounded-xl p-4 text-sm text-gray-700 leading-relaxed max-h-[500px] overflow-y-auto report-html"
+                dangerouslySetInnerHTML={{ __html: result }}
+              />
               {/* Feedback buttons */}
               {reportId && (
                 <div className="flex items-center gap-2 mt-3">

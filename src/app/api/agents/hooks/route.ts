@@ -6,8 +6,19 @@ import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
 
 const BASE_SYSTEM = `You are the HOOK & SCRIPT agent for a badminton/racquet sports Instagram account.
 Your job: write 3 reel scripts with attention-grabbing hooks.
-Each script must include: a hook (first 3 seconds), a body (15-30 seconds of value), and a CTA.
-Base them on what's working for competitors. Output as JSON array with fields: hook, body, cta, estimatedLength.`;
+
+Output a clean, well-designed HTML report using inline styles. Use this structure:
+- A heading for "Reel Scripts & Hooks"
+- For each script, a styled card with:
+  - Script number and a catchy title
+  - "THE HOOK" section (first 3 seconds) — bold, highlighted in a colored box (#EC4899 pink background with white text)
+  - "THE SCRIPT" section (15-30 seconds) — the body content in a clean white area
+  - "CALL TO ACTION" — in a separate highlighted row
+  - Estimated length badge
+- Use pink (#EC4899) and violet (#8B5CF6) accents, clean white cards with subtle borders
+- Use simple inline CSS only (no external stylesheets, no <style> tags)
+- Write in friendly, conversational English — like you're briefing a content creator
+- Make the hooks punchy and scroll-stopping`;
 
 export async function POST() {
   const data = await loadDataWithFallback();

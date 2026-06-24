@@ -86,9 +86,12 @@ export default function Dashboard() {
       <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <h1 className="text-lg font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
-              ContentAgent
-            </h1>
+            <div className="flex items-center gap-2">
+              <img src="/logo.svg" alt="RCC" className="w-8 h-8 rounded-full object-cover" />
+              <h1 className="text-lg font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
+                ContentAgent
+              </h1>
+            </div>
             <div className="hidden sm:flex items-center gap-1">
               <Link href="/" className="px-3 py-1.5 text-sm font-medium text-gray-900 bg-gray-100 rounded-lg">
                 Dashboard

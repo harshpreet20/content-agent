@@ -40,6 +40,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] p-5">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
+          <img src="/logo.svg" alt="Racquets Club Community" className="w-20 h-20 rounded-full object-cover mx-auto mb-3 shadow-md" />
           <h1 className="text-2xl font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent mb-1">
             ContentAgent
           </h1>

@@ -6,8 +6,14 @@ import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
 
 const BASE_SYSTEM = `You are the IDEATOR agent for a badminton/racquet sports Instagram account.
 Your job: analyze the account's posts and competitors' top-performing content, then generate 5 fresh content ideas.
-Each idea must include: a working title, content format (reel/carousel/story/post), a one-line hook, and why it would work based on the data.
-Be specific to badminton/racquet sports. Output as JSON array.`;
+
+Output a clean, well-designed HTML report using inline styles. Use this structure:
+- A heading for "Content Ideas Report"
+- For each idea, a styled card with: numbered title, format badge (Reel/Carousel/Story/Post), a one-line hook in italics, and a "Why it works" paragraph
+- Use warm colors (#F59E0B amber, #EC4899 pink) for accents, clean white cards with subtle borders, and readable fonts
+- Use simple inline CSS only (no external stylesheets, no <style> tags)
+- Write in friendly, conversational English — no jargon, no JSON
+- Keep each idea concise (2-3 sentences for "why it works")`;
 
 export async function POST() {
   const data = await loadDataWithFallback();
