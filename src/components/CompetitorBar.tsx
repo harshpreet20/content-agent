@@ -42,8 +42,14 @@ export default function CompetitorBar({ competitors }: { competitors: Competitor
             <div className="text-gray-400 text-xs mt-0.5">{c.postCount} posts</div>
           </div>
           <div className="text-right shrink-0">
-            <div className="text-sm font-bold text-gray-900">{formatNumber(c.avgLikes)}</div>
-            <div className="text-[10px] text-gray-400 uppercase tracking-wide">avg likes</div>
+            {c.postCount > 0 ? (
+              <>
+                <div className="text-sm font-bold text-gray-900">{formatNumber(c.avgLikes)}</div>
+                <div className="text-[10px] text-gray-400 uppercase tracking-wide">avg likes</div>
+              </>
+            ) : (
+              <span className="text-[10px] font-semibold text-amber-500 bg-amber-50 px-2 py-1 rounded-full">Pending scrape</span>
+            )}
           </div>
         </div>
       ))}

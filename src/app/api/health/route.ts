@@ -61,7 +61,7 @@ export async function GET() {
       const age = Date.now() - new Date(data.scraped_at).getTime();
       const hours = Math.round(age / (1000 * 60 * 60));
       checks.data_freshness = hours <= 24
-        ? { status: "ok", latency: hours }
+        ? { status: "ok" }
         : { status: "error", error: `Data is ${hours}h old` };
     } else {
       checks.data_freshness = { status: "error", error: "No scraped data" };

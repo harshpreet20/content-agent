@@ -55,6 +55,8 @@ export default function StatusBar() {
   const checks = health?.checks || {};
   const keys = Object.keys(SERVICE_META);
 
+  const WARN_ERRORS = ["Not generated yet", "No scraped data", "Stale (>2h)"];
+
   return (
     <div className="flex flex-wrap items-center gap-2">
       {keys.map((key) => {
@@ -62,6 +64,14 @@ export default function StatusBar() {
         const meta = SERVICE_META[key];
         const isOk = check?.status === "ok";
         const isUnknown = !check;
+        const isWarn = !isOk && check?.error && WARN_ERRORS.includes(check.error);
+
+        let dotClass = "bg-gray-300";
+        if (!isUnknown) {
+          if (isOk) dotClass = "bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.4)]";
+          else if (isWarn) dotClass = "bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.4)]";
+          else dotClass = "bg-red-400 shadow-[0_0_6px_rgba(239,68,68,0.4)]";
+        }
 
         return (
           <div
@@ -77,15 +87,7 @@ export default function StatusBar() {
           >
             <span className="text-sm">{meta.icon}</span>
             <span className="text-xs font-semibold text-gray-600">{meta.label}</span>
-            <span
-              className={`w-2.5 h-2.5 rounded-full ${
-                isUnknown
-                  ? "bg-gray-300"
-                  : isOk
-                  ? "bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.4)]"
-                  : "bg-red-400 shadow-[0_0_6px_rgba(239,68,68,0.4)]"
-              }`}
-            />
+            <span className={`w-2.5 h-2.5 rounded-full ${dotClass}`} />
           </div>
         );
       })}

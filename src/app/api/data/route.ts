@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { loadData, getMyStats, getCompetitorStats } from "@/lib/data";
 import { createServerClient } from "@/lib/supabase-server";
 
+const DEFAULT_COMPETITORS = "wtfpuneet,badmintonclubx,shuttlify,delhibadmintonclub,badmintonclubofindia,eastdelhisportsclub,kanikaaaa108,vibewithkanika_";
+const ALL_EXPECTED = DEFAULT_COMPETITORS.split(",");
+
 export const dynamic = "force-dynamic";
 
 export async function GET() {
@@ -42,7 +45,8 @@ export async function GET() {
     const avgComments = myPosts.length ? Math.round(totalComments / myPosts.length) : 0;
     const topPost = [...myPosts].sort((a: any, b: any) => b.likes - a.likes)[0] || null;
 
-    const competitorStats = competitors.map((handle: string) => {
+    const allHandles = Array.from(new Set([...competitors, ...ALL_EXPECTED]));
+    const competitorStats = allHandles.map((handle: string) => {
       const posts = profiles[handle] || [];
       const tl = posts.reduce((s: number, p: any) => s + (p.likes || 0), 0);
       const al = posts.length ? Math.round(tl / posts.length) : 0;
