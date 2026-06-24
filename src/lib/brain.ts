@@ -80,7 +80,7 @@ ${competitors.map((c) => {
   Top posts: ${topPosts.map((p) => `"${p.caption?.slice(0, 80)}" (${p.likes} likes)`).join(" | ")}`;
 }).join("\n")}
 
-=== REVIEWS (Trustpilot) ===
+=== REVIEWS (Trustpilot & Google) ===
 ${reviewsSummary}
 
 === RECENT AGENT INSIGHTS ===
