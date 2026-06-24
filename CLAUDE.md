@@ -22,21 +22,29 @@ A team of 5 AI agents that manage content for @racquetsclubcommunity (badminton/
 ## Architecture
 ```
 Raw Data (Apify scrapes, Trustpilot reviews, past reports, learnings)
-    ↓
-Brain Layer (src/lib/brain.ts — synthesizes strategic context brief, cached 1hr)
-    ↓
-Agent Layer (5 agents — each receives the brain context + learnings)
-    ↓
+    |
+Brain Layer (src/lib/brain.ts -- synthesizes strategic context brief, cached 1hr)
+    |
+Agent Layer (5 agents -- each receives the brain context + learnings)
+    |
 Output (HTML reports with context-informed decisions)
 ```
 
 ## Stack
 - **Frontend:** Next.js dashboard (deployed on Vercel)
-- **Data:** Apify Instagram scraper → Supabase (content_agent_scrapes)
-- **Reviews:** Apify Trustpilot scraper → Supabase (content_agent_reviews)
+- **Data:** Apify Instagram scraper -> Supabase (content_agent_scrapes)
+- **Reviews:** Apify Trustpilot scraper -> Supabase (content_agent_reviews)
 - **Intelligence:** Brain context layer + micro-intel feedback loop
+- **Scraping:** Async Apify actor runs (twice daily cron + manual refresh)
 - **Notifications:** Telegram bot for daily reports
 - **Secrets:** All tokens live in `.env` (gitignored)
+
+## API Endpoints
+- `/api/health` — System status (database, AI, scraper, data freshness, brain)
+- `/api/brain` — GET status / POST to generate brain context
+- `/api/scrape-status` — Poll async scrape progress
+- `/api/cron/scrape` — Trigger scrape (GET=cron w/ auth, POST=manual)
+- `/api/data` — Dashboard data with all competitors
 
 ## Commands
 ```bash
