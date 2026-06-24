@@ -63,7 +63,7 @@ export async function scrapeTrustpilot(): Promise<{
     .eq("source", "trustpilot");
 
   const existingTexts = new Set((existing || []).map((r: any) => r.review_text));
-  const newReviews = reviews.filter((r) => !existingTexts.has(r.review_text));
+  const newReviews = reviews.filter((r) => r.review_text && !existingTexts.has(r.review_text));
 
   if (newReviews.length > 0) {
     await supabase.from("content_agent_reviews").insert(

@@ -34,7 +34,10 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const source = searchParams.get("source") || "trustpilot";
+    const source = searchParams.get("source");
+    if (source && source !== "trustpilot" && source !== "google") {
+      return NextResponse.json({ error: "Invalid source. Use 'trustpilot' or 'google'." }, { status: 400 });
+    }
 
     const result = source === "google"
       ? await scrapeGoogleReviews()

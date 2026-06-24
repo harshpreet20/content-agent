@@ -148,19 +148,28 @@ function getTypeDistribution(posts: any[]): string {
 async function getReviewsSummary(): Promise<string> {
   try {
     const supabase = createServerClient();
-    const { data } = await supabase
+
+    const { data: trustpilotData } = await supabase
       .from("content_agent_reviews")
       .select("source, rating, title, review_text")
+      .eq("source", "trustpilot")
       .order("scraped_at", { ascending: false })
-      .limit(20);
+      .limit(10);
 
-    if (!data || data.length === 0) return "No reviews available yet.";
+    const { data: googleData } = await supabase
+      .from("content_agent_reviews")
+      .select("source, rating, title, review_text")
+      .eq("source", "google")
+      .order("scraped_at", { ascending: false })
+      .limit(10);
 
-    const trustpilot = data.filter((r) => r.source === "trustpilot");
-    const google = data.filter((r) => r.source === "google");
+    const trustpilot = trustpilotData || [];
+    const google = googleData || [];
 
-    const summarize = (reviews: typeof data & any[], label: string) => {
-      if (!reviews || reviews.length === 0) return `${label}: No reviews yet.`;
+    if (trustpilot.length === 0 && google.length === 0) return "No reviews available yet.";
+
+    const summarize = (reviews: any[], label: string) => {
+      if (reviews.length === 0) return `${label}: No reviews yet.`;
       const ratings = reviews.map((r: any) => r.rating).filter((r: number) => r > 0);
       const avg = ratings.length > 0
         ? (ratings.reduce((s: number, r: number) => s + r, 0) / ratings.length).toFixed(1)

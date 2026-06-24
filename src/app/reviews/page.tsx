@@ -31,7 +31,7 @@ function Stars({ rating, size = "text-sm" }: { rating: number; size?: string }) 
 }
 
 export default function ReviewsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, status, loading: authLoading } = useAuth();
   const router = useRouter();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [summary, setSummary] = useState<any>(null);
@@ -40,17 +40,10 @@ export default function ReviewsPage() {
   const [error, setError] = useState<string | null>(null);
   const [sourceFilter, setSourceFilter] = useState<string>("all");
 
-  const { status } = useAuth();
-
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
     if (!authLoading && user && status && status !== "approved") router.push("/login");
   }, [user, authLoading, status, router]);
-
-  useEffect(() => {
-    if (!user || status !== "approved") return;
-    loadReviews();
-  }, [user]);
 
   async function loadReviews() {
     setLoading(true);
@@ -71,7 +64,7 @@ export default function ReviewsPage() {
   useEffect(() => {
     if (!user || status !== "approved") return;
     loadReviews();
-  }, [sourceFilter]);
+  }, [user, status, sourceFilter]);
 
   async function handleScrape(source: string) {
     setScraping(source);
@@ -256,16 +249,16 @@ export default function ReviewsPage() {
                       <h4 className="font-semibold text-gray-900 text-sm mb-1">{review.title}</h4>
                     )}
                     <p className="text-sm text-gray-600 leading-relaxed">{review.review_text}</p>
-                    {(review.data?.reply || review.data?.response) && (
-                      <div className="mt-3 pl-4 border-l-2 border-amber-200 bg-amber-50/50 rounded-r-lg p-3">
-                        <span className="text-[10px] font-bold text-amber-700 uppercase">Business Reply</span>
-                        <p className="text-xs text-gray-600 mt-1">
-                          {typeof (review.data.reply || review.data.response) === "string"
-                            ? (review.data.reply || review.data.response)
-                            : (review.data.reply?.text || review.data.response?.text || "")}
-                        </p>
-                      </div>
-                    )}
+                    {(() => {
+                      const raw = review.data?.reply || review.data?.response;
+                      const text = typeof raw === "string" ? raw : raw?.text;
+                      return text?.trim() ? (
+                        <div className="mt-3 pl-4 border-l-2 border-amber-200 bg-amber-50/50 rounded-r-lg p-3">
+                          <span className="text-[10px] font-bold text-amber-700 uppercase">Business Reply</span>
+                          <p className="text-xs text-gray-600 mt-1">{text}</p>
+                        </div>
+                      ) : null;
+                    })()}
                   </div>
                 ))}
               </div>
