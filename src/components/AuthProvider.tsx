@@ -9,6 +9,9 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   supabase: SupabaseClient | null;
+  role: string | null;
+  status: string | null;
+  isAdmin: boolean;
   signOut: () => Promise<void>;
 }
 
@@ -17,6 +20,9 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   loading: true,
   supabase: null,
+  role: null,
+  status: null,
+  isAdmin: false,
   signOut: async () => {},
 });
 
@@ -35,7 +41,25 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
   const [sb] = useState<SupabaseClient | null>(() => getClientSideSupabase());
+
+  async function fetchUserStatus(authUser: User) {
+    try {
+      const res = await fetch("/api/auth/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ authUserId: authUser.id, email: authUser.email }),
+      });
+      const json = await res.json();
+      if (json.role) setRole(json.role);
+      if (json.status) setStatus(json.status);
+    } catch {
+      setRole(null);
+      setStatus(null);
+    }
+  }
 
   useEffect(() => {
     if (!sb) {
@@ -43,15 +67,24 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       return;
     }
 
-    sb.auth.getSession().then(({ data: { session } }) => {
+    sb.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.user) {
+        await fetchUserStatus(session.user);
+      }
       setLoading(false);
     });
 
-    const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = sb.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.user) {
+        await fetchUserStatus(session.user);
+      } else {
+        setRole(null);
+        setStatus(null);
+      }
       setLoading(false);
     });
 
@@ -60,10 +93,14 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
   const signOut = async () => {
     if (sb) await sb.auth.signOut();
+    setRole(null);
+    setStatus(null);
   };
 
+  const isAdmin = role === "admin" && status === "approved";
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, supabase: sb, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, supabase: sb, role, status, isAdmin, signOut }}>
       {children}
     </AuthContext.Provider>
   );

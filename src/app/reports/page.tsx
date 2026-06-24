@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Nav from "@/components/Nav";
 
 function sanitizeReport(raw: string): string {
   let text = raw.trim();
@@ -115,11 +116,12 @@ export default function ReportsPage() {
     }
   }
 
+  const { status } = useAuth();
+
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, authLoading, router]);
+    if (!authLoading && !user) router.push("/login");
+    if (!authLoading && user && status && status !== "approved") router.push("/login");
+  }, [user, authLoading, status, router]);
 
   useEffect(() => {
     const params = filter === "all" ? "" : `?agent=${filter}`;
@@ -140,33 +142,7 @@ export default function ReportsPage() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-5 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-3">
-              <img src="/rcc-crest.webp" alt="RCC" className="w-[60px] h-[60px] rounded-full object-cover shadow-sm" />
-              <span className="text-lg font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
-                ContentAgent
-              </span>
-            </Link>
-            <div className="hidden sm:flex items-center gap-1">
-              <Link href="/" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
-                Dashboard
-              </Link>
-              <Link href="/reports" className="px-3 py-1.5 text-sm font-medium text-gray-900 bg-gray-100 rounded-lg">
-                Reports
-              </Link>
-              <Link href="/analytics" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
-                Analytics
-              </Link>
-              <Link href="/reviews" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
-                Reviews
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Nav active="/reports" />
 
       <main className="max-w-4xl mx-auto px-5 py-8">
         {/* Header */}

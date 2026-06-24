@@ -1,0 +1,288 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+interface AppUser {
+  id: string;
+  auth_user_id: string;
+  email: string;
+  role: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export default function AdminPage() {
+  const { user, loading: authLoading, isAdmin, status } = useAuth();
+  const router = useRouter();
+  const [users, setUsers] = useState<AppUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!authLoading && !user) router.push("/login");
+    if (!authLoading && user && !isAdmin) router.push("/");
+  }, [user, authLoading, isAdmin, router]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    loadUsers();
+  }, [isAdmin]);
+
+  async function loadUsers() {
+    try {
+      const res = await fetch("/api/admin/users");
+      const json = await res.json();
+      setUsers(json.users || []);
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function updateUser(userId: string, updates: { status?: string; role?: string }) {
+    setActionLoading(userId);
+    try {
+      await fetch("/api/admin/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, ...updates }),
+      });
+      await loadUsers();
+    } catch {
+      // silent
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
+  async function deleteUser(userId: string, email: string) {
+    if (!confirm(`Remove ${email} from the system?`)) return;
+    setActionLoading(userId);
+    try {
+      await fetch(`/api/admin/users?id=${userId}`, { method: "DELETE" });
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+    } catch {
+      // silent
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
+  if (authLoading || !isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
+        <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const pendingUsers = users.filter((u) => u.status === "pending");
+  const approvedUsers = users.filter((u) => u.status === "approved");
+  const rejectedUsers = users.filter((u) => u.status === "rejected");
+
+  return (
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto px-5 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center gap-3">
+              <img src="/rcc-crest.webp" alt="RCC" className="w-[60px] h-[60px] rounded-full object-cover shadow-sm" />
+              <span className="text-lg font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
+                ContentAgent
+              </span>
+            </Link>
+            <div className="hidden sm:flex items-center gap-1">
+              <Link href="/" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">Dashboard</Link>
+              <Link href="/reports" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">Reports</Link>
+              <Link href="/analytics" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">Analytics</Link>
+              <Link href="/reviews" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">Reviews</Link>
+              <Link href="/admin" className="px-3 py-1.5 text-sm font-medium text-gray-900 bg-gray-100 rounded-lg">Admin</Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main className="max-w-5xl mx-auto px-5 py-8">
+        <div className="mb-8">
+          <h2 className="text-2xl font-extrabold text-gray-900">User Management</h2>
+          <p className="text-sm text-gray-400 mt-0.5">Approve, reject, or manage user access</p>
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {/* Summary cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Total Users</div>
+                <div className="text-3xl font-extrabold text-gray-900">{users.length}</div>
+              </div>
+              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Pending</div>
+                <div className="text-3xl font-extrabold text-amber-500">{pendingUsers.length}</div>
+              </div>
+              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Approved</div>
+                <div className="text-3xl font-extrabold text-green-600">{approvedUsers.length}</div>
+              </div>
+              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Admins</div>
+                <div className="text-3xl font-extrabold text-violet-600">{users.filter((u) => u.role === "admin").length}</div>
+              </div>
+            </div>
+
+            {/* Pending approvals */}
+            {pendingUsers.length > 0 && (
+              <section>
+                <h3 className="text-sm font-semibold text-amber-600 uppercase tracking-wide mb-3 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                  Pending Approval ({pendingUsers.length})
+                </h3>
+                <div className="space-y-2">
+                  {pendingUsers.map((u) => (
+                    <UserRow key={u.id} user={u} actionLoading={actionLoading} onUpdate={updateUser} onDelete={deleteUser} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Approved users */}
+            <section>
+              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                Active Users ({approvedUsers.length})
+              </h3>
+              <div className="space-y-2">
+                {approvedUsers.map((u) => (
+                  <UserRow key={u.id} user={u} actionLoading={actionLoading} onUpdate={updateUser} onDelete={deleteUser} />
+                ))}
+              </div>
+            </section>
+
+            {/* Rejected users */}
+            {rejectedUsers.length > 0 && (
+              <section>
+                <h3 className="text-sm font-semibold text-red-500 uppercase tracking-wide mb-3">
+                  Rejected ({rejectedUsers.length})
+                </h3>
+                <div className="space-y-2">
+                  {rejectedUsers.map((u) => (
+                    <UserRow key={u.id} user={u} actionLoading={actionLoading} onUpdate={updateUser} onDelete={deleteUser} />
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+function UserRow({
+  user,
+  actionLoading,
+  onUpdate,
+  onDelete,
+}: {
+  user: AppUser;
+  actionLoading: string | null;
+  onUpdate: (id: string, updates: { status?: string; role?: string }) => void;
+  onDelete: (id: string, email: string) => void;
+}) {
+  const isLoading = actionLoading === user.id;
+  const statusColors: Record<string, string> = {
+    pending: "bg-amber-50 text-amber-600",
+    approved: "bg-green-50 text-green-600",
+    rejected: "bg-red-50 text-red-500",
+  };
+  const roleColors: Record<string, string> = {
+    admin: "bg-violet-50 text-violet-600",
+    user: "bg-gray-50 text-gray-500",
+  };
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-4 flex items-center gap-4">
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 via-pink-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+        {user.email[0].toUpperCase()}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="font-semibold text-sm text-gray-900 truncate">{user.email}</div>
+        <div className="flex items-center gap-2 mt-1">
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${statusColors[user.status] || ""}`}>
+            {user.status}
+          </span>
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${roleColors[user.role] || ""}`}>
+            {user.role}
+          </span>
+          <span className="text-[10px] text-gray-300">
+            Joined {new Date(user.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+          </span>
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5 shrink-0">
+        {isLoading ? (
+          <div className="w-4 h-4 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+        ) : (
+          <>
+            {user.status === "pending" && (
+              <>
+                <button
+                  onClick={() => onUpdate(user.id, { status: "approved" })}
+                  className="px-3 py-1.5 text-[11px] font-semibold bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => onUpdate(user.id, { status: "rejected" })}
+                  className="px-3 py-1.5 text-[11px] font-semibold bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition"
+                >
+                  Reject
+                </button>
+              </>
+            )}
+            {user.status === "approved" && user.role === "user" && (
+              <button
+                onClick={() => onUpdate(user.id, { role: "admin" })}
+                className="px-3 py-1.5 text-[11px] font-semibold bg-violet-50 text-violet-600 rounded-lg hover:bg-violet-100 transition"
+              >
+                Make Admin
+              </button>
+            )}
+            {user.status === "approved" && user.role === "admin" && (
+              <button
+                onClick={() => onUpdate(user.id, { role: "user" })}
+                className="px-3 py-1.5 text-[11px] font-semibold bg-gray-50 text-gray-500 rounded-lg hover:bg-gray-100 transition"
+              >
+                Remove Admin
+              </button>
+            )}
+            {user.status === "rejected" && (
+              <button
+                onClick={() => onUpdate(user.id, { status: "approved" })}
+                className="px-3 py-1.5 text-[11px] font-semibold bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition"
+              >
+                Approve
+              </button>
+            )}
+            <button
+              onClick={() => onDelete(user.id, user.email)}
+              className="p-1.5 text-gray-300 hover:text-red-500 rounded-lg hover:bg-red-50 transition"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

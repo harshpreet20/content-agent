@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import AgentCard from "@/components/AgentCard";
 import StatsBar from "@/components/StatsBar";
 import CompetitorBar from "@/components/CompetitorBar";
+import Nav from "@/components/Nav";
 import { useAuth } from "@/components/AuthProvider";
 
 const AGENTS = [
@@ -55,14 +56,13 @@ export default function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const { user, signOut, loading: authLoading } = useAuth();
+  const { user, status, loading: authLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, authLoading, router]);
+    if (!authLoading && !user) router.push("/login");
+    if (!authLoading && user && status && status !== "approved") router.push("/login");
+  }, [user, authLoading, status, router]);
 
   function loadDashboardData() {
     return fetch("/api/data")
@@ -73,9 +73,9 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || status !== "approved") return;
     loadDashboardData();
-  }, [user]);
+  }, [user, status]);
 
   async function handleRefresh() {
     setRefreshing(true);
@@ -92,7 +92,7 @@ export default function Dashboard() {
     }
   }
 
-  if (authLoading || !user) {
+  if (authLoading || !user || status !== "approved") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
@@ -102,61 +102,8 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-5 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
-              <img src="/rcc-crest.webp" alt="RCC" className="w-[60px] h-[60px] rounded-full object-cover shadow-sm" />
-              <h1 className="text-lg font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
-                ContentAgent
-              </h1>
-            </div>
-            <div className="hidden sm:flex items-center gap-1">
-              <Link href="/" className="px-3 py-1.5 text-sm font-medium text-gray-900 bg-gray-100 rounded-lg">
-                Dashboard
-              </Link>
-              <Link href="/reports" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
-                Reports
-              </Link>
-              <Link href="/analytics" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
-                Analytics
-              </Link>
-              <Link href="/reviews" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
-                Reviews
-              </Link>
-            </div>
-          </div>
+      <Nav active="/" />
 
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:block text-xs text-gray-400 font-medium">
-              @racquetsclubcommunity
-            </span>
-            {!authLoading && (
-              user ? (
-                <button
-                  onClick={signOut}
-                  className="text-xs text-gray-400 hover:text-gray-600 font-medium transition"
-                >
-                  Sign out
-                </button>
-              ) : (
-                <Link
-                  href="/login"
-                  className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition"
-                >
-                  Sign in
-                </Link>
-              )
-            )}
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 via-pink-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
-              {user ? user.email?.[0].toUpperCase() : "R"}
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Content */}
       <main className="max-w-6xl mx-auto px-5 py-8">
         {loading ? (
           <div className="flex items-center justify-center h-64">
@@ -164,7 +111,6 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="space-y-8">
-            {/* Page title */}
             <div className="flex items-start justify-between">
               <div>
                 <h2 className="text-2xl font-extrabold text-gray-900">Dashboard</h2>
@@ -190,12 +136,10 @@ export default function Dashboard() {
               </button>
             </div>
 
-            {/* Stats row */}
             <section>
               <StatsBar stats={data?.me || null} />
             </section>
 
-            {/* Competitors */}
             <section>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Competitors</h3>
@@ -203,7 +147,6 @@ export default function Dashboard() {
               <CompetitorBar competitors={data?.competitors || []} />
             </section>
 
-            {/* Agents */}
             <section>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">AI Agents</h3>
