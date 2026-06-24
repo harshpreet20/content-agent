@@ -34,6 +34,11 @@ const AGENTS = [
     color: "#F97316",
     bgColor: "#FFF7ED",
     endpoint: "/api/agents/reel-prompt",
+    configKey: "quality",
+    configOptions: [
+      { label: "24 fps Social", value: "social" },
+      { label: "60 fps Cinematic", value: "cinematic" },
+    ],
   },
   {
     name: "Planner",

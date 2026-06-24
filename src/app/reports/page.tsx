@@ -25,7 +25,8 @@ const AGENT_META: Record<string, { icon: string; color: string; bgColor: string;
   hooks:        { icon: "\u{1F3AC}", color: "#EC4899", bgColor: "#FDF2F8", label: "Hook & Script" },
   planner:      { icon: "\u{1F4C5}", color: "#8B5CF6", bgColor: "#F5F3FF", label: "Planner" },
   analyst:      { icon: "\u{1F4CA}", color: "#10B981", bgColor: "#ECFDF5", label: "Analyst" },
-  "dm-manager": { icon: "\u{1F4AC}", color: "#3B82F6", bgColor: "#EFF6FF", label: "DM Manager" },
+  "dm-manager":  { icon: "\u{1F4AC}", color: "#3B82F6", bgColor: "#EFF6FF", label: "DM Manager" },
+  "reel-prompt": { icon: "\u{1F3A8}", color: "#F97316", bgColor: "#FFF7ED", label: "AI Reel Prompt" },
 };
 
 interface Report {

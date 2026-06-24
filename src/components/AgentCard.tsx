@@ -16,6 +16,11 @@ function sanitizeReport(raw: string): string {
   return text;
 }
 
+interface ConfigOption {
+  label: string;
+  value: string;
+}
+
 interface AgentCardProps {
   name: string;
   description: string;
@@ -23,9 +28,11 @@ interface AgentCardProps {
   color: string;
   bgColor: string;
   endpoint: string;
+  configOptions?: ConfigOption[];
+  configKey?: string;
 }
 
-export default function AgentCard({ name, description, icon, color, bgColor, endpoint }: AgentCardProps) {
+export default function AgentCard({ name, description, icon, color, bgColor, endpoint, configOptions, configKey }: AgentCardProps) {
   const [result, setResult] = useState<string | null>(null);
   const [reportId, setReportId] = useState<string | null>(null);
   const [agentKey, setAgentKey] = useState<string>("");
@@ -35,6 +42,7 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
   const [runTime, setRunTime] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<number | null>(null);
   const [feedbackSending, setFeedbackSending] = useState(false);
+  const [selectedConfig, setSelectedConfig] = useState<string>(configOptions?.[0]?.value || "");
 
   async function runAgent() {
     setLoading(true);
@@ -46,7 +54,12 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
     setLearningsUsed(0);
     const start = Date.now();
     try {
-      const res = await fetch(endpoint, { method: "POST" });
+      const fetchOptions: RequestInit = { method: "POST" };
+      if (configKey && selectedConfig) {
+        fetchOptions.headers = { "Content-Type": "application/json" };
+        fetchOptions.body = JSON.stringify({ [configKey]: selectedConfig });
+      }
+      const res = await fetch(endpoint, fetchOptions);
       const json = await res.json();
       setRunTime(Math.round((Date.now() - start) / 1000));
       if (json.error) {
@@ -170,6 +183,29 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
               )}
             </>
           )}
+        </div>
+      )}
+
+      {/* Config selector */}
+      {configOptions && configOptions.length > 0 && (
+        <div className="px-5 pb-3">
+          <div className="flex gap-2">
+            {configOptions.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setSelectedConfig(opt.value)}
+                disabled={loading}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all border ${
+                  selectedConfig === opt.value
+                    ? "border-current shadow-sm"
+                    : "border-gray-200 text-gray-400 hover:border-gray-300"
+                }`}
+                style={selectedConfig === opt.value ? { color, backgroundColor: bgColor, borderColor: color } : {}}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
