@@ -119,6 +119,9 @@ export default function Dashboard() {
               <Link href="/reports" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
                 Reports
               </Link>
+              <Link href="/analytics" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
+                Analytics
+              </Link>
             </div>
           </div>
 

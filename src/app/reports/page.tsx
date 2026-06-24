@@ -157,6 +157,9 @@ export default function ReportsPage() {
               <Link href="/reports" className="px-3 py-1.5 text-sm font-medium text-gray-900 bg-gray-100 rounded-lg">
                 Reports
               </Link>
+              <Link href="/analytics" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
+                Analytics
+              </Link>
             </div>
           </div>
         </div>
