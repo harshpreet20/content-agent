@@ -21,9 +21,12 @@ const SERVICE_META: Record<string, { label: string; icon: string }> = {
   brain: { label: "Brain", icon: "\u{1F9E0}" },
 };
 
+const WARN_ERRORS = ["Not generated yet", "No scraped data", "Stale (>2h)"];
+
 export default function StatusBar() {
   const [health, setHealth] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [brainGenerating, setBrainGenerating] = useState(false);
 
   useEffect(() => {
     fetchHealth();
@@ -43,6 +46,21 @@ export default function StatusBar() {
     }
   }
 
+  async function generateBrain() {
+    setBrainGenerating(true);
+    try {
+      const res = await fetch("/api/brain", { method: "POST" });
+      const json = await res.json();
+      if (json.success) {
+        await fetchHealth();
+      }
+    } catch {
+      // silent
+    } finally {
+      setBrainGenerating(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center gap-3 px-4 py-2.5 bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
@@ -55,8 +73,6 @@ export default function StatusBar() {
   const checks = health?.checks || {};
   const keys = Object.keys(SERVICE_META);
 
-  const WARN_ERRORS = ["Not generated yet", "No scraped data", "Stale (>2h)"];
-
   return (
     <div className="flex flex-wrap items-center gap-2">
       {keys.map((key) => {
@@ -65,6 +81,7 @@ export default function StatusBar() {
         const isOk = check?.status === "ok";
         const isUnknown = !check;
         const isWarn = !isOk && check?.error && WARN_ERRORS.includes(check.error);
+        const needsBrainInit = key === "brain" && !isOk && check?.error === "Not generated yet";
 
         let dotClass = "bg-gray-300";
         if (!isUnknown) {
@@ -88,6 +105,15 @@ export default function StatusBar() {
             <span className="text-sm">{meta.icon}</span>
             <span className="text-xs font-semibold text-gray-600">{meta.label}</span>
             <span className={`w-2.5 h-2.5 rounded-full ${dotClass}`} />
+            {needsBrainInit && (
+              <button
+                onClick={generateBrain}
+                disabled={brainGenerating}
+                className="text-[10px] font-bold text-amber-600 hover:text-amber-800 transition disabled:opacity-50"
+              >
+                {brainGenerating ? "Generating..." : "Generate"}
+              </button>
+            )}
           </div>
         );
       })}
