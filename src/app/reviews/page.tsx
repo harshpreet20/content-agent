@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Nav from "@/components/Nav";
 
 interface Review {
@@ -36,7 +35,6 @@ export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [scraping, setScraping] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sourceFilter, setSourceFilter] = useState<string>("all");
 
@@ -66,21 +64,6 @@ export default function ReviewsPage() {
     loadReviews();
   }, [user, status, sourceFilter]);
 
-  async function handleScrape(source: string) {
-    setScraping(source);
-    setError(null);
-    try {
-      const res = await fetch(`/api/reviews?source=${source}`, { method: "POST" });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      await loadReviews();
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setScraping(null);
-    }
-  }
-
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
@@ -99,33 +82,9 @@ export default function ReviewsPage() {
 
       <main className="max-w-5xl mx-auto px-5 py-8">
         {/* Header */}
-        <div className="flex items-start justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-extrabold text-gray-900">Reviews</h2>
-            <p className="text-sm text-gray-400 mt-0.5">Trustpilot &amp; Google reviews for Racquets Club Community</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => handleScrape("trustpilot")}
-              disabled={!!scraping}
-              className="flex items-center gap-2 px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-xl hover:bg-emerald-700 transition active:scale-[0.98] shadow-sm disabled:opacity-60"
-            >
-              <svg className={`w-3.5 h-3.5 ${scraping === "trustpilot" ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              {scraping === "trustpilot" ? "Scraping..." : "Trustpilot"}
-            </button>
-            <button
-              onClick={() => handleScrape("google")}
-              disabled={!!scraping}
-              className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-xs font-semibold rounded-xl hover:bg-blue-700 transition active:scale-[0.98] shadow-sm disabled:opacity-60"
-            >
-              <svg className={`w-3.5 h-3.5 ${scraping === "google" ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              {scraping === "google" ? "Scraping..." : "Google"}
-            </button>
-          </div>
+        <div className="mb-6">
+          <h2 className="text-2xl font-extrabold text-gray-900">Reviews</h2>
+          <p className="text-sm text-gray-400 mt-0.5">Trustpilot &amp; Google reviews for Racquets Club Community</p>
         </div>
 
         {/* Source filter tabs */}
@@ -215,7 +174,7 @@ export default function ReviewsPage() {
               <div className="text-center py-20">
                 <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-2xl flex items-center justify-center text-2xl">{"⭐"}</div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">No reviews yet</h3>
-                <p className="text-sm text-gray-400">Click the Trustpilot or Google button to fetch your latest reviews.</p>
+                <p className="text-sm text-gray-400">Reviews are fetched automatically during the weekly scrape.</p>
               </div>
             ) : (
               <div className="space-y-3">

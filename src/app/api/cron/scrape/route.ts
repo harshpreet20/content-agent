@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { ApifyClient } from "apify-client";
 import { createServerClient } from "@/lib/supabase-server";
+import { startReviewScrapes } from "@/lib/reviews";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -47,11 +48,19 @@ async function startScrape() {
     { onConflict: "id" }
   );
 
+  let reviewRuns = null;
+  try {
+    reviewRuns = await startReviewScrapes();
+  } catch {
+    // review scraping is non-critical; IG scrape still proceeds
+  }
+
   return {
     success: true,
     status: "RUNNING",
     runId: run.id,
-    message: `Scraping ${ALL_HANDLES.length} handles — check back in a few minutes`,
+    reviewRuns,
+    message: `Scraping ${ALL_HANDLES.length} handles + reviews — check back in a few minutes`,
   };
 }
 
