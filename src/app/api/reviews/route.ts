@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { scrapeTrustpilot, getStoredReviews } from "@/lib/reviews";
+import { scrapeTrustpilot, scrapeGoogleReviews, getStoredReviews } from "@/lib/reviews";
 import { createServerClient } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
@@ -31,11 +31,18 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const result = await scrapeTrustpilot();
+    const { searchParams } = new URL(request.url);
+    const source = searchParams.get("source") || "trustpilot";
+
+    const result = source === "google"
+      ? await scrapeGoogleReviews()
+      : await scrapeTrustpilot();
+
     return NextResponse.json({
       success: true,
+      source,
       ...result.summary,
     });
   } catch (e: any) {

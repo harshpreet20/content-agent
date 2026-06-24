@@ -36,8 +36,9 @@ export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [scraping, setScraping] = useState(false);
+  const [scraping, setScraping] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sourceFilter, setSourceFilter] = useState<string>("all");
 
   const { status } = useAuth();
 
@@ -54,7 +55,8 @@ export default function ReviewsPage() {
   async function loadReviews() {
     setLoading(true);
     try {
-      const res = await fetch("/api/reviews");
+      const src = sourceFilter !== "all" ? `?source=${sourceFilter}` : "";
+      const res = await fetch(`/api/reviews${src}`);
       const json = await res.json();
       if (json.error) throw new Error(json.error);
       setReviews(json.reviews || []);
@@ -66,18 +68,23 @@ export default function ReviewsPage() {
     }
   }
 
-  async function handleScrape() {
-    setScraping(true);
+  useEffect(() => {
+    if (!user || status !== "approved") return;
+    loadReviews();
+  }, [sourceFilter]);
+
+  async function handleScrape(source: string) {
+    setScraping(source);
     setError(null);
     try {
-      const res = await fetch("/api/reviews", { method: "POST" });
+      const res = await fetch(`/api/reviews?source=${source}`, { method: "POST" });
       const json = await res.json();
       if (json.error) throw new Error(json.error);
       await loadReviews();
     } catch (e: any) {
       setError(e.message);
     } finally {
-      setScraping(false);
+      setScraping(null);
     }
   }
 
@@ -99,21 +106,54 @@ export default function ReviewsPage() {
 
       <main className="max-w-5xl mx-auto px-5 py-8">
         {/* Header */}
-        <div className="flex items-start justify-between mb-8">
+        <div className="flex items-start justify-between mb-6">
           <div>
             <h2 className="text-2xl font-extrabold text-gray-900">Reviews</h2>
-            <p className="text-sm text-gray-400 mt-0.5">Trustpilot reviews for Racquets Club Community</p>
+            <p className="text-sm text-gray-400 mt-0.5">Trustpilot &amp; Google reviews for Racquets Club Community</p>
           </div>
-          <button
-            onClick={handleScrape}
-            disabled={scraping}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-xs font-semibold rounded-xl hover:bg-gray-800 transition active:scale-[0.98] shadow-sm disabled:opacity-60"
-          >
-            <svg className={`w-4 h-4 ${scraping ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            {scraping ? "Scraping..." : "Scrape Trustpilot"}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleScrape("trustpilot")}
+              disabled={!!scraping}
+              className="flex items-center gap-2 px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-xl hover:bg-emerald-700 transition active:scale-[0.98] shadow-sm disabled:opacity-60"
+            >
+              <svg className={`w-3.5 h-3.5 ${scraping === "trustpilot" ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              {scraping === "trustpilot" ? "Scraping..." : "Trustpilot"}
+            </button>
+            <button
+              onClick={() => handleScrape("google")}
+              disabled={!!scraping}
+              className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-xs font-semibold rounded-xl hover:bg-blue-700 transition active:scale-[0.98] shadow-sm disabled:opacity-60"
+            >
+              <svg className={`w-3.5 h-3.5 ${scraping === "google" ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              {scraping === "google" ? "Scraping..." : "Google"}
+            </button>
+          </div>
+        </div>
+
+        {/* Source filter tabs */}
+        <div className="flex items-center gap-1 mb-6">
+          {[
+            { key: "all", label: "All Sources" },
+            { key: "trustpilot", label: "Trustpilot" },
+            { key: "google", label: "Google" },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setSourceFilter(tab.key)}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition ${
+                sourceFilter === tab.key
+                  ? "bg-gray-900 text-white"
+                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         {error && (
@@ -182,7 +222,7 @@ export default function ReviewsPage() {
               <div className="text-center py-20">
                 <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-2xl flex items-center justify-center text-2xl">{"⭐"}</div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">No reviews yet</h3>
-                <p className="text-sm text-gray-400">Click "Scrape Trustpilot" to fetch your latest reviews.</p>
+                <p className="text-sm text-gray-400">Click the Trustpilot or Google button to fetch your latest reviews.</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -203,17 +243,27 @@ export default function ReviewsPage() {
                         <span className="text-[11px] text-gray-400">
                           {review.review_date ? new Date(review.review_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : ""}
                         </span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 uppercase">Trustpilot</span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                          review.source === "google"
+                            ? "bg-blue-50 text-blue-700"
+                            : "bg-emerald-50 text-emerald-700"
+                        }`}>
+                          {review.source === "google" ? "Google" : "Trustpilot"}
+                        </span>
                       </div>
                     </div>
                     {review.title && (
                       <h4 className="font-semibold text-gray-900 text-sm mb-1">{review.title}</h4>
                     )}
                     <p className="text-sm text-gray-600 leading-relaxed">{review.review_text}</p>
-                    {review.data?.reply && (
+                    {(review.data?.reply || review.data?.response) && (
                       <div className="mt-3 pl-4 border-l-2 border-amber-200 bg-amber-50/50 rounded-r-lg p-3">
                         <span className="text-[10px] font-bold text-amber-700 uppercase">Business Reply</span>
-                        <p className="text-xs text-gray-600 mt-1">{typeof review.data.reply === "string" ? review.data.reply : review.data.reply.text || ""}</p>
+                        <p className="text-xs text-gray-600 mt-1">
+                          {typeof (review.data.reply || review.data.response) === "string"
+                            ? (review.data.reply || review.data.response)
+                            : (review.data.reply?.text || review.data.response?.text || "")}
+                        </p>
                       </div>
                     )}
                   </div>

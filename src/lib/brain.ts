@@ -150,23 +150,32 @@ async function getReviewsSummary(): Promise<string> {
     const supabase = createServerClient();
     const { data } = await supabase
       .from("content_agent_reviews")
-      .select("rating, title, review_text")
+      .select("source, rating, title, review_text")
       .order("scraped_at", { ascending: false })
-      .limit(10);
+      .limit(20);
 
     if (!data || data.length === 0) return "No reviews available yet.";
 
-    const ratings = data.map((r) => r.rating).filter((r) => r > 0);
-    const avg = ratings.length > 0
-      ? (ratings.reduce((s, r) => s + r, 0) / ratings.length).toFixed(1)
-      : "N/A";
+    const trustpilot = data.filter((r) => r.source === "trustpilot");
+    const google = data.filter((r) => r.source === "google");
 
-    const snippets = data
-      .slice(0, 5)
-      .map((r) => `[${r.rating}/5] "${(r.title || r.review_text || "").slice(0, 80)}"`)
-      .join("\n");
+    const summarize = (reviews: typeof data & any[], label: string) => {
+      if (!reviews || reviews.length === 0) return `${label}: No reviews yet.`;
+      const ratings = reviews.map((r: any) => r.rating).filter((r: number) => r > 0);
+      const avg = ratings.length > 0
+        ? (ratings.reduce((s: number, r: number) => s + r, 0) / ratings.length).toFixed(1)
+        : "N/A";
+      const snippets = reviews
+        .slice(0, 3)
+        .map((r: any) => `[${r.rating}/5] "${(r.title || r.review_text || "").slice(0, 80)}"`)
+        .join("\n");
+      return `${label}: ${reviews.length} reviews, avg ${avg}/5\n${snippets}`;
+    };
 
-    return `${data.length} reviews, avg rating: ${avg}/5\nRecent:\n${snippets}`;
+    return [
+      summarize(trustpilot, "Trustpilot"),
+      summarize(google, "Google Business"),
+    ].join("\n\n");
   } catch {
     return "Reviews unavailable.";
   }
