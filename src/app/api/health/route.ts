@@ -36,9 +36,13 @@ export async function GET() {
     if (!token) {
       checks.scraper = { status: "error", error: "Missing APIFY_API_TOKEN" };
     } else {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
       const res = await fetch("https://api.apify.com/v2/user/me", {
         headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
       checks.scraper = res.ok
         ? { status: "ok", latency: Date.now() - apifyStart }
         : { status: "error", error: `Apify returned ${res.status}`, latency: Date.now() - apifyStart };
