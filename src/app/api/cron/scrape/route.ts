@@ -1,28 +1,6 @@
 import { NextResponse } from "next/server";
 import { ApifyClient } from "apify-client";
 import { createServerClient } from "@/lib/supabase-server";
-import { getAccountInfo, getAccountInsights } from "@/lib/instagram";
-
-async function syncInstagramInsights() {
-  try {
-    const [account, insights] = await Promise.all([
-      getAccountInfo(),
-      getAccountInsights("day"),
-    ]);
-    const insightMetrics: Record<string, number> = {};
-    for (const item of insights) {
-      insightMetrics[item.name] = item.total_value?.value ?? item.values?.[0]?.value ?? 0;
-    }
-    const supabase = createServerClient();
-    await supabase.from("content_agent_analytics").insert([
-      { metric_type: "account", data: { username: account.username, followers: account.followers_count, following: account.follows_count, posts: account.media_count }, period: "snapshot" },
-      { metric_type: "insights", data: insightMetrics, period: "day" },
-    ]);
-    return { followers: account.followers_count };
-  } catch {
-    return null;
-  }
-}
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -126,14 +104,11 @@ export async function GET(request: Request) {
     );
   }
 
-  const igSync = await syncInstagramInsights();
-
   return NextResponse.json({
     success: true,
     totalPosts: items.length,
     handles: ALL_HANDLES,
     scrapedAt: output.scrapedAt,
-    instagram: igSync,
   });
 }
 
@@ -222,13 +197,10 @@ export async function POST() {
     );
   }
 
-  const igSyncPost = await syncInstagramInsights();
-
   return NextResponse.json({
     success: true,
     totalPosts: items.length,
     handles: ALL_HANDLES,
     scrapedAt: output.scrapedAt,
-    instagram: igSyncPost,
   });
 }

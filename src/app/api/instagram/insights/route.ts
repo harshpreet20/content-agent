@@ -1,32 +1,90 @@
 import { NextResponse } from "next/server";
-import { getAccountInsights, getAccountInfo } from "@/lib/instagram";
+import { createServerClient } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const [account, dailyInsights] = await Promise.all([
-      getAccountInfo(),
-      getAccountInsights("day"),
-    ]);
+    const supabase = createServerClient();
 
-    const metrics: Record<string, number> = {};
-    for (const item of dailyInsights) {
-      const val = item.total_value?.value ?? item.values?.[0]?.value ?? 0;
-      metrics[item.name] = val;
+    // Get latest scrape
+    const { data: latest, error } = await supabase
+      .from("content_agent_scrapes")
+      .select("*")
+      .order("scraped_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error || !latest) {
+      return NextResponse.json({ error: "No scraped data found. Hit Refresh Data on the dashboard first." }, { status: 404 });
     }
+
+    const profiles = latest.data?.profiles || latest.data || {};
+    const myHandle = latest.my_handle;
+    const myPosts = profiles[myHandle] || [];
+    const competitors = latest.competitors || [];
+
+    const totalLikes = myPosts.reduce((s: number, p: any) => s + (p.likes || 0), 0);
+    const totalComments = myPosts.reduce((s: number, p: any) => s + (p.comments || 0), 0);
+    const totalViews = myPosts.reduce((s: number, p: any) => s + (p.views || 0), 0);
+    const avgLikes = myPosts.length ? Math.round(totalLikes / myPosts.length) : 0;
+    const avgComments = myPosts.length ? Math.round(totalComments / myPosts.length) : 0;
+
+    // Post type breakdown
+    const typeCount: Record<string, number> = {};
+    for (const p of myPosts) {
+      const t = p.type || "unknown";
+      typeCount[t] = (typeCount[t] || 0) + 1;
+    }
+
+    // Top posts by likes
+    const topPosts = [...myPosts]
+      .sort((a: any, b: any) => (b.likes || 0) - (a.likes || 0))
+      .slice(0, 15)
+      .map((p: any) => ({
+        caption: p.caption || "",
+        likes: p.likes || 0,
+        comments: p.comments || 0,
+        views: p.views || 0,
+        type: p.type || "unknown",
+        url: p.url || "",
+        timestamp: p.timestamp || "",
+      }));
+
+    // Competitor comparison
+    const compStats = competitors.map((handle: string) => {
+      const posts = profiles[handle] || [];
+      const tl = posts.reduce((s: number, p: any) => s + (p.likes || 0), 0);
+      const tc = posts.reduce((s: number, p: any) => s + (p.comments || 0), 0);
+      return {
+        handle,
+        postCount: posts.length,
+        totalLikes: tl,
+        avgLikes: posts.length ? Math.round(tl / posts.length) : 0,
+        totalComments: tc,
+        avgComments: posts.length ? Math.round(tc / posts.length) : 0,
+      };
+    });
 
     return NextResponse.json({
       account: {
-        username: account.username,
-        name: account.name,
-        followers: account.followers_count,
-        following: account.follows_count,
-        posts: account.media_count,
-        profilePicture: account.profile_picture_url,
-        bio: account.biography,
+        username: myHandle,
+        posts: myPosts.length,
+        totalLikes,
+        totalComments,
+        totalViews,
+        avgLikes,
+        avgComments,
       },
-      insights: metrics,
+      insights: {
+        reach: totalViews,
+        impressions: totalViews + totalLikes,
+        engagement: totalLikes + totalComments,
+      },
+      topPosts,
+      typeBreakdown: Object.entries(typeCount).map(([type, count]) => ({ type, count })),
+      competitors: compStats,
+      scrapedAt: latest.scraped_at,
     });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });

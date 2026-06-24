@@ -160,6 +160,9 @@ export default function ReportsPage() {
               <Link href="/analytics" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
                 Analytics
               </Link>
+              <Link href="/reviews" className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
+                Reviews
+              </Link>
             </div>
           </div>
         </div>
