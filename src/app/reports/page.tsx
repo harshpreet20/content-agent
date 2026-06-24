@@ -29,6 +29,62 @@ export default function ReportsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  function downloadHtml(filename: string, html: string) {
+    const wrapper = `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${filename}</title>
+<style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;margin:0;padding:24px;background:#fafafa;color:#1f2937}
+.section{background:#fff;border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid #e5e7eb}
+.section-header{display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #f3f4f6}
+.section-header .badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;color:#fff}
+.section-header .date{font-size:11px;color:#9ca3af;margin-left:auto}
+@media print{body{padding:0;background:#fff}.section{box-shadow:none;break-inside:avoid}}</style>
+</head><body>${html}</body></html>`;
+    const blob = new Blob([wrapper], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${filename}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadSingle(report: Report) {
+    const meta = AGENT_META[report.agent_name] || { label: report.agent_name, color: "#6B7280" };
+    const date = new Date(report.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    const html = `<div class="section">
+      <div class="section-header"><span class="badge" style="background:${meta.color}">${meta.label}</span><span class="date">${date}</span></div>
+      ${report.result}
+    </div>`;
+    downloadHtml(`${meta.label}-Report-${date.replace(/\s/g, "-")}`, html);
+  }
+
+  function downloadCombined() {
+    const seen = new Set<string>();
+    const latest: Report[] = [];
+    for (const r of reports) {
+      if (!seen.has(r.agent_name)) {
+        seen.add(r.agent_name);
+        latest.push(r);
+      }
+    }
+    if (latest.length === 0) return;
+    const date = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    const sections = latest.map((r) => {
+      const meta = AGENT_META[r.agent_name] || { label: r.agent_name, color: "#6B7280" };
+      const rDate = new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      return `<div class="section">
+        <div class="section-header"><span class="badge" style="background:${meta.color}">${meta.label}</span><span class="date">${rDate}</span></div>
+        ${r.result}
+      </div>`;
+    }).join("\n");
+    const header = `<div style="text-align:center;margin-bottom:32px">
+      <h1 style="font-size:24px;font-weight:800;margin:0">ContentAgent — Combined Report</h1>
+      <p style="color:#9ca3af;font-size:13px;margin-top:4px">${date} &middot; ${latest.length} agents</p>
+    </div>`;
+    downloadHtml(`Combined-Report-${date.replace(/\s/g, "-")}`, header + sections);
+  }
+
   async function handleDelete(id: string) {
     if (!confirm("Delete this report?")) return;
     setDeletingId(id);
@@ -72,10 +128,10 @@ export default function ReportsPage() {
     <div className="min-h-screen bg-[#FAFAFA]">
       {/* Navigation */}
       <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-5 h-14 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-5 h-20 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2">
-              <img src="/rcc-crest.webp" alt="RCC" className="w-8 h-8 rounded-full object-cover" />
+            <Link href="/" className="flex items-center gap-3">
+              <img src="/rcc-crest.webp" alt="RCC" className="w-[60px] h-[60px] rounded-full object-cover shadow-sm" />
               <span className="text-lg font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
                 ContentAgent
               </span>
@@ -94,9 +150,22 @@ export default function ReportsPage() {
 
       <main className="max-w-4xl mx-auto px-5 py-8">
         {/* Header */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-extrabold text-gray-900">Reports</h2>
-          <p className="text-sm text-gray-400 mt-0.5">History of all agent outputs</p>
+        <div className="mb-6 flex items-start justify-between">
+          <div>
+            <h2 className="text-2xl font-extrabold text-gray-900">Reports</h2>
+            <p className="text-sm text-gray-400 mt-0.5">History of all agent outputs</p>
+          </div>
+          {reports.length > 0 && (
+            <button
+              onClick={downloadCombined}
+              className="flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-xs font-semibold rounded-xl hover:bg-gray-800 transition active:scale-[0.98] shadow-sm"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Download Combined
+            </button>
+          )}
         </div>
 
         {/* Filter pills */}
@@ -190,7 +259,19 @@ export default function ReportsPage() {
                         className="mt-4 text-sm text-gray-700 leading-relaxed bg-white rounded-xl p-4 max-h-[600px] overflow-y-auto report-html"
                         dangerouslySetInnerHTML={{ __html: report.result }}
                       />
-                      <div className="mt-3 flex justify-end">
+                      <div className="mt-3 flex justify-end gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            downloadSingle(report);
+                          }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                          Download
+                        </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
