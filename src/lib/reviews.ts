@@ -2,7 +2,21 @@ import { ApifyClient } from "apify-client";
 import { createServerClient } from "@/lib/supabase-server";
 
 const TRUSTPILOT_URL = "https://www.trustpilot.com/review/racquetsclubcommunity.com";
-const GOOGLE_MAPS_URL = process.env.GOOGLE_MAPS_URL || "https://www.google.com/maps/search/Racquets+Club+Community+RCC+Badminton";
+const GOOGLE_MAPS_URL = process.env.GOOGLE_MAPS_URL || "";
+const GOOGLE_SEARCH_QUERY = process.env.GOOGLE_BUSINESS_NAME || "Racquets Club Community RCC Badminton Community";
+
+function buildGoogleScraperInput() {
+  const input: Record<string, any> = {
+    maxReviews: 100,
+    reviewsSort: "newest",
+    language: "en",
+  };
+  if (GOOGLE_MAPS_URL) {
+    input.startUrls = [{ url: GOOGLE_MAPS_URL }];
+  }
+  input.searchStringsArray = [GOOGLE_SEARCH_QUERY];
+  return input;
+}
 
 export async function startReviewScrapes() {
   const apifyToken = process.env.APIFY_API_TOKEN;
@@ -18,7 +32,7 @@ export async function startReviewScrapes() {
       { webhooks: [{ eventTypes: ["ACTOR.RUN.SUCCEEDED"], requestUrl: `${webhookUrl}?source=trustpilot` }] }
     ),
     client.actor("compass/google-maps-reviews-scraper").start(
-      { startUrls: [{ url: GOOGLE_MAPS_URL }], maxReviews: 100, reviewsSort: "newest", language: "en" },
+      buildGoogleScraperInput(),
       { webhooks: [{ eventTypes: ["ACTOR.RUN.SUCCEEDED"], requestUrl: `${webhookUrl}?source=google` }] }
     ),
   ]);
@@ -199,7 +213,7 @@ export async function scrapeGoogleReviews(): Promise<{
   const client = new ApifyClient({ token: apifyToken });
 
   const run = await client.actor("compass/google-maps-reviews-scraper").call(
-    { startUrls: [{ url: GOOGLE_MAPS_URL }], maxReviews: 100, reviewsSort: "newest", language: "en" },
+    buildGoogleScraperInput(),
     { waitSecs: 120 }
   );
 
