@@ -30,9 +30,10 @@ interface AgentCardProps {
   endpoint: string;
   configOptions?: ConfigOption[];
   configKey?: string;
+  defaultBody?: Record<string, string>;
 }
 
-export default function AgentCard({ name, description, icon, color, bgColor, endpoint, configOptions, configKey }: AgentCardProps) {
+export default function AgentCard({ name, description, icon, color, bgColor, endpoint, configOptions, configKey, defaultBody }: AgentCardProps) {
   const [result, setResult] = useState<string | null>(null);
   const [reportId, setReportId] = useState<string | null>(null);
   const [agentKey, setAgentKey] = useState<string>("");
@@ -55,9 +56,13 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
     const start = Date.now();
     try {
       const fetchOptions: RequestInit = { method: "POST" };
+      const bodyData: Record<string, string> = { ...defaultBody };
       if (configKey && selectedConfig) {
+        bodyData[configKey] = selectedConfig;
+      }
+      if (Object.keys(bodyData).length > 0) {
         fetchOptions.headers = { "Content-Type": "application/json" };
-        fetchOptions.body = JSON.stringify({ [configKey]: selectedConfig });
+        fetchOptions.body = JSON.stringify(bodyData);
       }
       const res = await fetch(endpoint, fetchOptions);
       const json = await res.json();
