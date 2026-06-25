@@ -1,5 +1,9 @@
 # Content Agent Dashboard — Complete Setup Guide
 
+**Author:** Harshpreet Singh Bhasin
+**Company:** Hotbot Studios | hotbotstudios.com
+**License:** Proprietary — Hotbot Studios
+
 > Build a team of 6 AI agents that manage Instagram content for any niche, powered by Claude AI, Supabase, Apify scrapers, and deployed on Vercel — all built through Claude Code on the web.
 
 ---
@@ -709,4 +713,9 @@ mcp__github__list_issues                — Issue tracking
 
 ---
 
-*Built with Claude Code. Total build time: ~2-4 hours with Claude doing the heavy lifting.*
+---
+
+**Built by Harshpreet Singh Bhasin | Hotbot Studios**
+hotbotstudios.com | harshpreet@hotbotstudios.com
+
+*Powered by the Hotbot Agent Toolkit. Total build time: ~2-4 hours with Claude doing the heavy lifting.*

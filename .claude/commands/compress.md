@@ -1,5 +1,8 @@
 # COMPRESS — Brief Compressor
 
+> **By Harshpreet Singh Bhasin | Hotbot Studios**
+> Part of the Hotbot Agent Toolkit
+
 Compress any verbose project description, feature request, or conversation into a structured BRF (Brief) for efficient execution.
 
 **Usage:** `/compress [paste any description, conversation, or requirements]`

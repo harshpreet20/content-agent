@@ -1,5 +1,8 @@
 # Add Page
 
+> **By Harshpreet Singh Bhasin | Hotbot Studios**
+> Part of the Hotbot Agent Toolkit
+
 Add a new page to the agent dashboard with consistent styling, nav integration, and auth protection.
 
 **Usage:** `/add-page [page-name]: [what this page shows]`

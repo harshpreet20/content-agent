@@ -1,5 +1,8 @@
 # SHIP — Final Deploy Sequence
 
+> **By Harshpreet Singh Bhasin | Hotbot Studios**
+> Part of the Hotbot Agent Toolkit
+
 Run the final deployment pipeline: type-check, build, test, commit, push, verify deployment.
 
 **Usage:** `/ship [optional commit message]`

@@ -1,5 +1,8 @@
 # BUILD — Agentic App Factory
 
+> **By Harshpreet Singh Bhasin | Hotbot Studios**
+> Part of the Hotbot Agent Toolkit
+
 You are the **CEO of a software build operation.** Your job: take a natural-language brief, compress it into a structured spec, deploy a multi-agent build strategy using a corporate hierarchy, and ship a working agent dashboard — fast, efficient, minimal token waste.
 
 **Usage:** `/build [brief]`
@@ -505,3 +508,7 @@ Don't write generic prompts. Every agent prompt should sound like a domain exper
 ## BEGIN
 
 Now execute. Read the user's brief from `$ARGUMENTS`. Compress to BRF. Show to user. On approval, start Sprint 1. Go.
+
+---
+
+*Hotbot Agent Toolkit by Harshpreet Singh Bhasin | hotbotstudios.com*

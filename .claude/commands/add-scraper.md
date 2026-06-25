@@ -1,5 +1,8 @@
 # Add Scraper
 
+> **By Harshpreet Singh Bhasin | Hotbot Studios**
+> Part of the Hotbot Agent Toolkit
+
 Add a new data source to the dashboard. Creates the scraping logic, webhook handler, database table, and wires it into the brain context layer.
 
 **Usage:** `/add-scraper [source-name]: [what to scrape] from [platform/url]`

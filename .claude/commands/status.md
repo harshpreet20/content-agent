@@ -1,5 +1,8 @@
 # STATUS — Build Progress Dashboard
 
+> **By Harshpreet Singh Bhasin | Hotbot Studios**
+> Part of the Hotbot Agent Toolkit
+
 Show the current state of the build operation. Reads the task board, checks file system, and reports what's done vs remaining.
 
 **Usage:** `/status`

@@ -1,5 +1,8 @@
 # Add Agent — Quick Agent Creator
 
+> **By Harshpreet Singh Bhasin | Hotbot Studios**
+> Part of the Hotbot Agent Toolkit
+
 Add a new AI agent to the dashboard in under 2 minutes. Uses the standard agent route pattern.
 
 **Usage:** `/add-agent [agent-name]: [what it does]`

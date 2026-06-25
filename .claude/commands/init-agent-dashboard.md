@@ -1,5 +1,8 @@
 # Init Agent Dashboard
 
+> **By Harshpreet Singh Bhasin | Hotbot Studios**
+> Part of the Hotbot Agent Toolkit
+
 Scaffold a complete AI-powered content agent dashboard from scratch. This creates the full project structure, database schema, all utilities, and deploys.
 
 **Usage:** `/init-agent-dashboard [niche] for @[handle] vs @comp1,@comp2,@comp3`

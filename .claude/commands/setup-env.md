@@ -1,5 +1,8 @@
 # Setup Environment
 
+> **By Harshpreet Singh Bhasin | Hotbot Studios**
+> Part of the Hotbot Agent Toolkit
+
 Configure all environment variables, API keys, and MCP connections for the agent dashboard. Guides you through extracting keys from each service and setting them up.
 
 **Usage:** `/setup-env` (interactive — walks you through each service)
