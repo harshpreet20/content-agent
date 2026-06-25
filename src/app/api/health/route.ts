@@ -74,24 +74,47 @@ export async function GET() {
     checks.data_freshness = { status: "error", error: "Could not check" };
   }
 
-  // Check brain context
+  // Check brain context — green if generated after last scrape, orange if regenerating/pending, red if missing
   try {
     const supabase = createServerClient();
-    const { data } = await supabase
-      .from("analytics")
-      .select("fetched_at")
-      .eq("metric_type", "brain_context")
-      .order("fetched_at", { ascending: false })
-      .limit(1)
-      .single();
 
-    if (data) {
-      const age = Date.now() - new Date(data.fetched_at).getTime();
-      checks.brain = age < 2 * 60 * 60 * 1000
-        ? { status: "ok" }
-        : { status: "error", error: "Stale (>2h)" };
-    } else {
+    const [brainRes, scrapeRes, statusRes] = await Promise.all([
+      supabase
+        .from("analytics")
+        .select("fetched_at")
+        .eq("metric_type", "brain_context")
+        .order("fetched_at", { ascending: false })
+        .limit(1)
+        .single(),
+      supabase
+        .from("scrapes")
+        .select("scraped_at")
+        .order("scraped_at", { ascending: false })
+        .limit(1)
+        .single(),
+      supabase
+        .from("analytics")
+        .select("data")
+        .eq("metric_type", "brain_status")
+        .order("fetched_at", { ascending: false })
+        .limit(1)
+        .single(),
+    ]);
+
+    const isGenerating = (statusRes.data?.data as any)?.status === "generating";
+
+    if (isGenerating) {
+      checks.brain = { status: "error", error: "Regenerating" };
+    } else if (!brainRes.data) {
       checks.brain = { status: "error", error: "Not generated yet" };
+    } else if (!scrapeRes.data) {
+      checks.brain = { status: "ok" };
+    } else {
+      const brainTime = new Date(brainRes.data.fetched_at).getTime();
+      const scrapeTime = new Date(scrapeRes.data.scraped_at).getTime();
+      checks.brain = brainTime >= scrapeTime
+        ? { status: "ok" }
+        : { status: "error", error: "New data available" };
     }
   } catch {
     checks.brain = { status: "error", error: "Could not check" };

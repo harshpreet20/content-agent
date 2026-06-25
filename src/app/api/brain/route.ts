@@ -6,7 +6,7 @@ export const maxDuration = 60;
 
 export async function POST() {
   try {
-    const brain = await buildBrainContext();
+    const brain = await buildBrainContext(true);
     if (!brain) {
       return NextResponse.json(
         { error: "Could not generate brain context — check data and API key" },

@@ -114,6 +114,10 @@ async function collectLatestRun() {
         { onConflict: "id" }
       );
 
+      // Auto-regenerate brain context with the new data
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://content-agent-gamma.vercel.app";
+      fetch(`${baseUrl}/api/brain`, { method: "POST" }).catch(() => {});
+
       return NextResponse.json({
         status: "SUCCEEDED",
         totalPosts: items.length,

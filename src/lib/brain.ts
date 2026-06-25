@@ -42,9 +42,13 @@ Rules:
 - Write in plain text, no HTML, no markdown formatting. Just clear paragraphs with section headers.
 - This brief will be injected into other AI agent prompts, so write it as context they can act on.`;
 
-export async function buildBrainContext(): Promise<BrainContext | null> {
-  const cached = await getCachedBrief();
-  if (cached) return cached;
+export async function buildBrainContext(force = false): Promise<BrainContext | null> {
+  if (!force) {
+    const cached = await getCachedBrief();
+    if (cached) return cached;
+  }
+
+  await setBrainStatus("generating");
 
   const data = await loadDataWithFallback();
   if (!data) return null;
@@ -114,8 +118,10 @@ ${allLearnings}`;
     };
 
     await cacheBrief(context);
+    await setBrainStatus("ready");
     return context;
   } catch {
+    await setBrainStatus("ready");
     return null;
   }
 }
@@ -252,6 +258,19 @@ async function getCachedBrief(): Promise<BrainContext | null> {
     return data.data as BrainContext;
   } catch {
     return null;
+  }
+}
+
+async function setBrainStatus(status: "generating" | "ready"): Promise<void> {
+  try {
+    const supabase = createServerClient();
+    await supabase.from("analytics").insert({
+      metric_type: "brain_status",
+      data: { status },
+      period: "snapshot",
+    });
+  } catch {
+    // non-critical
   }
 }
 

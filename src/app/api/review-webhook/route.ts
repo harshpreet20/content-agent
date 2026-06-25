@@ -25,6 +25,10 @@ export async function POST(request: Request) {
       ? await collectTrustpilotResults(runId)
       : await collectGoogleResults(runId);
 
+    // Auto-regenerate brain context with new review data
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://content-agent-gamma.vercel.app";
+    fetch(`${baseUrl}/api/brain`, { method: "POST" }).catch(() => {});
+
     return NextResponse.json({ success: true, source, ...result });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
