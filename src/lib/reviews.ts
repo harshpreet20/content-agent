@@ -2,7 +2,7 @@ import { ApifyClient } from "apify-client";
 import { createServerClient } from "@/lib/supabase-server";
 
 const TRUSTPILOT_URL = "https://www.trustpilot.com/review/racquetsclubcommunity.com";
-const GOOGLE_MAPS_URL = process.env.GOOGLE_MAPS_URL || "https://share.google/LSBtuEj4pFJqCoBAh";
+const GOOGLE_MAPS_URL = process.env.GOOGLE_MAPS_URL || "https://www.google.com/maps/search/Racquets+Club+Community+RCC+Badminton";
 
 export async function startReviewScrapes() {
   const apifyToken = process.env.APIFY_API_TOKEN;
@@ -22,6 +22,19 @@ export async function startReviewScrapes() {
       { webhooks: [{ eventTypes: ["ACTOR.RUN.SUCCEEDED"], requestUrl: `${webhookUrl}?source=google` }] }
     ),
   ]);
+
+  const supabase = createServerClient();
+  await supabase.from("scrape_runs").upsert(
+    {
+      id: "reviews_latest",
+      run_id: tpRun.id,
+      dataset_id: tpRun.defaultDatasetId,
+      status: "RUNNING",
+      started_at: new Date().toISOString(),
+      handles: [`trustpilot:${tpRun.id}`, `google:${gRun.id}:${gRun.defaultDatasetId}`],
+    },
+    { onConflict: "id" }
+  );
 
   return { trustpilotRunId: tpRun.id, googleRunId: gRun.id };
 }
@@ -216,6 +229,61 @@ export async function scrapeGoogleReviews(): Promise<{
     reviews,
     summary: { total: result.total, avgRating, newCount: result.collected },
   };
+}
+
+export async function pollAndCollectReviews(): Promise<{
+  trustpilot: { collected: number } | null;
+  google: { collected: number } | null;
+}> {
+  const apifyToken = process.env.APIFY_API_TOKEN;
+  if (!apifyToken) throw new Error("Missing APIFY_API_TOKEN");
+
+  const supabase = createServerClient();
+  const { data: runData } = await supabase
+    .from("scrape_runs")
+    .select("*")
+    .eq("id", "reviews_latest")
+    .single();
+
+  if (!runData || runData.status === "SUCCEEDED") {
+    return { trustpilot: null, google: null };
+  }
+
+  const client = new ApifyClient({ token: apifyToken });
+  const handles = (runData.handles || []) as string[];
+
+  let tpResult: { collected: number } | null = null;
+  let gResult: { collected: number } | null = null;
+
+  for (const h of handles) {
+    if (h.startsWith("trustpilot:")) {
+      const runId = h.split(":")[1];
+      try {
+        const run = await client.run(runId).get();
+        if (run?.status === "SUCCEEDED") {
+          tpResult = await collectTrustpilotResults(runId);
+        }
+      } catch { /* skip */ }
+    } else if (h.startsWith("google:")) {
+      const parts = h.split(":");
+      const runId = parts[1];
+      try {
+        const run = await client.run(runId).get();
+        if (run?.status === "SUCCEEDED") {
+          gResult = await collectGoogleResults(runId);
+        }
+      } catch { /* skip */ }
+    }
+  }
+
+  if (tpResult || gResult) {
+    await supabase.from("scrape_runs").upsert(
+      { id: "reviews_latest", status: "SUCCEEDED", finished_at: new Date().toISOString() },
+      { onConflict: "id" }
+    );
+  }
+
+  return { trustpilot: tpResult, google: gResult };
 }
 
 export async function getStoredReviews(source?: string) {
