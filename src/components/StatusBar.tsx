@@ -81,7 +81,7 @@ export default function StatusBar() {
         const isOk = check?.status === "ok";
         const isUnknown = !check;
         const isWarn = !isOk && check?.error && WARN_ERRORS.includes(check.error);
-        const needsBrainInit = key === "brain" && !isOk && check?.error === "Not generated yet";
+        const needsBrainAction = key === "brain" && !isOk && (check?.error === "Not generated yet" || check?.error === "Stale (>2h)");
 
         let dotClass = "bg-gray-300";
         if (!isUnknown) {
@@ -105,13 +105,13 @@ export default function StatusBar() {
             <span className="text-sm">{meta.icon}</span>
             <span className="text-xs font-semibold text-gray-600">{meta.label}</span>
             <span className={`w-2.5 h-2.5 rounded-full ${dotClass}`} />
-            {needsBrainInit && (
+            {needsBrainAction && (
               <button
                 onClick={generateBrain}
                 disabled={brainGenerating}
                 className="text-[10px] font-bold text-amber-600 hover:text-amber-800 transition disabled:opacity-50"
               >
-                {brainGenerating ? "Generating..." : "Generate"}
+                {brainGenerating ? "Generating..." : check?.error === "Stale (>2h)" ? "Refresh" : "Generate"}
               </button>
             )}
           </div>
