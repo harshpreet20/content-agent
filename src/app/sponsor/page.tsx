@@ -18,7 +18,7 @@ function SponsorStatsBar({ sponsor }: { sponsor: any }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       {stats.map((s) => (
-        <div key={s.label} className="bg-white rounded-xl border border-gray-100 p-4 text-center shadow-sm">
+        <div key={s.label} className="bg-[#e0e5ec] rounded-xl p-4 text-center neu-card">
           <p className="text-2xl font-extrabold text-gray-900">{typeof s.value === "number" ? s.value.toLocaleString() : s.value}</p>
           <p className="text-xs text-gray-400 font-medium mt-1">{s.label}</p>
         </div>
@@ -126,7 +126,7 @@ export default function SponsorPage() {
 
   if (authLoading || !user || status !== "approved") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
+      <div className="min-h-screen flex items-center justify-center bg-[#e0e5ec]">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -141,7 +141,7 @@ export default function SponsorPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#e0e5ec]">
       <Nav active="/sponsor" />
 
       <main className="max-w-6xl mx-auto px-5 py-8 space-y-8">
@@ -151,7 +151,7 @@ export default function SponsorPage() {
         </div>
 
         {/* Sponsor input */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-[#e0e5ec] rounded-2xl neu-raised p-6">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 text-sm">@</span>
@@ -161,14 +161,14 @@ export default function SponsorPage() {
                 onChange={(e) => setHandle(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !scraping && scrapeSponsor()}
                 placeholder="sponsor_handle or Instagram URL"
-                className="w-full pl-9 pr-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
+                className="w-full pl-9 pr-4 py-3 rounded-xl bg-[#e0e5ec] neu-input text-sm focus:outline-none"
                 disabled={scraping}
               />
             </div>
             <button
               onClick={scrapeSponsor}
               disabled={scraping || !handle.trim()}
-              className="px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 active:scale-[0.98]"
+              className="px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 active:scale-[0.98] neu-btn"
               style={{ background: "linear-gradient(135deg, #F59E0B, #EC4899)" }}
             >
               {scraping ? (
@@ -186,7 +186,7 @@ export default function SponsorPage() {
           </div>
 
           {error && (
-            <div className="mt-3 p-3 bg-red-50 border border-red-100 rounded-xl text-red-500 text-xs">
+            <div className="mt-3 p-3 bg-red-50/60 rounded-xl text-red-500 text-xs neu-pressed">
               {error}
             </div>
           )}

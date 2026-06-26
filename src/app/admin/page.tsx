@@ -76,7 +76,7 @@ export default function AdminPage() {
 
   if (authLoading || !isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
+      <div className="min-h-screen flex items-center justify-center bg-[#e0e5ec]">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -87,7 +87,7 @@ export default function AdminPage() {
   const rejectedUsers = users.filter((u) => u.status === "rejected");
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#e0e5ec]">
       <Nav active="/admin" />
 
       <main className="max-w-5xl mx-auto px-5 py-8">
@@ -104,19 +104,19 @@ export default function AdminPage() {
           <div className="space-y-8">
             {/* Summary cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+              <div className="bg-[#e0e5ec] rounded-2xl p-5 neu-card">
                 <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Total Users</div>
                 <div className="text-3xl font-extrabold text-gray-900">{users.length}</div>
               </div>
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+              <div className="bg-[#e0e5ec] rounded-2xl p-5 neu-card">
                 <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Pending</div>
                 <div className="text-3xl font-extrabold text-amber-500">{pendingUsers.length}</div>
               </div>
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+              <div className="bg-[#e0e5ec] rounded-2xl p-5 neu-card">
                 <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Approved</div>
                 <div className="text-3xl font-extrabold text-green-600">{approvedUsers.length}</div>
               </div>
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+              <div className="bg-[#e0e5ec] rounded-2xl p-5 neu-card">
                 <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Admins</div>
                 <div className="text-3xl font-extrabold text-violet-600">{users.filter((u) => u.role === "admin").length}</div>
               </div>
@@ -192,17 +192,17 @@ function UserRow({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-4 flex items-center gap-4">
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 via-pink-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+    <div className="bg-[#e0e5ec] rounded-2xl neu-card p-4 flex items-center gap-4">
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 via-pink-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold shrink-0 neu-raised-sm">
         {user.email[0].toUpperCase()}
       </div>
       <div className="min-w-0 flex-1">
         <div className="font-semibold text-sm text-gray-900 truncate">{user.email}</div>
         <div className="flex items-center gap-2 mt-1">
-          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${statusColors[user.status] || ""}`}>
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase neu-flat ${statusColors[user.status] || ""}`}>
             {user.status}
           </span>
-          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${roleColors[user.role] || ""}`}>
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase neu-flat ${roleColors[user.role] || ""}`}>
             {user.role}
           </span>
           <span className="text-[10px] text-gray-300">
@@ -219,13 +219,13 @@ function UserRow({
               <>
                 <button
                   onClick={() => onUpdate(user.id, { status: "approved" })}
-                  className="px-3 py-1.5 text-[11px] font-semibold bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                  className="px-3 py-1.5 text-[11px] font-semibold bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all neu-btn"
                 >
                   Approve
                 </button>
                 <button
                   onClick={() => onUpdate(user.id, { status: "rejected" })}
-                  className="px-3 py-1.5 text-[11px] font-semibold bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition"
+                  className="px-3 py-1.5 text-[11px] font-semibold text-red-500 rounded-lg transition-all neu-btn"
                 >
                   Reject
                 </button>
@@ -234,7 +234,7 @@ function UserRow({
             {user.status === "approved" && user.role === "user" && (
               <button
                 onClick={() => onUpdate(user.id, { role: "admin" })}
-                className="px-3 py-1.5 text-[11px] font-semibold bg-violet-50 text-violet-600 rounded-lg hover:bg-violet-100 transition"
+                className="px-3 py-1.5 text-[11px] font-semibold text-violet-600 rounded-lg transition-all neu-btn"
               >
                 Make Admin
               </button>
@@ -242,7 +242,7 @@ function UserRow({
             {user.status === "approved" && user.role === "admin" && (
               <button
                 onClick={() => onUpdate(user.id, { role: "user" })}
-                className="px-3 py-1.5 text-[11px] font-semibold bg-gray-50 text-gray-500 rounded-lg hover:bg-gray-100 transition"
+                className="px-3 py-1.5 text-[11px] font-semibold text-gray-500 rounded-lg transition-all neu-btn"
               >
                 Remove Admin
               </button>
@@ -250,14 +250,14 @@ function UserRow({
             {user.status === "rejected" && (
               <button
                 onClick={() => onUpdate(user.id, { status: "approved" })}
-                className="px-3 py-1.5 text-[11px] font-semibold bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition"
+                className="px-3 py-1.5 text-[11px] font-semibold text-green-600 rounded-lg transition-all neu-btn"
               >
                 Approve
               </button>
             )}
             <button
               onClick={() => onDelete(user.id, user.email)}
-              className="p-1.5 text-gray-300 hover:text-red-500 rounded-lg hover:bg-red-50 transition"
+              className="p-1.5 text-gray-300 hover:text-red-500 rounded-lg transition-all neu-btn"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

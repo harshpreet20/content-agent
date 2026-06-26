@@ -141,14 +141,14 @@ export default function ReportsPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
+      <div className="min-h-screen flex items-center justify-center bg-[#e0e5ec]">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#e0e5ec]">
       <Nav active="/reports" />
 
       <main className="max-w-4xl mx-auto px-5 py-8">
@@ -161,7 +161,7 @@ export default function ReportsPage() {
           {reports.length > 0 && (
             <button
               onClick={downloadCombined}
-              className="flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-xs font-semibold rounded-xl hover:bg-gray-800 transition active:scale-[0.98] shadow-sm"
+              className="flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-xs font-semibold rounded-xl hover:bg-gray-800 transition-all active:scale-[0.98] neu-btn"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -175,10 +175,10 @@ export default function ReportsPage() {
         <div className="flex gap-2 mb-6 flex-wrap">
           <button
             onClick={() => { setFilter("all"); setLoading(true); }}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               filter === "all"
-                ? "bg-gray-900 text-white shadow-sm"
-                : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300"
+                ? "bg-gray-900 text-white neu-pressed"
+                : "bg-[#e0e5ec] text-gray-500 neu-btn"
             }`}
           >
             All
@@ -187,10 +187,10 @@ export default function ReportsPage() {
             <button
               key={key}
               onClick={() => { setFilter(key); setLoading(true); }}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                 filter === key
-                  ? "text-white shadow-sm"
-                  : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300"
+                  ? "text-white neu-pressed"
+                  : "bg-[#e0e5ec] text-gray-500 neu-btn"
               }`}
               style={filter === key ? { backgroundColor: meta.color } : {}}
             >
@@ -207,7 +207,7 @@ export default function ReportsPage() {
           </div>
         ) : reports.length === 0 ? (
           <div className="text-center py-20">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-2xl flex items-center justify-center text-2xl">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center text-2xl neu-pressed">
               {"\u{1F4ED}"}
             </div>
             <h3 className="text-lg font-bold text-gray-900 mb-1">No reports yet</h3>
@@ -226,11 +226,11 @@ export default function ReportsPage() {
               return (
                 <div
                   key={report.id}
-                  className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden"
+                  className="bg-[#e0e5ec] rounded-2xl neu-card overflow-hidden"
                 >
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : report.id)}
-                    className="w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50/50 transition text-left"
+                    className="w-full px-5 py-4 flex items-center justify-between hover:opacity-90 transition text-left"
                   >
                     <div className="flex items-center gap-3">
                       <div
@@ -257,9 +257,9 @@ export default function ReportsPage() {
                   </button>
 
                   {isExpanded && (
-                    <div className="px-5 pb-5 border-t border-gray-50">
+                    <div className="px-5 pb-5">
                       <div
-                        className="mt-4 text-sm text-gray-700 leading-relaxed bg-white rounded-xl p-4 max-h-[600px] overflow-y-auto report-html"
+                        className="mt-4 text-sm text-gray-700 leading-relaxed bg-[#e0e5ec] rounded-xl p-4 max-h-[600px] overflow-y-auto report-html neu-pressed"
                         dangerouslySetInnerHTML={{ __html: sanitizeReport(report.result) }}
                       />
                       <div className="mt-3 flex justify-end gap-2">
@@ -268,7 +268,7 @@ export default function ReportsPage() {
                             e.stopPropagation();
                             downloadSingle(report);
                           }}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 rounded-lg transition-all neu-btn"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -281,7 +281,7 @@ export default function ReportsPage() {
                             handleDelete(report.id);
                           }}
                           disabled={deletingId === report.id}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 rounded-lg transition disabled:opacity-50"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-500 rounded-lg transition-all disabled:opacity-50 neu-btn"
                         >
                           {deletingId === report.id ? (
                             <div className="w-3.5 h-3.5 border-2 border-red-300 border-t-transparent rounded-full animate-spin" />

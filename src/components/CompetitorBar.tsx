@@ -32,9 +32,9 @@ export default function CompetitorBar({ competitors }: { competitors: Competitor
       {competitors.map((c, i) => (
         <div
           key={c.handle}
-          className="bg-white rounded-2xl p-4 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow flex items-center gap-4"
+          className="bg-[#e0e5ec] rounded-2xl p-4 neu-card flex items-center gap-4"
         >
-          <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${GRADIENTS[i % GRADIENTS.length]} flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm`}>
+          <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${GRADIENTS[i % GRADIENTS.length]} flex items-center justify-center text-white font-bold text-sm shrink-0 neu-raised-sm`}>
             {c.handle[0].toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
@@ -48,7 +48,7 @@ export default function CompetitorBar({ competitors }: { competitors: Competitor
                 <div className="text-[10px] text-gray-400 uppercase tracking-wide">avg likes</div>
               </>
             ) : (
-              <span className="text-[10px] font-semibold text-amber-500 bg-amber-50 px-2 py-1 rounded-full">Pending scrape</span>
+              <span className="text-[10px] font-semibold text-amber-500 px-2 py-1 rounded-full neu-pressed">Pending scrape</span>
             )}
           </div>
         </div>

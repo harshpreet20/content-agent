@@ -92,14 +92,14 @@ export default function Dashboard() {
 
   if (authLoading || !user || status !== "approved") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
+      <div className="min-h-screen flex items-center justify-center bg-[#e0e5ec]">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#e0e5ec]">
       <Nav active="/" />
 
       <main className="max-w-6xl mx-auto px-5 py-8">
@@ -144,7 +144,7 @@ export default function Dashboard() {
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">AI Agents</h3>
                 <Link
                   href="/reports"
-                  className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition"
+                  className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition-all px-3 py-1.5 rounded-lg neu-btn"
                 >
                   View history &rarr;
                 </Link>

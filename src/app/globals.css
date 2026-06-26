@@ -18,14 +18,63 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #e0e5ec;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: #b8bec7;
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
+}
+
+/* Neomorphism Design System */
+.neu-card {
+  box-shadow: 6px 6px 12px #b8bec7, -6px -6px 12px #ffffff;
+  transition: box-shadow 0.2s ease;
+}
+.neu-card:hover {
+  box-shadow: 8px 8px 16px #b8bec7, -8px -8px 16px #ffffff;
+}
+
+.neu-flat {
+  box-shadow: 3px 3px 6px #b8bec7, -3px -3px 6px #ffffff;
+}
+
+.neu-raised {
+  box-shadow: 6px 6px 12px #b8bec7, -6px -6px 12px #ffffff;
+}
+
+.neu-raised-sm {
+  box-shadow: 4px 4px 8px #b8bec7, -4px -4px 8px #ffffff;
+}
+
+.neu-pressed {
+  box-shadow: inset 3px 3px 6px #b8bec7, inset -3px -3px 6px #ffffff;
+}
+
+.neu-btn {
+  box-shadow: 3px 3px 6px #b8bec7, -3px -3px 6px #ffffff;
+  transition: all 0.15s ease;
+}
+.neu-btn:hover {
+  box-shadow: 4px 4px 8px #b8bec7, -4px -4px 8px #ffffff;
+}
+.neu-btn:active {
+  box-shadow: inset 2px 2px 4px #b8bec7, inset -2px -2px 4px #ffffff;
+}
+
+.neu-input {
+  box-shadow: inset 3px 3px 6px #b8bec7, inset -3px -3px 6px #ffffff;
+  transition: box-shadow 0.15s ease;
+  border: none !important;
+}
+.neu-input:focus {
+  box-shadow: inset 4px 4px 8px #b8bec7, inset -4px -4px 8px #ffffff;
+}
+
+.neu-nav {
+  box-shadow: 0 4px 8px #b8bec7;
 }

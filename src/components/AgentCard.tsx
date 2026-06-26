@@ -100,12 +100,12 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all flex flex-col">
+    <div className="bg-[#e0e5ec] rounded-2xl neu-card transition-all flex flex-col">
       {/* Header */}
       <div className="p-5 pb-4">
         <div className="flex items-start justify-between mb-3">
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center text-xl shadow-sm"
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-xl neu-raised-sm"
             style={{ backgroundColor: bgColor }}
           >
             {icon}
@@ -135,14 +135,14 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
       {(error || result) && (
         <div className="px-5 pb-4 flex-1">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-red-500 text-xs leading-relaxed">
+            <div className="p-3 bg-red-50/80 rounded-xl text-red-500 text-xs leading-relaxed neu-pressed">
               {error}
             </div>
           )}
           {result && (
             <>
               <div
-                className="bg-white rounded-xl p-4 text-sm text-gray-700 leading-relaxed max-h-[500px] overflow-y-auto report-html"
+                className="bg-[#e0e5ec] rounded-xl p-4 text-sm text-gray-700 leading-relaxed max-h-[500px] overflow-y-auto report-html neu-pressed"
                 dangerouslySetInnerHTML={{ __html: sanitizeReport(result) }}
               />
               {/* Feedback buttons */}
@@ -152,12 +152,12 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
                   <button
                     onClick={() => sendFeedback(1)}
                     disabled={feedback !== null || feedbackSending}
-                    className={`p-1.5 rounded-lg transition text-sm ${
+                    className={`p-1.5 rounded-lg transition-all text-sm ${
                       feedback === 1
-                        ? "bg-green-100 text-green-600"
+                        ? "text-green-600 neu-pressed"
                         : feedback !== null
                         ? "opacity-30 cursor-default text-gray-300"
-                        : "hover:bg-green-50 text-gray-400 hover:text-green-600"
+                        : "text-gray-400 hover:text-green-600 neu-flat"
                     }`}
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -167,12 +167,12 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
                   <button
                     onClick={() => sendFeedback(-1)}
                     disabled={feedback !== null || feedbackSending}
-                    className={`p-1.5 rounded-lg transition text-sm ${
+                    className={`p-1.5 rounded-lg transition-all text-sm ${
                       feedback === -1
-                        ? "bg-red-100 text-red-500"
+                        ? "text-red-500 neu-pressed"
                         : feedback !== null
                         ? "opacity-30 cursor-default text-gray-300"
-                        : "hover:bg-red-50 text-gray-400 hover:text-red-500"
+                        : "text-gray-400 hover:text-red-500 neu-flat"
                     }`}
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -200,12 +200,12 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
                 key={opt.value}
                 onClick={() => setSelectedConfig(opt.value)}
                 disabled={loading}
-                className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all border ${
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all border-0 ${
                   selectedConfig === opt.value
-                    ? "border-current shadow-sm"
-                    : "border-gray-200 text-gray-400 hover:border-gray-300"
+                    ? "neu-pressed"
+                    : "text-gray-400 neu-flat"
                 }`}
-                style={selectedConfig === opt.value ? { color, backgroundColor: bgColor, borderColor: color } : {}}
+                style={selectedConfig === opt.value ? { color } : {}}
               >
                 {opt.label}
               </button>
@@ -219,7 +219,7 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
         <button
           onClick={runAgent}
           disabled={loading}
-          className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 active:scale-[0.98]"
+          className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 active:scale-[0.98] neu-btn"
           style={{
             backgroundColor: loading ? bgColor : color,
             color: loading ? color : "#fff",

@@ -99,7 +99,7 @@ export default function AnalyticsPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
+      <div className="min-h-screen flex items-center justify-center bg-[#e0e5ec]">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -120,7 +120,7 @@ export default function AnalyticsPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#e0e5ec]">
       <Nav active="/analytics" />
 
       <main className="max-w-6xl mx-auto px-5 py-8">
@@ -135,7 +135,7 @@ export default function AnalyticsPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-xs font-semibold rounded-xl hover:bg-gray-800 transition active:scale-[0.98] shadow-sm disabled:opacity-60"
+            className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-xs font-semibold rounded-xl hover:bg-gray-800 transition-all active:scale-[0.98] disabled:opacity-60 neu-btn"
           >
             <svg className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -145,7 +145,7 @@ export default function AnalyticsPage() {
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm mb-6">{error}</div>
+          <div className="p-4 bg-red-50/60 rounded-2xl text-red-600 text-sm mb-6 neu-pressed">{error}</div>
         )}
 
         {loading ? (
@@ -165,7 +165,7 @@ export default function AnalyticsPage() {
                   { label: "Total Views", value: account.totalViews >= 1000 ? `${(account.totalViews / 1000).toFixed(1)}K` : account.totalViews, color: "#3B82F6" },
                   { label: "Engagement", value: insights.engagement?.toLocaleString() || "0", color: "#6366F1" },
                 ].map((stat) => (
-                  <div key={stat.label} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+                  <div key={stat.label} className="bg-[#e0e5ec] rounded-2xl p-5 neu-card">
                     <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">{stat.label}</div>
                     <div className="text-2xl font-extrabold text-gray-900">{stat.value}</div>
                   </div>
@@ -175,7 +175,7 @@ export default function AnalyticsPage() {
 
             {/* Top posts chart */}
             {postChartData.length > 0 && (
-              <section className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6">
+              <section className="bg-[#e0e5ec] rounded-2xl neu-card p-6">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Top Posts by Likes</h3>
                 <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
@@ -183,7 +183,7 @@ export default function AnalyticsPage() {
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-20} textAnchor="end" height={60} />
                       <YAxis tick={{ fontSize: 11 }} />
-                      <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb", fontSize: 12 }} />
+                      <Tooltip contentStyle={{ borderRadius: 12, background: "#e0e5ec", boxShadow: "4px 4px 8px #b8bec7, -4px -4px 8px #ffffff", border: "none", fontSize: 12 }} />
                       <Bar dataKey="likes" fill="#EC4899" radius={[6, 6, 0, 0]} name="Likes" />
                       <Bar dataKey="comments" fill="#8B5CF6" radius={[6, 6, 0, 0]} name="Comments" />
                       <Bar dataKey="views" fill="#3B82F6" radius={[6, 6, 0, 0]} name="Views" />
@@ -196,7 +196,7 @@ export default function AnalyticsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Content type breakdown */}
               {typeBreakdown.length > 0 && (
-                <section className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6">
+                <section className="bg-[#e0e5ec] rounded-2xl neu-card p-6">
                   <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Content Type Breakdown</h3>
                   <div className="h-64 flex items-center justify-center">
                     <ResponsiveContainer width="100%" height="100%">
@@ -215,7 +215,7 @@ export default function AnalyticsPage() {
                             <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb", fontSize: 12 }} />
+                        <Tooltip contentStyle={{ borderRadius: 12, background: "#e0e5ec", boxShadow: "4px 4px 8px #b8bec7, -4px -4px 8px #ffffff", border: "none", fontSize: 12 }} />
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
@@ -224,7 +224,7 @@ export default function AnalyticsPage() {
 
               {/* Competitor comparison */}
               {compChartData.length > 0 && (
-                <section className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6">
+                <section className="bg-[#e0e5ec] rounded-2xl neu-card p-6">
                   <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Competitor Comparison - Avg Likes</h3>
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
@@ -232,7 +232,7 @@ export default function AnalyticsPage() {
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                         <XAxis type="number" tick={{ fontSize: 11 }} />
                         <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={75} />
-                        <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb", fontSize: 12 }} />
+                        <Tooltip contentStyle={{ borderRadius: 12, background: "#e0e5ec", boxShadow: "4px 4px 8px #b8bec7, -4px -4px 8px #ffffff", border: "none", fontSize: 12 }} />
                         <Bar dataKey="avgLikes" fill="#10B981" radius={[0, 6, 6, 0]} name="Avg Likes" />
                         <Bar dataKey="avgComments" fill="#F59E0B" radius={[0, 6, 6, 0]} name="Avg Comments" />
                       </BarChart>
@@ -244,12 +244,12 @@ export default function AnalyticsPage() {
 
             {/* Posts detail table */}
             {topPosts.length > 0 && (
-              <section className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6">
+              <section className="bg-[#e0e5ec] rounded-2xl neu-card p-6">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Post Performance</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-gray-100">
+                      <tr className="border-b border-[#d0d5dc]">
                         <th className="text-left py-3 px-2 text-xs font-semibold text-gray-400 uppercase">Post</th>
                         <th className="text-center py-3 px-2 text-xs font-semibold text-gray-400 uppercase">Type</th>
                         <th className="text-right py-3 px-2 text-xs font-semibold text-gray-400 uppercase">Likes</th>
@@ -260,7 +260,7 @@ export default function AnalyticsPage() {
                     </thead>
                     <tbody>
                       {topPosts.map((p, i) => (
-                        <tr key={i} className={`border-b border-gray-50 ${i % 2 === 0 ? "bg-gray-50/30" : ""}`}>
+                        <tr key={i} className={`border-b border-[#d0d5dc] ${i % 2 === 0 ? "bg-[#d8dde4]/30" : ""}`}>
                           <td className="py-3 px-2">
                             {p.url ? (
                               <a href={p.url} target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:underline font-medium">

@@ -63,7 +63,7 @@ export default function StatusBar() {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-3 px-4 py-2.5 bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="flex items-center gap-3 px-4 py-2.5 bg-[#e0e5ec] rounded-2xl neu-raised-sm">
         <div className="w-3 h-3 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
         <span className="text-xs text-gray-400 font-medium">Checking systems...</span>
       </div>
@@ -93,7 +93,7 @@ export default function StatusBar() {
         return (
           <div
             key={key}
-            className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+            className="flex items-center gap-2 px-3 py-2 bg-[#e0e5ec] rounded-xl neu-flat"
             title={
               isUnknown
                 ? "Unknown"
@@ -109,7 +109,7 @@ export default function StatusBar() {
               <button
                 onClick={generateBrain}
                 disabled={brainGenerating}
-                className="text-[10px] font-bold text-amber-600 hover:text-amber-800 transition disabled:opacity-50"
+                className="text-[10px] font-bold text-amber-600 hover:text-amber-800 transition-all disabled:opacity-50 px-2 py-0.5 rounded-lg neu-btn"
               >
                 {brainGenerating ? "Generating..." : check?.error === "New data available" ? "Refresh" : "Generate"}
               </button>

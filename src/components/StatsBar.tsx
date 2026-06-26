@@ -73,7 +73,7 @@ export default function StatsBar({ stats }: StatsBarProps) {
         return (
           <div
             key={cfg.key}
-            className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-shadow"
+            className="bg-[#e0e5ec] rounded-2xl p-5 neu-card"
           >
             <div className="flex items-center gap-2 mb-3">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: color + "14" }}>
