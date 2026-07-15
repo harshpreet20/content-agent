@@ -24,6 +24,9 @@ interface Product {
   sold_out: boolean;
   active: boolean;
   sort_order: number;
+  seo_title: string | null;
+  seo_description: string | null;
+  seo_keywords: string[];
 }
 
 const money = (n: number) => `₹${(n || 0).toLocaleString("en-IN")}`;
@@ -32,6 +35,7 @@ type Draft = Partial<Product> & {
   sizesText?: string;
   highlightsText?: string;
   personalizationJson?: string;
+  seoKeywordsText?: string;
 };
 
 const emptyDraft: Draft = {
@@ -51,6 +55,9 @@ const emptyDraft: Draft = {
   sizesText: "",
   highlightsText: "",
   personalizationJson: "[]",
+  seo_title: "",
+  seo_description: "",
+  seoKeywordsText: "",
 };
 
 export default function ProductsPage() {
@@ -93,6 +100,7 @@ export default function ProductsPage() {
       sizesText: (p.sizes || []).join(", "),
       highlightsText: (p.highlights || []).join("\n"),
       personalizationJson: JSON.stringify(p.personalization || [], null, 2),
+      seoKeywordsText: (p.seo_keywords || []).join(", "),
     });
   }
 
@@ -124,6 +132,9 @@ export default function ProductsPage() {
       sizes: (draft.sizesText || "").split(",").map((s) => s.trim()).filter(Boolean),
       highlights: (draft.highlightsText || "").split("\n").map((s) => s.trim()).filter(Boolean),
       personalization,
+      seo_title: draft.seo_title || null,
+      seo_description: draft.seo_description || null,
+      seo_keywords: (draft.seoKeywordsText || "").split(",").map((s) => s.trim()).filter(Boolean),
     };
     if (!payload.slug || !payload.name) {
       setError("Name and slug are required.");
@@ -297,6 +308,22 @@ export default function ProductsPage() {
               <div className="col-span-2">
                 <label className={labelCls}>Personalization (advanced JSON)</label>
                 <textarea rows={3} className={`${field} font-mono text-xs`} value={draft.personalizationJson || "[]"} onChange={(e) => setDraft({ ...draft, personalizationJson: e.target.value })} />
+              </div>
+
+              <div className="col-span-2 mt-1 border-t border-[#b8bec7]/50 pt-3">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-violet-500">On-page SEO · GEO</p>
+              </div>
+              <div className="col-span-2">
+                <label className={labelCls}>SEO title</label>
+                <input className={field} value={draft.seo_title || ""} onChange={(e) => setDraft({ ...draft, seo_title: e.target.value })} placeholder="Shown in search results & browser tab" />
+              </div>
+              <div className="col-span-2">
+                <label className={labelCls}>SEO meta description</label>
+                <textarea rows={2} className={field} value={draft.seo_description || ""} onChange={(e) => setDraft({ ...draft, seo_description: e.target.value })} placeholder="~155 characters, keyword-rich and human" />
+              </div>
+              <div className="col-span-2">
+                <label className={labelCls}>SEO keywords (comma separated)</label>
+                <input className={field} value={draft.seoKeywordsText || ""} onChange={(e) => setDraft({ ...draft, seoKeywordsText: e.target.value })} placeholder="premium sweatbands, luxury sweatbands, RCC sweatbands" />
               </div>
               <label className="flex items-center gap-2 text-sm text-gray-600">
                 <input type="checkbox" checked={!!draft.active} onChange={(e) => setDraft({ ...draft, active: e.target.checked })} />

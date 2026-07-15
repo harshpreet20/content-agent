@@ -22,6 +22,9 @@ const FIELDS = [
   "sold_out",
   "active",
   "sort_order",
+  "seo_title",
+  "seo_description",
+  "seo_keywords",
 ] as const;
 
 function pick(body: Record<string, unknown>) {
