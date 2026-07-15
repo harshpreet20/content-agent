@@ -14,6 +14,7 @@ const NAV_LINKS = [
 const STAFF_LINKS = [
   { href: "/orders", label: "Orders" },
   { href: "/products", label: "Store" },
+  { href: "/insights", label: "Insights" },
 ];
 
 export default function Nav({ active }: { active: string }) {
