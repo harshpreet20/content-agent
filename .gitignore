@@ -5,3 +5,6 @@ node_modules/
 dashboard/data/
 *.log
 tsconfig.tsbuildinfo
+
+# local env
+.env*.local

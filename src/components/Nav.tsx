@@ -11,8 +11,13 @@ const NAV_LINKS = [
   { href: "/reviews", label: "Reviews" },
 ];
 
+const STAFF_LINKS = [
+  { href: "/orders", label: "Orders" },
+  { href: "/products", label: "Store" },
+];
+
 export default function Nav({ active }: { active: string }) {
-  const { user, isAdmin, signOut, loading } = useAuth();
+  const { user, isAdmin, isStaff, signOut, loading } = useAuth();
 
   return (
     <nav className="bg-[#e0e5ec] neu-nav sticky top-0 z-50">
@@ -46,6 +51,20 @@ export default function Nav({ active }: { active: string }) {
                 {link.label}
               </Link>
             ))}
+            {isStaff &&
+              STAFF_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-xl transition-all ${
+                    active === link.href
+                      ? "text-emerald-700 neu-pressed"
+                      : "text-emerald-600 hover:text-emerald-800 neu-flat"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
             {isAdmin && (
               <Link
                 href="/admin"
