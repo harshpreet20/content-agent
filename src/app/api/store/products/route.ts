@@ -25,6 +25,9 @@ const FIELDS = [
   "seo_title",
   "seo_description",
   "seo_keywords",
+  "kind",
+  "amazon_url",
+  "flipkart_url",
 ] as const;
 
 function pick(body: Record<string, unknown>) {

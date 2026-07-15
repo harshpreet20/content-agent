@@ -27,6 +27,9 @@ interface Product {
   seo_title: string | null;
   seo_description: string | null;
   seo_keywords: string[];
+  kind: string | null;
+  amazon_url: string | null;
+  flipkart_url: string | null;
 }
 
 const money = (n: number) => `₹${(n || 0).toLocaleString("en-IN")}`;
@@ -58,6 +61,9 @@ const emptyDraft: Draft = {
   seo_title: "",
   seo_description: "",
   seoKeywordsText: "",
+  kind: "physical",
+  amazon_url: "",
+  flipkart_url: "",
 };
 
 export default function ProductsPage() {
@@ -135,6 +141,9 @@ export default function ProductsPage() {
       seo_title: draft.seo_title || null,
       seo_description: draft.seo_description || null,
       seo_keywords: (draft.seoKeywordsText || "").split(",").map((s) => s.trim()).filter(Boolean),
+      kind: draft.kind === "membership" ? "membership" : "physical",
+      amazon_url: (draft.amazon_url || "").trim() || null,
+      flipkart_url: (draft.flipkart_url || "").trim() || null,
     };
     if (!payload.slug || !payload.name) {
       setError("Name and slug are required.");
@@ -265,6 +274,13 @@ export default function ProductsPage() {
                 <label className={labelCls}>Category</label>
                 <input className={field} value={draft.category || ""} onChange={(e) => setDraft({ ...draft, category: e.target.value })} />
               </div>
+              <div className="col-span-2">
+                <label className={labelCls}>Type</label>
+                <select className={field} value={draft.kind || "physical"} onChange={(e) => setDraft({ ...draft, kind: e.target.value })}>
+                  <option value="physical">Physical product (shipped)</option>
+                  <option value="membership">Membership (no shipping)</option>
+                </select>
+              </div>
               <div>
                 <label className={labelCls}>Price (₹)</label>
                 <input type="number" className={field} value={draft.price ?? 0} onChange={(e) => setDraft({ ...draft, price: Number(e.target.value) })} />
@@ -324,6 +340,18 @@ export default function ProductsPage() {
               <div className="col-span-2">
                 <label className={labelCls}>SEO keywords (comma separated)</label>
                 <input className={field} value={draft.seoKeywordsText || ""} onChange={(e) => setDraft({ ...draft, seoKeywordsText: e.target.value })} placeholder="premium sweatbands, luxury sweatbands, RCC sweatbands" />
+              </div>
+
+              <div className="col-span-2 mt-1 border-t border-[#b8bec7]/50 pt-3">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-amber-500">Marketplace links</p>
+              </div>
+              <div className="col-span-2">
+                <label className={labelCls}>Amazon product URL</label>
+                <input className={field} value={draft.amazon_url || ""} onChange={(e) => setDraft({ ...draft, amazon_url: e.target.value })} placeholder="https://amazon.in/..." />
+              </div>
+              <div className="col-span-2">
+                <label className={labelCls}>Flipkart product URL</label>
+                <input className={field} value={draft.flipkart_url || ""} onChange={(e) => setDraft({ ...draft, flipkart_url: e.target.value })} placeholder="https://flipkart.com/..." />
               </div>
               <label className="flex items-center gap-2 text-sm text-gray-600">
                 <input type="checkbox" checked={!!draft.active} onChange={(e) => setDraft({ ...draft, active: e.target.checked })} />
