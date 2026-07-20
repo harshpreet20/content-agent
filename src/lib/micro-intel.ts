@@ -1,8 +1,8 @@
-import { createServerClient } from "./supabase-server";
+import { createAdminClient } from "./supabase-server";
 import { askClaude } from "./claude";
 
 export async function getLearnings(agentName: string): Promise<string[]> {
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("learnings")
     .select("learning, score")
@@ -35,7 +35,7 @@ export async function saveFeedback(
   agentName: string,
   rating: number
 ) {
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   const { error } = await supabase.from("feedback").insert({
     report_id: reportId,
     agent_name: agentName,
@@ -54,7 +54,7 @@ export async function saveFeedback(
 }
 
 export async function retrain(agentName: string) {
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
 
   const { data: feedback } = await supabase
     .from("feedback")

@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const agent = searchParams.get("agent");
   const limit = parseInt(searchParams.get("limit") || "20");
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   let query = supabase
     .from("reports")
     .select("*")
@@ -34,7 +34,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Missing report id" }, { status: 400 });
   }
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   const { error } = await supabase
     .from("reports")
     .delete()

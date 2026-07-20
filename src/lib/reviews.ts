@@ -1,5 +1,5 @@
 import { ApifyClient } from "apify-client";
-import { createServerClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
 
 const TRUSTPILOT_URL = "https://www.trustpilot.com/review/racquetsclubcommunity.com";
 const GOOGLE_MAPS_URL = process.env.GOOGLE_MAPS_URL || "";
@@ -37,7 +37,7 @@ export async function startReviewScrapes() {
     ),
   ]);
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   await supabase.from("scrape_runs").upsert(
     {
       id: "reviews_latest",
@@ -92,7 +92,7 @@ async function saveTrustpilotReviews(items: any[]) {
     },
   }));
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   const { data: existing } = await supabase
     .from("reviews")
     .select("review_text")
@@ -125,7 +125,7 @@ async function saveGoogleReviews(items: any[]) {
     },
   }));
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   const { data: existing } = await supabase
     .from("reviews")
     .select("review_text")
@@ -252,7 +252,7 @@ export async function pollAndCollectReviews(): Promise<{
   const apifyToken = process.env.APIFY_API_TOKEN;
   if (!apifyToken) throw new Error("Missing APIFY_API_TOKEN");
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   const { data: runData } = await supabase
     .from("scrape_runs")
     .select("*")
@@ -301,7 +301,7 @@ export async function pollAndCollectReviews(): Promise<{
 }
 
 export async function getStoredReviews(source?: string) {
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   let query = supabase
     .from("reviews")
     .select("*")

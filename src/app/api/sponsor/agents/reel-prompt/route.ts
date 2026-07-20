@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadDataWithFallback, getMyStats, getCompetitorStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
-import { saveReport, createServerClient } from "@/lib/supabase-server";
+import { saveReport, createAdminClient } from "@/lib/supabase-server";
 import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
 import { buildBrainContext, injectBrainContext } from "@/lib/brain";
 
@@ -152,7 +152,7 @@ export async function POST(request: Request) {
 
   const quality = ["social", "standard", "cinematic", "slowmo"].includes(body.quality) ? body.quality : "social";
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   const { data: sponsorRow } = await supabase
     .from("sponsor_scrapes")
     .select("data")

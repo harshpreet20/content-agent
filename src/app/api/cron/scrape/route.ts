@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { ApifyClient } from "apify-client";
-import { createServerClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
 import { startReviewScrapes } from "@/lib/reviews";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +35,7 @@ async function startScrape() {
     }],
   });
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   await supabase.from("scrape_runs").upsert(
     {
       id: "latest",
@@ -120,7 +120,7 @@ async function collectResults(runId: string, datasetId: string) {
     totalPosts: items.length,
   };
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   const { error } = await supabase.from("scrapes").insert({
     my_handle: MY_HANDLE,
     competitors: COMPETITORS,
