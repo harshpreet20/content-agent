@@ -86,7 +86,7 @@ const SPONSOR_AGENTS = [
 ];
 
 export default function SponsorPage() {
-  const { user, status, loading: authLoading } = useAuth();
+  const { user, status, statusError, loading: authLoading, retryStatus } = useAuth();
   const router = useRouter();
   const [handle, setHandle] = useState("");
   const [scraping, setScraping] = useState(false);
@@ -122,6 +122,22 @@ export default function SponsorPage() {
     } finally {
       setScraping(false);
     }
+  }
+
+  if (!authLoading && user && statusError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#e0e5ec] p-5">
+        <div className="text-center">
+          <p className="text-sm text-gray-500 mb-3">Couldn't verify your account status.</p>
+          <button
+            onClick={retryStatus}
+            className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition-all px-4 py-2 rounded-lg neu-btn"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (authLoading || !user || status !== "approved") {
