@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("app_users")
       .select("*")
@@ -32,7 +32,7 @@ export async function PATCH(request: Request) {
   }
 
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
     const updates: Record<string, string> = { updated_at: new Date().toISOString() };
     if (status && ["pending", "approved", "rejected"].includes(status)) {
       updates.status = status;
@@ -62,7 +62,7 @@ export async function DELETE(request: Request) {
   }
 
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
     const { error } = await supabase
       .from("app_users")
       .delete()

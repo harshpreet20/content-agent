@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { scrapeTrustpilot, scrapeGoogleReviews, getStoredReviews } from "@/lib/reviews";
-import { createServerClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 180;
@@ -59,7 +59,7 @@ export async function DELETE(request: Request) {
 
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   const { error } = await supabase.from("reviews").delete().eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

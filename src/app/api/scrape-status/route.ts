@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { ApifyClient } from "apify-client";
-import { createServerClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
 import { pollAndCollectReviews } from "@/lib/reviews";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +18,7 @@ export async function POST() {
 }
 
 async function collectLatestRun() {
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   const { data: runData } = await supabase
     .from("scrape_runs")
     .select("*")

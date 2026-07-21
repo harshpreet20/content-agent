@@ -11,8 +11,10 @@ interface AuthContextType {
   supabase: SupabaseClient | null;
   role: string | null;
   status: string | null;
+  statusError: boolean;
   isAdmin: boolean;
   signOut: () => Promise<void>;
+  retryStatus: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -22,8 +24,10 @@ const AuthContext = createContext<AuthContextType>({
   supabase: null,
   role: null,
   status: null,
+  statusError: false,
   isAdmin: false,
   signOut: async () => {},
+  retryStatus: () => {},
 });
 
 export function useAuth() {
@@ -43,6 +47,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [statusError, setStatusError] = useState(false);
   const [sb] = useState<SupabaseClient | null>(() => getClientSideSupabase());
 
   async function fetchUserStatus(authUser: User) {
@@ -53,11 +58,14 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         body: JSON.stringify({ authUserId: authUser.id, email: authUser.email }),
       });
       const json = await res.json();
-      if (json.role) setRole(json.role);
-      if (json.status) setStatus(json.status);
+      if (!res.ok || json.error) throw new Error(json.error || `status ${res.status}`);
+      setRole(json.role ?? null);
+      setStatus(json.status ?? null);
+      setStatusError(false);
     } catch {
       setRole(null);
       setStatus(null);
+      setStatusError(true);
     }
   }
 
@@ -67,14 +75,20 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       return;
     }
 
-    sb.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchUserStatus(session.user);
-      }
-      setLoading(false);
-    });
+    sb.auth
+      .getSession()
+      .then(async ({ data: { session } }) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          await fetchUserStatus(session.user);
+        }
+      })
+      .catch(() => {
+        setSession(null);
+        setUser(null);
+      })
+      .finally(() => setLoading(false));
 
     const { data: { subscription } } = sb.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
@@ -84,12 +98,20 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       } else {
         setRole(null);
         setStatus(null);
+        setStatusError(false);
       }
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, [sb]);
+
+  const retryStatus = () => {
+    if (user) {
+      setStatusError(false);
+      fetchUserStatus(user);
+    }
+  };
 
   const signOut = async () => {
     if (sb) await sb.auth.signOut();
@@ -100,7 +122,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const isAdmin = role === "admin" && status === "approved";
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, supabase: sb, role, status, isAdmin, signOut }}>
+    <AuthContext.Provider
+      value={{ user, session, loading, supabase: sb, role, status, statusError, isAdmin, signOut, retryStatus }}
+    >
       {children}
     </AuthContext.Provider>
   );

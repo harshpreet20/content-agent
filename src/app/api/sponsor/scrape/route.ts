@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { ApifyClient } from "apify-client";
-import { createServerClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 180;
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   const apifyToken = process.env.APIFY_API_TOKEN;
   if (!apifyToken) return NextResponse.json({ error: "Missing APIFY_API_TOKEN" }, { status: 500 });
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
 
   const { data: cached } = await supabase
     .from("sponsor_scrapes")
@@ -96,7 +96,7 @@ export async function GET(request: Request) {
 
   if (!handle) return NextResponse.json({ error: "Missing handle param" }, { status: 400 });
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   const { data } = await supabase
     .from("sponsor_scrapes")
     .select("*")

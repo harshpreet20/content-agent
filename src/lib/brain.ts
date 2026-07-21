@@ -1,5 +1,5 @@
 import { loadDataWithFallback, getMyStats, getCompetitorStats } from "./data";
-import { createServerClient } from "./supabase-server";
+import { createAdminClient } from "./supabase-server";
 import { askClaude } from "./claude";
 
 interface BrainContext {
@@ -153,7 +153,7 @@ function getTypeDistribution(posts: any[]): string {
 
 async function getReviewsSummary(): Promise<string> {
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
 
     const { data: trustpilotData } = await supabase
       .from("reviews")
@@ -198,7 +198,7 @@ async function getReviewsSummary(): Promise<string> {
 
 async function getRecentReportInsights(): Promise<string> {
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
     const { data } = await supabase
       .from("reports")
       .select("agent_name, result, created_at")
@@ -220,7 +220,7 @@ async function getRecentReportInsights(): Promise<string> {
 
 async function getAllLearnings(): Promise<string> {
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
     const { data } = await supabase
       .from("learnings")
       .select("agent_name, learning")
@@ -240,7 +240,7 @@ async function getAllLearnings(): Promise<string> {
 
 async function getCachedBrief(): Promise<BrainContext | null> {
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
     const { data } = await supabase
       .from("analytics")
       .select("data, fetched_at")
@@ -263,7 +263,7 @@ async function getCachedBrief(): Promise<BrainContext | null> {
 
 async function setBrainStatus(status: "generating" | "ready"): Promise<void> {
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
     await supabase.from("analytics").insert({
       metric_type: "brain_status",
       data: { status },
@@ -276,7 +276,7 @@ async function setBrainStatus(status: "generating" | "ready"): Promise<void> {
 
 async function cacheBrief(context: BrainContext): Promise<void> {
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
     await supabase.from("analytics").insert({
       metric_type: "brain_context",
       data: context,

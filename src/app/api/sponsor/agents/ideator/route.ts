@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadDataWithFallback, getMyStats, getCompetitorStats } from "@/lib/data";
 import { askClaude } from "@/lib/claude";
-import { saveReport, createServerClient } from "@/lib/supabase-server";
+import { saveReport, createAdminClient } from "@/lib/supabase-server";
 import { getLearnings, buildEnhancedPrompt } from "@/lib/micro-intel";
 import { buildBrainContext, injectBrainContext } from "@/lib/brain";
 
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
   const sponsorHandle = (body.sponsorHandle || "").trim().replace(/^@/, "");
   if (!sponsorHandle) return NextResponse.json({ error: "Missing sponsorHandle" }, { status: 400 });
 
-  const supabase = createServerClient();
+  const supabase = createAdminClient();
   const { data: sponsorRow } = await supabase
     .from("sponsor_scrapes")
     .select("data")

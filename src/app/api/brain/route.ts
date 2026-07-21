@@ -26,8 +26,8 @@ export async function POST() {
 
 export async function GET() {
   try {
-    const { createServerClient } = await import("@/lib/supabase-server");
-    const supabase = createServerClient();
+    const { createAdminClient } = await import("@/lib/supabase-server");
+    const supabase = createAdminClient();
     const { data } = await supabase
       .from("analytics")
       .select("data, fetched_at")

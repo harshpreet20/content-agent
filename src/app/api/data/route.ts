@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { loadData, getMyStats, getCompetitorStats } from "@/lib/data";
-import { createServerClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
 
 const DEFAULT_COMPETITORS = "wtfpuneet,badmintonclubx,shuttlify,delhibadmintonclub,badmintonclubofindia,eastdelhisportsclub,kanikaaaa108,vibewithkanika_";
 const ALL_EXPECTED = DEFAULT_COMPETITORS.split(",");
@@ -20,7 +20,7 @@ export async function GET() {
 
   // Fall back to Supabase (production)
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("scrapes")
       .select("*")

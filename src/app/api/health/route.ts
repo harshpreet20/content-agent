@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +9,7 @@ export async function GET() {
   // Check Supabase
   const sbStart = Date.now();
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
     const { error } = await supabase.from("scrapes").select("id").limit(1);
     checks.database = error
       ? { status: "error", error: error.message, latency: Date.now() - sbStart }
@@ -53,7 +53,7 @@ export async function GET() {
 
   // Check latest scrape freshness
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
     const { data } = await supabase
       .from("scrapes")
       .select("scraped_at")
@@ -76,7 +76,7 @@ export async function GET() {
 
   // Check brain context — green if generated after last scrape, orange if regenerating/pending, red if missing
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
 
     const [brainRes, scrapeRes, statusRes] = await Promise.all([
       supabase
