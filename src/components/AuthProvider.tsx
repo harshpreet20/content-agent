@@ -13,6 +13,7 @@ interface AuthContextType {
   status: string | null;
   statusError: boolean;
   isAdmin: boolean;
+  isStaff: boolean;
   signOut: () => Promise<void>;
   retryStatus: () => void;
 }
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextType>({
   status: null,
   statusError: false,
   isAdmin: false,
+  isStaff: false,
   signOut: async () => {},
   retryStatus: () => {},
 });
@@ -120,10 +122,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   };
 
   const isAdmin = role === "admin" && status === "approved";
+  const isStaff = (role === "admin" || role === "sales") && status === "approved";
 
   return (
     <AuthContext.Provider
-      value={{ user, session, loading, supabase: sb, role, status, statusError, isAdmin, signOut, retryStatus }}
+      value={{ user, session, loading, supabase: sb, role, status, statusError, isAdmin, isStaff, signOut, retryStatus }}
     >
       {children}
     </AuthContext.Provider>
