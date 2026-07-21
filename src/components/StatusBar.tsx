@@ -63,7 +63,7 @@ export default function StatusBar() {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-3 px-4 py-2.5 bg-[#e0e5ec] rounded-2xl neu-raised-sm">
+      <div className="flex items-center gap-3 px-4 py-2.5 bg-[#f5f6f8] rounded-2xl neu-raised-sm">
         <div className="w-3 h-3 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
         <span className="text-xs text-gray-400 font-medium">Checking systems...</span>
       </div>
@@ -93,7 +93,7 @@ export default function StatusBar() {
         return (
           <div
             key={key}
-            className="flex items-center gap-2 px-3 py-2 bg-[#e0e5ec] rounded-xl neu-flat"
+            className="flex items-center gap-2 px-3 py-2 bg-[#f5f6f8] rounded-xl neu-flat"
             title={
               isUnknown
                 ? "Unknown"

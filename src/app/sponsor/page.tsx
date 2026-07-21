@@ -18,7 +18,7 @@ function SponsorStatsBar({ sponsor }: { sponsor: any }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       {stats.map((s) => (
-        <div key={s.label} className="bg-[#e0e5ec] rounded-xl p-4 text-center neu-card">
+        <div key={s.label} className="bg-[#f5f6f8] rounded-xl p-4 text-center neu-card">
           <p className="text-2xl font-extrabold text-gray-900">{typeof s.value === "number" ? s.value.toLocaleString() : s.value}</p>
           <p className="text-xs text-gray-400 font-medium mt-1">{s.label}</p>
         </div>
@@ -126,7 +126,7 @@ export default function SponsorPage() {
 
   if (!authLoading && user && statusError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#e0e5ec] p-5">
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8] p-5">
         <div className="text-center">
           <p className="text-sm text-gray-500 mb-3">Couldn't verify your account status.</p>
           <button
@@ -142,7 +142,7 @@ export default function SponsorPage() {
 
   if (authLoading || !user || status !== "approved") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#e0e5ec]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -157,7 +157,7 @@ export default function SponsorPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/sponsor" />
 
       <main className="max-w-6xl mx-auto px-5 py-8 space-y-8">
@@ -167,7 +167,7 @@ export default function SponsorPage() {
         </div>
 
         {/* Sponsor input */}
-        <div className="bg-[#e0e5ec] rounded-2xl neu-raised p-6">
+        <div className="bg-[#f5f6f8] rounded-2xl neu-raised p-6">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 text-sm">@</span>
@@ -177,7 +177,7 @@ export default function SponsorPage() {
                 onChange={(e) => setHandle(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !scraping && scrapeSponsor()}
                 placeholder="sponsor_handle or Instagram URL"
-                className="w-full pl-9 pr-4 py-3 rounded-xl bg-[#e0e5ec] neu-input text-sm focus:outline-none"
+                className="w-full pl-9 pr-4 py-3 rounded-xl bg-[#f5f6f8] neu-input text-sm focus:outline-none"
                 disabled={scraping}
               />
             </div>

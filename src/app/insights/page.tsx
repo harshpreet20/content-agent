@@ -154,16 +154,16 @@ export default function InsightsPage() {
 
   if (authLoading || !isStaff) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#e0e5ec]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  const card = "bg-[#e0e5ec] rounded-2xl p-5 neu-card";
+  const card = "bg-[#f5f6f8] rounded-2xl p-5 neu-card";
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/insights" />
       <main className="max-w-6xl mx-auto px-5 py-8">
         <div className="mb-6">
