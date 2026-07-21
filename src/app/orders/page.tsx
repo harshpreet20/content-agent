@@ -132,15 +132,18 @@ export default function OrdersPage() {
         {/* KPI cards */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Orders</div>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-50">📦</div>
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Orders</div>
             <div className="text-3xl font-extrabold text-gray-900">{stats.total}</div>
           </div>
           <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Awaiting payment</div>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-amber-50">⏳</div>
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Awaiting payment</div>
             <div className="text-3xl font-extrabold text-amber-500">{stats.pending}</div>
           </div>
           <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Confirmed revenue</div>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-emerald-50">💰</div>
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Confirmed revenue</div>
             <div className="text-3xl font-extrabold text-green-600">{money(stats.revenue)}</div>
           </div>
         </div>

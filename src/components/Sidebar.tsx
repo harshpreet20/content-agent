@@ -129,7 +129,8 @@ export default function Sidebar({ active }: { active: string }) {
       <img
         src="/rcc-crest.webp"
         alt="RCC"
-        className="w-10 h-10 rounded-full object-cover ring-1 ring-gray-200"
+        className="w-10 h-10 rounded-full object-cover"
+        style={{ boxShadow: "0 3px 6px rgba(15,23,42,0.18), 0 1px 2px rgba(15,23,42,0.12), inset 0 1px 1px rgba(255,255,255,0.6)" }}
       />
       <span className="text-base font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
         ContentAgent
@@ -158,7 +159,12 @@ export default function Sidebar({ active }: { active: string }) {
       {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 inset-x-0 h-16 z-40 bg-white border-b border-gray-200 flex items-center justify-between px-5">
         <Link href="/" className="flex items-center gap-2.5">
-          <img src="/rcc-crest.webp" alt="RCC" className="w-9 h-9 rounded-full object-cover" />
+          <img
+            src="/rcc-crest.webp"
+            alt="RCC"
+            className="w-9 h-9 rounded-full object-cover"
+            style={{ boxShadow: "0 3px 6px rgba(15,23,42,0.18), 0 1px 2px rgba(15,23,42,0.12), inset 0 1px 1px rgba(255,255,255,0.6)" }}
+          />
           <span className="text-base font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent">
             ContentAgent
           </span>

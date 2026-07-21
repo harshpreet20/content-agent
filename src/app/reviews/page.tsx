@@ -122,23 +122,27 @@ export default function ReviewsPage() {
             {summary && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-                  <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Average Rating</div>
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-amber-50">⭐</div>
+                  <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Average Rating</div>
                   <div className="flex items-center gap-2">
                     <span className="text-3xl font-extrabold text-gray-900">{summary.avgRating}</span>
                     <Stars rating={Math.round(summary.avgRating)} size="text-lg" />
                   </div>
                 </div>
                 <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-                  <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Total Reviews</div>
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-50">💬</div>
+                  <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Total Reviews</div>
                   <div className="text-3xl font-extrabold text-gray-900">{summary.total}</div>
                 </div>
                 <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-                  <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Positive</div>
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-emerald-50">👍</div>
+                  <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Positive</div>
                   <div className="text-3xl font-extrabold text-green-600">{positive}</div>
                   <div className="text-[10px] text-gray-400 mt-0.5">4-5 stars</div>
                 </div>
                 <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-                  <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Needs Attention</div>
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-red-50">⚠️</div>
+                  <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Needs Attention</div>
                   <div className="text-3xl font-extrabold text-red-500">{negative}</div>
                   <div className="text-[10px] text-gray-400 mt-0.5">1-2 stars</div>
                 </div>
