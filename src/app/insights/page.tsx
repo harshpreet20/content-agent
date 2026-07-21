@@ -180,19 +180,23 @@ export default function InsightsPage() {
             {/* KPI row */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className={card}>
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Revenue</div>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-emerald-50">💰</div>
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Revenue</div>
                 <div className="text-3xl font-extrabold text-green-600">{money(s.revenue)}</div>
               </div>
               <div className={card}>
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Paid orders</div>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-50">📦</div>
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Paid orders</div>
                 <div className="text-3xl font-extrabold text-gray-900">{s.orders}</div>
               </div>
               <div className={card}>
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Avg order</div>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-violet-50">🧾</div>
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Avg order</div>
                 <div className="text-3xl font-extrabold text-gray-900">{money(s.aov)}</div>
               </div>
               <div className={card}>
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Units sold</div>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-pink-50">🏷️</div>
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Units sold</div>
                 <div className="text-3xl font-extrabold text-gray-900">{s.units}</div>
               </div>
             </div>
@@ -200,14 +204,16 @@ export default function InsightsPage() {
             {/* Alerts row */}
             <div className="grid grid-cols-2 gap-3">
               <div className={card}>
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Awaiting payment</div>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-amber-50">⏳</div>
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Awaiting payment</div>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-extrabold text-amber-500">{s.pendingCount}</span>
                   <span className="text-sm text-gray-400">{money(s.pendingValue)} pending</span>
                 </div>
               </div>
               <div className={card}>
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Lost sales</div>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-red-50">⚠️</div>
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Lost sales</div>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-extrabold text-red-500">{s.lost.length}</span>
                   <span className="text-sm text-gray-400">{money(s.lostValue)} lost</span>

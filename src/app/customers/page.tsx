@@ -80,15 +80,18 @@ export default function CustomersPage() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
           <div className="bg-white rounded-2xl p-5 neu-card">
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Customers</div>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-50">👤</div>
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Customers</div>
             <div className="text-2xl font-extrabold text-gray-900">{customers.length}</div>
           </div>
           <div className="bg-white rounded-2xl p-5 neu-card">
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Lifetime Revenue</div>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-emerald-50">💰</div>
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Lifetime Revenue</div>
             <div className="text-2xl font-extrabold text-gray-900">{money(totalSpend)}</div>
           </div>
           <div className="bg-white rounded-2xl p-5 neu-card">
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Repeat Customers</div>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-pink-50">🔁</div>
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Repeat Customers</div>
             <div className="text-2xl font-extrabold text-gray-900">{customers.filter((c) => c.order_count > 1).length}</div>
           </div>
         </div>

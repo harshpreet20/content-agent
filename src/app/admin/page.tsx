@@ -105,19 +105,23 @@ export default function AdminPage() {
             {/* Summary cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Total Users</div>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-50">👥</div>
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Total Users</div>
                 <div className="text-3xl font-extrabold text-gray-900">{users.length}</div>
               </div>
               <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Pending</div>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-amber-50">⏳</div>
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Pending</div>
                 <div className="text-3xl font-extrabold text-amber-500">{pendingUsers.length}</div>
               </div>
               <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Approved</div>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-green-50">✅</div>
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Approved</div>
                 <div className="text-3xl font-extrabold text-green-600">{approvedUsers.length}</div>
               </div>
               <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Admins</div>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-violet-50">👑</div>
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Admins</div>
                 <div className="text-3xl font-extrabold text-violet-600">{users.filter((u) => u.role === "admin").length}</div>
               </div>
             </div>
