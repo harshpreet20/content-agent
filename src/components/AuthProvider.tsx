@@ -108,6 +108,24 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     return () => subscription.unsubscribe();
   }, [sb]);
 
+  // Re-check role/status when the tab regains focus, so an admin approving or
+  // promoting this user elsewhere shows up without requiring a manual sign-out.
+  useEffect(() => {
+    if (!user) return;
+    function onFocus() {
+      if (user) fetchUserStatus(user);
+    }
+    function onVisibilityChange() {
+      if (document.visibilityState === "visible") onFocus();
+    }
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [user]);
+
   const retryStatus = () => {
     if (user) {
       setStatusError(false);
