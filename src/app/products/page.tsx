@@ -181,17 +181,17 @@ export default function ProductsPage() {
 
   if (authLoading || !isStaff) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#e0e5ec]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  const field = "w-full px-3 py-2 rounded-xl bg-[#e0e5ec] neu-input outline-none text-sm text-gray-800";
+  const field = "w-full px-3 py-2 rounded-xl bg-[#f5f6f8] neu-input outline-none text-sm text-gray-800";
   const labelCls = "block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1";
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/products" />
       <main className="max-w-5xl mx-auto px-5 py-8">
         <div className="flex items-center justify-between mb-6">
@@ -214,7 +214,7 @@ export default function ProductsPage() {
         ) : (
           <div className="grid gap-3">
             {products.map((p) => (
-              <div key={p.id} className="bg-[#e0e5ec] rounded-2xl p-4 neu-card flex items-center gap-4">
+              <div key={p.id} className="bg-[#f5f6f8] rounded-2xl p-4 neu-card flex items-center gap-4">
                 <div
                   className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl neu-raised-sm flex-none"
                   style={{ background: `${p.accent}22` }}
@@ -241,7 +241,7 @@ export default function ProductsPage() {
               </div>
             ))}
             {products.length === 0 && (
-              <div className="bg-[#e0e5ec] rounded-2xl p-12 text-center neu-pressed">
+              <div className="bg-[#f5f6f8] rounded-2xl p-12 text-center neu-pressed">
                 <p className="text-gray-400 text-sm">No products yet. Add your first one.</p>
               </div>
             )}
@@ -253,7 +253,7 @@ export default function ProductsPage() {
       {draft && (
         <div className="fixed inset-0 z-50 flex justify-end">
           <div className="absolute inset-0 bg-black/30" onClick={() => setDraft(null)} />
-          <div className="relative w-full max-w-lg h-full bg-[#e0e5ec] shadow-2xl overflow-y-auto p-6">
+          <div className="relative w-full max-w-lg h-full bg-[#f5f6f8] shadow-2xl overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-extrabold text-gray-900">{draft.id ? "Edit product" : "New product"}</h3>
               <button onClick={() => setDraft(null)} className="w-9 h-9 rounded-xl neu-btn text-gray-500">✕</button>

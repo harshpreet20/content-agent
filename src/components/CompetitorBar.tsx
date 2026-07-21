@@ -32,7 +32,7 @@ export default function CompetitorBar({ competitors }: { competitors: Competitor
       {competitors.map((c, i) => (
         <div
           key={c.handle}
-          className="bg-[#e0e5ec] rounded-2xl p-4 neu-card flex items-center gap-4"
+          className="bg-[#f5f6f8] rounded-2xl p-4 neu-card flex items-center gap-4"
         >
           <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${GRADIENTS[i % GRADIENTS.length]} flex items-center justify-center text-white font-bold text-sm shrink-0 neu-raised-sm`}>
             {c.handle[0].toUpperCase()}

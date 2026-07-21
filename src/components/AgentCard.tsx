@@ -100,7 +100,7 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
   }
 
   return (
-    <div className="bg-[#e0e5ec] rounded-2xl neu-card transition-all flex flex-col">
+    <div className="bg-[#f5f6f8] rounded-2xl neu-card transition-all flex flex-col">
       {/* Header */}
       <div className="p-5 pb-4">
         <div className="flex items-start justify-between mb-3">
@@ -142,7 +142,7 @@ export default function AgentCard({ name, description, icon, color, bgColor, end
           {result && (
             <>
               <div
-                className="bg-[#e0e5ec] rounded-xl p-4 text-sm text-gray-700 leading-relaxed max-h-[500px] overflow-y-auto report-html neu-pressed"
+                className="bg-[#f5f6f8] rounded-xl p-4 text-sm text-gray-700 leading-relaxed max-h-[500px] overflow-y-auto report-html neu-pressed"
                 dangerouslySetInnerHTML={{ __html: sanitizeReport(result) }}
               />
               {/* Feedback buttons */}

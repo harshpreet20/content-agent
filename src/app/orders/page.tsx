@@ -112,14 +112,14 @@ export default function OrdersPage() {
 
   if (authLoading || !isStaff) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#e0e5ec]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/orders" />
       <main className="max-w-5xl mx-auto px-5 py-8">
         <div className="mb-6">
@@ -131,15 +131,15 @@ export default function OrdersPage() {
 
         {/* KPI cards */}
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-[#e0e5ec] rounded-2xl p-5 neu-card">
+          <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
             <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Orders</div>
             <div className="text-3xl font-extrabold text-gray-900">{stats.total}</div>
           </div>
-          <div className="bg-[#e0e5ec] rounded-2xl p-5 neu-card">
+          <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
             <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Awaiting payment</div>
             <div className="text-3xl font-extrabold text-amber-500">{stats.pending}</div>
           </div>
-          <div className="bg-[#e0e5ec] rounded-2xl p-5 neu-card">
+          <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
             <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Confirmed revenue</div>
             <div className="text-3xl font-extrabold text-green-600">{money(stats.revenue)}</div>
           </div>
@@ -165,7 +165,7 @@ export default function OrdersPage() {
             <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : visible.length === 0 ? (
-          <div className="bg-[#e0e5ec] rounded-2xl p-12 text-center neu-pressed">
+          <div className="bg-[#f5f6f8] rounded-2xl p-12 text-center neu-pressed">
             <p className="text-gray-400 text-sm">No orders here yet.</p>
           </div>
         ) : (
@@ -175,7 +175,7 @@ export default function OrdersPage() {
               const idx = FLOW.indexOf(o.status);
               const next = idx >= 0 && idx < FLOW.length - 1 ? FLOW[idx + 1] : null;
               return (
-                <div key={o.id} className="bg-[#e0e5ec] rounded-2xl p-5 neu-card">
+                <div key={o.id} className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">

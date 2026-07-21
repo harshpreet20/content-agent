@@ -99,7 +99,7 @@ export default function AnalyticsPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#e0e5ec]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -120,7 +120,7 @@ export default function AnalyticsPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/analytics" />
 
       <main className="max-w-6xl mx-auto px-5 py-8">
@@ -165,7 +165,7 @@ export default function AnalyticsPage() {
                   { label: "Total Views", value: account.totalViews >= 1000 ? `${(account.totalViews / 1000).toFixed(1)}K` : account.totalViews, color: "#3B82F6" },
                   { label: "Engagement", value: insights.engagement?.toLocaleString() || "0", color: "#6366F1" },
                 ].map((stat) => (
-                  <div key={stat.label} className="bg-[#e0e5ec] rounded-2xl p-5 neu-card">
+                  <div key={stat.label} className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
                     <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">{stat.label}</div>
                     <div className="text-2xl font-extrabold text-gray-900">{stat.value}</div>
                   </div>
@@ -175,7 +175,7 @@ export default function AnalyticsPage() {
 
             {/* Top posts chart */}
             {postChartData.length > 0 && (
-              <section className="bg-[#e0e5ec] rounded-2xl neu-card p-6">
+              <section className="bg-[#f5f6f8] rounded-2xl neu-card p-6">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Top Posts by Likes</h3>
                 <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
@@ -196,7 +196,7 @@ export default function AnalyticsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Content type breakdown */}
               {typeBreakdown.length > 0 && (
-                <section className="bg-[#e0e5ec] rounded-2xl neu-card p-6">
+                <section className="bg-[#f5f6f8] rounded-2xl neu-card p-6">
                   <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Content Type Breakdown</h3>
                   <div className="h-64 flex items-center justify-center">
                     <ResponsiveContainer width="100%" height="100%">
@@ -224,7 +224,7 @@ export default function AnalyticsPage() {
 
               {/* Competitor comparison */}
               {compChartData.length > 0 && (
-                <section className="bg-[#e0e5ec] rounded-2xl neu-card p-6">
+                <section className="bg-[#f5f6f8] rounded-2xl neu-card p-6">
                   <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Competitor Comparison - Avg Likes</h3>
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
@@ -244,7 +244,7 @@ export default function AnalyticsPage() {
 
             {/* Posts detail table */}
             {topPosts.length > 0 && (
-              <section className="bg-[#e0e5ec] rounded-2xl neu-card p-6">
+              <section className="bg-[#f5f6f8] rounded-2xl neu-card p-6">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Post Performance</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">

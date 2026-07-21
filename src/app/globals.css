@@ -18,11 +18,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #e0e5ec;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #b8bec7;
+  background: #d1d5db;
   border-radius: 999px;
 }
 
@@ -30,51 +30,58 @@ body {
   background: #9ca3af;
 }
 
-/* Neomorphism Design System */
-.neu-card {
-  box-shadow: 6px 6px 12px #b8bec7, -6px -6px 12px #ffffff;
-  transition: box-shadow 0.2s ease;
+/* Flat Design System -- class names kept for compatibility with existing
+   markup, but redefined from the old neumorphic soft-shadow look to a
+   clean flat white-card style (border + faint shadow instead of dual
+   inset/outset shadows). Uses !important on background so these classes
+   still render correctly regardless of the bg-[#f5f6f8] utility also
+   present on the same elements from the previous design. */
+.neu-card,
+.neu-raised,
+.neu-raised-sm,
+.neu-flat {
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 .neu-card:hover {
-  box-shadow: 8px 8px 16px #b8bec7, -8px -8px 16px #ffffff;
-}
-
-.neu-flat {
-  box-shadow: 3px 3px 6px #b8bec7, -3px -3px 6px #ffffff;
-}
-
-.neu-raised {
-  box-shadow: 6px 6px 12px #b8bec7, -6px -6px 12px #ffffff;
-}
-
-.neu-raised-sm {
-  box-shadow: 4px 4px 8px #b8bec7, -4px -4px 8px #ffffff;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.08);
+  border-color: #d1d5db;
 }
 
 .neu-pressed {
-  box-shadow: inset 3px 3px 6px #b8bec7, inset -3px -3px 6px #ffffff;
+  background-color: #f3f4f6 !important;
+  border: 1px solid #e5e7eb;
+  box-shadow: none;
 }
 
 .neu-btn {
-  box-shadow: 3px 3px 6px #b8bec7, -3px -3px 6px #ffffff;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   transition: all 0.15s ease;
 }
 .neu-btn:hover {
-  box-shadow: 4px 4px 8px #b8bec7, -4px -4px 8px #ffffff;
+  background-color: #f9fafb !important;
+  border-color: #d1d5db;
 }
 .neu-btn:active {
-  box-shadow: inset 2px 2px 4px #b8bec7, inset -2px -2px 4px #ffffff;
+  background-color: #f3f4f6 !important;
 }
 
 .neu-input {
-  box-shadow: inset 3px 3px 6px #b8bec7, inset -3px -3px 6px #ffffff;
-  transition: box-shadow 0.15s ease;
-  border: none !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .neu-input:focus {
-  box-shadow: inset 4px 4px 8px #b8bec7, inset -4px -4px 8px #ffffff;
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
 }
 
 .neu-nav {
-  box-shadow: 0 4px 8px #b8bec7;
+  background-color: #ffffff !important;
+  box-shadow: none;
 }
