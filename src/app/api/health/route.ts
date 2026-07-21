@@ -38,7 +38,7 @@ export async function GET() {
     } else {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 5000);
-      const res = await fetch("https://api.apify.com/v2/user/me", {
+      const res = await fetch("https://api.apify.com/v2/users/me", {
         headers: { Authorization: `Bearer ${token}` },
         signal: controller.signal,
       });
