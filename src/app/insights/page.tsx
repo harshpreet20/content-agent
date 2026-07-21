@@ -14,7 +14,7 @@ import {
   Cell,
 } from "recharts";
 import { useAuth } from "@/components/AuthProvider";
-import Nav from "@/components/Nav";
+import Sidebar from "@/components/Sidebar";
 
 interface OrderItem { name: string; qty: number; price: number }
 interface Order {
@@ -163,8 +163,8 @@ export default function InsightsPage() {
   const card = "bg-[#e0e5ec] rounded-2xl p-5 neu-card";
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec]">
-      <Nav active="/insights" />
+    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+      <Sidebar active="/insights" />
       <main className="max-w-6xl mx-auto px-5 py-8">
         <div className="mb-6">
           <h2 className="text-2xl font-extrabold text-gray-900">Store Insights</h2>

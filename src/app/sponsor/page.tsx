@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Nav from "@/components/Nav";
+import Sidebar from "@/components/Sidebar";
 import AgentCard from "@/components/AgentCard";
 import { useAuth } from "@/components/AuthProvider";
 
@@ -157,8 +157,8 @@ export default function SponsorPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec]">
-      <Nav active="/sponsor" />
+    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+      <Sidebar active="/sponsor" />
 
       <main className="max-w-6xl mx-auto px-5 py-8 space-y-8">
         <div>

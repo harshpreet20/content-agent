@@ -37,7 +37,7 @@ export async function PATCH(request: Request) {
     if (status && ["pending", "approved", "rejected"].includes(status)) {
       updates.status = status;
     }
-    if (role && ["admin", "user"].includes(role)) {
+    if (role && ["admin", "sales", "content", "user"].includes(role)) {
       updates.role = role;
     }
 

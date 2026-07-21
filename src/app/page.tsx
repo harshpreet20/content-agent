@@ -7,7 +7,7 @@ import AgentCard from "@/components/AgentCard";
 import StatsBar from "@/components/StatsBar";
 import CompetitorBar from "@/components/CompetitorBar";
 import StatusBar from "@/components/StatusBar";
-import Nav from "@/components/Nav";
+import Sidebar from "@/components/Sidebar";
 import { useAuth } from "@/components/AuthProvider";
 
 const AGENTS = [
@@ -115,8 +115,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec]">
-      <Nav active="/" />
+    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+      <Sidebar active="/" />
 
       <main className="max-w-6xl mx-auto px-5 py-8">
         {loading ? (

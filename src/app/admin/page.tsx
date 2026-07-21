@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Nav from "@/components/Nav";
+import Sidebar from "@/components/Sidebar";
 
 interface AppUser {
   id: string;
@@ -87,8 +87,8 @@ export default function AdminPage() {
   const rejectedUsers = users.filter((u) => u.status === "rejected");
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec]">
-      <Nav active="/admin" />
+    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+      <Sidebar active="/admin" />
 
       <main className="max-w-5xl mx-auto px-5 py-8">
         <div className="mb-8">
@@ -188,6 +188,8 @@ function UserRow({
   };
   const roleColors: Record<string, string> = {
     admin: "bg-violet-50 text-violet-600",
+    sales: "bg-blue-50 text-blue-600",
+    content: "bg-pink-50 text-pink-600",
     user: "bg-gray-50 text-gray-500",
   };
 
@@ -231,21 +233,17 @@ function UserRow({
                 </button>
               </>
             )}
-            {user.status === "approved" && user.role === "user" && (
-              <button
-                onClick={() => onUpdate(user.id, { role: "admin" })}
-                className="px-3 py-1.5 text-[11px] font-semibold text-violet-600 rounded-lg transition-all neu-btn"
+            {user.status === "approved" && (
+              <select
+                value={user.role}
+                onChange={(e) => onUpdate(user.id, { role: e.target.value })}
+                className="px-2 py-1.5 text-[11px] font-semibold text-gray-600 rounded-lg neu-input outline-none bg-[#e0e5ec]"
               >
-                Make Admin
-              </button>
-            )}
-            {user.status === "approved" && user.role === "admin" && (
-              <button
-                onClick={() => onUpdate(user.id, { role: "user" })}
-                className="px-3 py-1.5 text-[11px] font-semibold text-gray-500 rounded-lg transition-all neu-btn"
-              >
-                Remove Admin
-              </button>
+                <option value="user">User</option>
+                <option value="content">Content</option>
+                <option value="sales">Sales</option>
+                <option value="admin">Super Admin</option>
+              </select>
             )}
             {user.status === "rejected" && (
               <button
