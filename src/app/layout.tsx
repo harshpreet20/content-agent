@@ -5,6 +5,11 @@ import AuthProvider from "@/components/AuthProvider";
 export const metadata: Metadata = {
   title: "Content Agent Dashboard",
   description: "5 AI agents managing your content",
+  icons: {
+    icon: "/rcc-crest.webp",
+    shortcut: "/rcc-crest.webp",
+    apple: "/rcc-crest.webp",
+  },
 };
 
 export default function RootLayout({
