@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Nav from "@/components/Nav";
+import Sidebar from "@/components/Sidebar";
 
 function sanitizeReport(raw: string): string {
   let text = raw.trim();
@@ -148,8 +148,8 @@ export default function ReportsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec]">
-      <Nav active="/reports" />
+    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+      <Sidebar active="/reports" />
 
       <main className="max-w-4xl mx-auto px-5 py-8">
         {/* Header */}

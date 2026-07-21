@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
-import Nav from "@/components/Nav";
+import Sidebar from "@/components/Sidebar";
 
 interface Product {
   id: string;
@@ -191,8 +191,8 @@ export default function ProductsPage() {
   const labelCls = "block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1";
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec]">
-      <Nav active="/products" />
+    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+      <Sidebar active="/products" />
       <main className="max-w-5xl mx-auto px-5 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>

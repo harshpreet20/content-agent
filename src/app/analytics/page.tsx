@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Nav from "@/components/Nav";
+import Sidebar from "@/components/Sidebar";
 import {
   ResponsiveContainer,
   BarChart,
@@ -120,8 +120,8 @@ export default function AnalyticsPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec]">
-      <Nav active="/analytics" />
+    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+      <Sidebar active="/analytics" />
 
       <main className="max-w-6xl mx-auto px-5 py-8">
         <div className="flex items-start justify-between mb-8">

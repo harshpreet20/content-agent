@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
-import Nav from "@/components/Nav";
+import Sidebar from "@/components/Sidebar";
 
 interface OrderItem {
   name: string;
@@ -119,8 +119,8 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec]">
-      <Nav active="/orders" />
+    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+      <Sidebar active="/orders" />
       <main className="max-w-5xl mx-auto px-5 py-8">
         <div className="mb-6">
           <h2 className="text-2xl font-extrabold text-gray-900">Orders</h2>

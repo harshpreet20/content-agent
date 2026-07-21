@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
-import Nav from "@/components/Nav";
+import Sidebar from "@/components/Sidebar";
 
 interface Review {
   id: string;
@@ -77,8 +77,8 @@ export default function ReviewsPage() {
   const negative = reviews.filter((r) => r.rating <= 2).length;
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec]">
-      <Nav active="/reviews" />
+    <div className="min-h-screen bg-[#e0e5ec] pt-16 md:pt-0 md:pl-64">
+      <Sidebar active="/reviews" />
 
       <main className="max-w-5xl mx-auto px-5 py-8">
         {/* Header */}
