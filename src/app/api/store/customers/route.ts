@@ -12,11 +12,15 @@ export async function GET(request: Request) {
   if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const supabase = authedClient(token);
-  const [{ data: ordered, error }, { data: manual }] = await Promise.all([
+  const [
+    { data: ordered, error: orderedError },
+    { data: manual, error: manualError },
+  ] = await Promise.all([
     supabase.from("customers_view").select("*").order("last_order_at", { ascending: false }),
     supabase.from("manual_customers").select("*").order("created_at", { ascending: false }),
   ]);
 
+  const error = orderedError ?? manualError;
   if (error) return NextResponse.json({ error: error.message }, { status: 403 });
 
   const byPhone = new Map<string, Record<string, unknown>>();
@@ -39,23 +43,26 @@ export async function GET(request: Request) {
   return NextResponse.json({ customers: Array.from(byPhone.values()) });
 }
 
-type ImportRow = { phone: string; name?: string; email?: string; address?: string };
-
 /** POST /api/store/customers — bulk-import customers (e.g. from an OCR'd photo). Staff only. */
 export async function POST(request: Request) {
   const token = getBearer(request);
   if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json().catch(() => null);
-  const rows: ImportRow[] = Array.isArray(body?.customers) ? body.customers : [];
+  const rows: unknown[] = Array.isArray(body?.customers) ? body.customers : [];
   const clean = rows
-    .map((r) => ({
-      phone: (r.phone || "").trim(),
-      name: (r.name || "").trim() || null,
-      email: (r.email || "").trim() || null,
-      address: (r.address || "").trim() || null,
-      source: "ocr_import",
-    }))
+    .flatMap((row) => {
+      if (!row || typeof row !== "object") return [];
+      const r = row as Record<string, unknown>;
+      if (typeof r.phone !== "string") return [];
+      return [{
+        phone: r.phone.trim(),
+        name: typeof r.name === "string" ? r.name.trim() || null : null,
+        email: typeof r.email === "string" ? r.email.trim() || null : null,
+        address: typeof r.address === "string" ? r.address.trim() || null : null,
+        source: "ocr_import",
+      }];
+    })
     .filter((r) => r.phone.length >= 6);
 
   if (!clean.length) return NextResponse.json({ error: "No rows with a valid phone number" }, { status: 400 });
