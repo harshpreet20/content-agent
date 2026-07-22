@@ -86,7 +86,7 @@ export default function SettingsPage() {
         <div className="mb-6">
           <h2 className="text-2xl font-extrabold text-gray-900">Store Settings</h2>
           <p className="text-sm text-gray-400 mt-0.5">
-            Shipping & tax defaults. Applying these at checkout requires wiring the storefront (rccecom) to read this table instead of any hardcoded values.
+            Shipping & tax defaults — read live by the storefront (rccecom) at checkout, no hardcoded values.
           </p>
         </div>
 

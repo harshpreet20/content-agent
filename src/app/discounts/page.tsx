@@ -135,7 +135,7 @@ export default function DiscountsPage() {
           <div>
             <h2 className="text-2xl font-extrabold text-gray-900">Discounts</h2>
             <p className="text-sm text-gray-400 mt-0.5">
-              Coupon codes staff can create here. Applying them at checkout requires wiring the storefront (rccecom) to call <code className="text-[11px]">validate_discount_code</code>.
+              Coupon codes staff can create here — live at checkout on the storefront (rccecom), which validates them via <code className="text-[11px]">validate_discount_code</code>.
             </p>
           </div>
           <button
