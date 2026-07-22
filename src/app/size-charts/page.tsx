@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import Sidebar from "@/components/Sidebar";
+import { recognizeText, parseSizeChartTable } from "@/lib/ocr";
 
 interface SizeChartRow {
   label: string;
@@ -56,6 +57,7 @@ export default function SizeChartsPage() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [scanning, setScanning] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
@@ -141,6 +143,29 @@ export default function SizeChartsPage() {
     }
   }
 
+  async function scanPhoto(file: File) {
+    if (!draft) return;
+    setScanning(true);
+    setError("");
+    try {
+      const text = await recognizeText(file);
+      const { sizesText, rows } = parseSizeChartTable(text);
+      if (!rows.length && !sizesText) {
+        setError("Couldn't make out a table in that photo — try a straighter, better-lit shot, or enter the chart manually. Raw OCR text:\n\n" + text.trim());
+        return;
+      }
+      setDraft((d) => ({
+        ...d,
+        sizesText: sizesText || d?.sizesText,
+        rowsJson: JSON.stringify(rows.length ? rows : JSON.parse(d?.rowsJson || "[]"), null, 2),
+      }));
+    } catch {
+      setError("OCR failed to run on that image. Try a different photo, or enter the chart manually.");
+    } finally {
+      setScanning(false);
+    }
+  }
+
   async function remove(c: SizeChart) {
     if (!confirm(`Delete "${c.name}"? Products referencing this chart will just show one fewer chart.`)) return;
     await fetch(`/api/store/size-charts?id=${c.id}`, {
@@ -222,6 +247,28 @@ export default function SizeChartsPage() {
             </div>
 
             {error && <div className="mb-4 p-3 rounded-xl text-red-500 text-xs neu-pressed whitespace-pre-wrap">{error}</div>}
+
+            <label className="mb-4 flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 py-3 text-xs font-bold text-gray-500 cursor-pointer hover:border-violet-300 hover:text-violet-600 transition">
+              {scanning ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                  Reading photo…
+                </>
+              ) : (
+                <>📷 Scan a size chart photo (fills sizes + rows for review)</>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                disabled={scanning}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) scanPhoto(file);
+                  e.target.value = "";
+                }}
+              />
+            </label>
 
             <div className="grid gap-3">
               <div>
