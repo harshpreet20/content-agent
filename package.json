@@ -2,13 +2,22 @@
   "name": "content-agent-dashboard",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "scrape": "npx tsx scripts/scrape.ts",
-    "report": "npx tsx scripts/telegram-report.ts"
+    "report": "npx tsx scripts/telegram-report.ts",
+    "dev:services": "concurrently -n auth,product,inventory,pricing,membership,rewards,cart,order,payment,shipping,notification,analytics,subscription,media \"npm run dev -w services/auth-service\" \"npm run dev -w services/product-service\" \"npm run dev -w services/inventory-service\" \"npm run dev -w services/pricing-service\" \"npm run dev -w services/membership-service\" \"npm run dev -w services/rewards-service\" \"npm run dev -w services/cart-service\" \"npm run dev -w services/order-service\" \"npm run dev -w services/payment-service\" \"npm run dev -w services/shipping-service\" \"npm run dev -w services/notification-service\" \"npm run dev -w services/analytics-service\" \"npm run dev -w services/subscription-service\" \"npm run dev -w services/media-service\"",
+    "dev:website": "npm run dev -w apps/website",
+    "dev:store": "npm run dev -w apps/store",
+    "typecheck:workspaces": "npm run typecheck --workspaces --if-present"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
@@ -26,6 +35,7 @@
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.0",
+    "concurrently": "^8.2.0",
     "eslint": "^8.0.0",
     "eslint-config-next": "^14.2.0",
     "postcss": "^8.4.0",

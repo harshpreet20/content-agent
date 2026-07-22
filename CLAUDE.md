@@ -54,3 +54,21 @@ npm run dev          # start dashboard locally
 npm run scrape       # pull fresh Instagram data
 npm run report       # send Telegram report
 ```
+
+## RCC Commerce Platform (separate scaffold in this repo)
+
+This repo also hosts an early scaffold of a much larger, unrelated project:
+a full commerce platform (website + storefront + admin portal, backed by 14
+microservices and an event bus) per `docs/PRD.md`. It lives entirely under
+`apps/`, `services/`, and `packages/` (npm workspaces declared in the root
+`package.json`) and does not touch anything above.
+
+- Everything under `src/`, `dashboard/`, `scripts/` above is the Content
+  Agent Dashboard described in this file — unaffected by the commerce scaffold.
+- The commerce services are stubs (every route returns `501`); see
+  `ARCHITECTURE.md` for what's real vs. scaffold and how to run each piece.
+- The store admin pages already in `src/app/{products,orders,customers,categories,discounts,settings}`
+  (Supabase-backed) currently serve as the interim Admin Portal — they were
+  deliberately left untouched rather than migrated into the new services.
+- Read `ARCHITECTURE.md` before adding to either side of this repo so new
+  work lands in the right place.

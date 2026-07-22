@@ -8,3 +8,10 @@ tsconfig.tsbuildinfo
 
 # local env
 .env*.local
+
+# workspaces (apps/*, services/*, packages/*)
+apps/**/dist/
+apps/**/.next/
+services/**/dist/
+packages/**/dist/
+**/*.tsbuildinfo
