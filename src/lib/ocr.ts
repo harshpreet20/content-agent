@@ -91,3 +91,34 @@ export function parseCustomerList(text: string): { phone: string; name: string }
   }
   return rows;
 }
+
+const PRICE = /(?:₹|rs\.?|inr)\s*([\d,]+(?:\.\d+)?)/i;
+
+/**
+ * Best-effort extraction of a product name/price from a scanned tag, spec
+ * sheet, or packaging photo. Only meant to prefill blank fields in the
+ * product editor for staff to confirm — never overwrites what's already
+ * there.
+ */
+export function parseProductInfo(text: string): { name?: string; price?: number } {
+  const lines = ocrLines(text);
+  const result: { name?: string; price?: number } = {};
+
+  for (const line of lines) {
+    const match = line.match(PRICE);
+    if (match) {
+      const n = Number(match[1].replace(/,/g, ""));
+      if (!Number.isNaN(n)) {
+        result.price = n;
+        break;
+      }
+    }
+  }
+
+  // First reasonably short line without a price on it is the best guess
+  // for a product name/title printed on the tag.
+  const nameLine = lines.find((l) => l.length >= 3 && l.length <= 60 && !PRICE.test(l));
+  if (nameLine) result.name = nameLine;
+
+  return result;
+}

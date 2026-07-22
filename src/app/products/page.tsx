@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useAuth } from "@/components/AuthProvider";
 import Sidebar from "@/components/Sidebar";
 import { uploadProductImage, uploadProductVideo, deleteProductMedia } from "@/lib/product-media";
+import { recognizeText, parseProductInfo } from "@/lib/ocr";
 
 interface Product {
   id: string;
@@ -87,6 +88,7 @@ export default function ProductsPage() {
   const [error, setError] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [ocrHint, setOcrHint] = useState("");
   const [sizeChartSlugs, setSizeChartSlugs] = useState<string[]>([]);
 
   useEffect(() => {
@@ -136,7 +138,13 @@ export default function ProductsPage() {
   async function handleImageFiles(files: FileList | null) {
     if (!files || !files.length || !draft || !supabase) return;
     setError("");
+    setOcrHint("");
     setUploadingImage(true);
+    // Scanning a blank product's first photo for a printed name/price is
+    // useful; running it on every photo of an already-filled-out product
+    // would just clobber the hint field with noise from later shots.
+    const shouldScan = !draft.name?.trim() && !draft.price && !(draft.images || []).length;
+    const firstFile = files[0];
     try {
       for (const file of Array.from(files)) {
         const { url } = await uploadProductImage(supabase, draft.slug || "unfiled", file);
@@ -148,6 +156,23 @@ export default function ProductsPage() {
       setError(e instanceof Error ? e.message : "Image upload failed");
     } finally {
       setUploadingImage(false);
+    }
+
+    if (shouldScan) {
+      try {
+        const text = await recognizeText(firstFile);
+        const info = parseProductInfo(text);
+        if (info.name || info.price != null) {
+          setDraft((d) => (d ? {
+            ...d,
+            name: d.name?.trim() ? d.name : info.name || d.name,
+            price: d.price ? d.price : info.price ?? d.price,
+          } : d));
+          setOcrHint("Filled name/price from the photo — double-check before saving.");
+        }
+      } catch {
+        // OCR is a bonus on top of the upload, which already succeeded — stay silent on failure.
+      }
     }
   }
 
@@ -408,7 +433,8 @@ export default function ProductsPage() {
                     />
                   </label>
                 </div>
-                <p className="text-[11px] text-gray-400">Compressed to WebP in your browser before upload. First photo is the storefront cover image.</p>
+                <p className="text-[11px] text-gray-400">Compressed to WebP in your browser before upload. First photo is the storefront cover image. For a blank product, the first photo is also scanned (OCR) for a printed name/price.</p>
+                {ocrHint && <p className="text-[11px] text-violet-600 font-semibold mt-1">📷 {ocrHint}</p>}
               </div>
 
               <div className="col-span-2">
