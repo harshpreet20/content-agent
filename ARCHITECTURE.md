@@ -5,7 +5,7 @@ exists in this repo against that spec, and how to run it.
 
 ## Repo layout
 
-```
+```text
 /                        content-agent-dashboard (root Next.js app, unchanged)
   src/app/                Content Agent Dashboard (Ideator, Hook & Script, ...)
                            + an existing Supabase-backed store admin
@@ -48,7 +48,7 @@ no publishing needed).
 | Layer | Status |
 | --- | --- |
 | `packages/shared-types`, `packages/event-bus` | **Real.** Full type coverage for PRD sections 3, 5, 7–23; in-memory `EventBus` with typed `publish`/`subscribe`. |
-| `services/*` (14 services) | **Scaffold.** Each boots a real Express server with a `/health` check and the routes listed in its `README.md`, but every route returns `501 Not Implemented`. No database is wired up yet. Each service's `src/index.ts` shows where `eventBus.publish(...)` calls and `eventBus.subscribe(...)` handlers go. |
+| `services/*` (14 services) | **Scaffold.** Each boots a real Express server; `/health` is live and returns 200, but every business route listed in its `README.md` returns `501 Not Implemented`. No database is wired up yet. Each service's `src/index.ts` shows where `eventBus.publish(...)` calls and `eventBus.subscribe(...)` handlers go. |
 | `apps/website`, `apps/store` | **Scaffold.** Minimal Next.js 14 apps. One page each, calling `product-service` over HTTP to prove the API-first wiring (no direct DB access from either app, per PRD section 6/30). |
 | Root Next app (`src/`) | **Real, deployed, unchanged.** This is the pre-existing Content Agent Dashboard. It already has working Supabase-backed CRUD for products/orders/customers/categories/discounts/settings — see "Admin Portal today" below. |
 
@@ -73,7 +73,7 @@ step, not done here.
 `packages/event-bus` implements the contract; `packages/shared-types/src/events.ts`
 is the source of truth for event names and payload shapes:
 
-```
+```text
 ProductCreated / ProductUpdated / CollectionPublished / ReviewCreated  → product-service
 InventoryChanged                                                       → inventory-service
 PriceChanged                                                           → pricing-service
@@ -86,12 +86,16 @@ GalleryApproved                                                         → medi
 ```
 
 Each service's README lists which of these it publishes and which it
-subscribes to. The current `EventBus` is a same-process `EventEmitter` —
-fine for local dev with everything run via `concurrently`, but it does
-**not** cross process boundaries. Swapping it for Redis Streams/SQS/Kafka
-(PRD section 28 lists Redis) is required before services actually run as
-independent deployments; the `publish`/`subscribe` call signatures are
-designed to stay the same when that happens.
+subscribes to. The current `EventBus` is a same-process `EventEmitter`, so
+it only connects publishers and subscribers running inside the **same**
+Node process. `npm run dev:services` starts every service as its own
+process via `concurrently` — useful for smoke-testing each service's HTTP
+routes in isolation, but events published by one service do **not** reach
+another service's subscribers that way today. Swapping the transport for
+Redis Streams/SQS/Kafka (PRD section 28 lists Redis) is required before
+cross-service events work with services running as independent processes;
+the `publish`/`subscribe` call signatures are designed to stay the same
+when that happens.
 
 ## Running it locally
 
@@ -115,8 +119,11 @@ Or run one service directly: `npm run dev -w services/order-service`.
 3. Decide whether the existing root admin app keeps talking to Supabase
    directly (fastest) or gets migrated to call the new services (matches
    PRD section 6 — "never directly access another application's database").
-4. Replace the in-memory `EventBus` transport with a real broker once
-   services run as separate deployments instead of a single `concurrently` group.
+4. Replace the in-memory `EventBus` transport with a real broker (Redis
+   Streams/SQS/Kafka) — needed for cross-service events even today, since
+   `npm run dev:services` already runs each service as its own OS process
+   via `concurrently`, and it's required regardless once services are
+   deployed independently.
 5. Auth: `auth-service` is currently a stub; the existing root app has its
    own Supabase Auth (`src/lib/supabase-authed.ts`) — these need to converge
    on one identity provider per PRD section 5.

@@ -33,10 +33,12 @@ export class EventBus {
 
   subscribe<E extends EventName>(name: E, handler: EventHandler<E>): () => void {
     const wrapped = (event: DomainEvent<E>) => {
-      Promise.resolve(handler(event)).catch((err) => {
-        // eslint-disable-next-line no-console
-        console.error(`[event-bus] handler for ${name} failed`, err);
-      });
+      Promise.resolve()
+        .then(() => handler(event))
+        .catch((err) => {
+          // eslint-disable-next-line no-console
+          console.error(`[event-bus] handler for ${name} failed`, err);
+        });
     };
     this.emitter.on(name, wrapped);
     return () => this.emitter.off(name, wrapped);

@@ -1,13 +1,16 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import { eventBus } from "@rcc/event-bus";
 import type { Subscription } from "@rcc/shared-types";
 
 const app = express();
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 4013;
+const parsedPort = Number(process.env.PORT);
+const PORT = Number.isInteger(parsedPort) && parsedPort > 0 ? parsedPort : 4013;
 
 app.get("/health", (_req, res) => {
   res.json({ ok: true, service: "subscription-service", status: "up" });

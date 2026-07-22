@@ -1,9 +1,10 @@
 # Rewards Service
 
-Stub implementation. Scaffolded from PRD section 5/23 (see `/docs/PRD.md`).
-Every route currently returns `501 Not Implemented` — wire up persistence
-(PostgreSQL) and replace the stub logic per PRD section 30 (repository/service
-pattern, idempotent event handlers, strong typing).
+Stub implementation. Scaffolded from PRD section 5/23 (see `../../docs/PRD.md`).
+`GET /health` is live and returns 200. Every business route below currently
+returns `501 Not Implemented` — wire up persistence (PostgreSQL) and replace
+the stub logic per PRD section 30 (repository/service pattern, idempotent
+event handlers, strong typing).
 
 ## Responsibilities
 
@@ -32,10 +33,10 @@ pattern, idempotent event handlers, strong typing).
 
 | Method | Path | Description |
 | --- | --- | --- |
+| `GET` | `/rewards/leaderboard` | Get the leaderboard |
 | `GET` | `/rewards/:customerId` | Get a customer's balance and achievements |
 | `POST` | `/rewards/earn` | Credit points for a trigger (purchase, referral, ...) |
 | `POST` | `/rewards/redeem` | Redeem points |
-| `GET` | `/rewards/leaderboard` | Get the leaderboard |
 
 ## Run locally
 

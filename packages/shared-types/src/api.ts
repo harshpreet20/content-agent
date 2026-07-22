@@ -9,6 +9,8 @@ export interface ApiError {
   ok: false;
   error: string;
   code?: string;
+  /** Present on the 501 stub responses services return before routes are implemented. */
+  route?: string;
 }
 
 export type ApiResponse<T> = ApiSuccess<T> | ApiError;
