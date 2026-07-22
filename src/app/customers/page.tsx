@@ -18,6 +18,23 @@ interface Customer {
 
 const money = (n: number) => `₹${(n || 0).toLocaleString("en-IN")}`;
 
+const AVATAR_GRADIENTS = [
+  "from-violet-400 to-indigo-500",
+  "from-rose-400 to-pink-500",
+  "from-teal-400 to-cyan-500",
+  "from-amber-400 to-orange-500",
+  "from-emerald-400 to-green-500",
+  "from-blue-400 to-sky-500",
+];
+
+function initials(name: string | null, phone: string) {
+  if (name) {
+    const parts = name.trim().split(/\s+/);
+    return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase() || "?";
+  }
+  return phone.slice(-2);
+}
+
 export default function CustomersPage() {
   const { user, loading: authLoading, isStaff, session } = useAuth();
   const router = useRouter();
@@ -112,34 +129,35 @@ export default function CustomersPage() {
             <p className="text-gray-400 text-sm">No customers yet.</p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl neu-card overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 text-left">
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-400 uppercase">Customer</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-400 uppercase">Contact</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-400 uppercase text-right">Orders</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-400 uppercase text-right">Lifetime spend</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-400 uppercase text-right">Last order</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((c) => (
-                  <tr key={c.phone} className="border-b border-gray-50 last:border-0">
-                    <td className="px-4 py-3 font-medium text-gray-800">{c.name || "—"}</td>
-                    <td className="px-4 py-3 text-gray-500">
-                      <div>{c.phone}</div>
-                      {c.email && <div className="text-xs text-gray-400">{c.email}</div>}
-                    </td>
-                    <td className="px-4 py-3 text-right text-gray-700">{c.order_count}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-gray-800">{money(c.lifetime_spend || 0)}</td>
-                    <td className="px-4 py-3 text-right text-xs text-gray-400">
-                      {new Date(c.last_order_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid gap-3">
+            {filtered.map((c, i) => (
+              <div key={c.phone} className="bg-white rounded-2xl p-4 neu-card flex items-center gap-4">
+                <div
+                  className={`w-11 h-11 rounded-full bg-gradient-to-br ${AVATAR_GRADIENTS[i % AVATAR_GRADIENTS.length]} flex items-center justify-center text-white font-bold text-sm shrink-0 neu-raised-sm`}
+                >
+                  {initials(c.name, c.phone)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-gray-900 text-sm truncate">{c.name || "Unnamed customer"}</p>
+                  <p className="text-xs text-gray-400 truncate">
+                    {c.phone}
+                    {c.email ? ` · ${c.email}` : ""}
+                  </p>
+                </div>
+                {c.order_count > 1 && (
+                  <span className="hidden sm:inline-flex items-center text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full bg-pink-50 text-pink-600 shrink-0">
+                    Repeat
+                  </span>
+                )}
+                <div className="text-right shrink-0">
+                  <div className="text-sm font-bold text-gray-900">{money(c.lifetime_spend || 0)}</div>
+                  <div className="text-[10px] text-gray-400 uppercase tracking-wide">{c.order_count} order{c.order_count === 1 ? "" : "s"}</div>
+                </div>
+                <div className="hidden md:block text-right text-xs text-gray-400 shrink-0 w-24">
+                  {new Date(c.last_order_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </main>

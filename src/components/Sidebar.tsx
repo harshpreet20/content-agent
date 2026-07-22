@@ -9,9 +9,9 @@ type LinkItem = { href: string; label: string };
 type Section = { title: string; tone: Tone; links: LinkItem[] };
 
 const toneClasses: Record<Tone, { active: string; inactive: string }> = {
-  gray: { active: "bg-gray-100 text-gray-900", inactive: "text-gray-500 hover:bg-gray-50 hover:text-gray-700" },
-  emerald: { active: "bg-emerald-50 text-emerald-700", inactive: "text-gray-500 hover:bg-gray-50 hover:text-emerald-700" },
-  violet: { active: "bg-violet-50 text-violet-700", inactive: "text-gray-500 hover:bg-gray-50 hover:text-violet-700" },
+  gray: { active: "bg-blue-100 text-blue-700 shadow-[0_2px_8px_-2px_rgba(37,99,235,0.35)]", inactive: "text-gray-500 hover:bg-blue-50/70 hover:text-blue-700" },
+  emerald: { active: "bg-emerald-100 text-emerald-700 shadow-[0_2px_8px_-2px_rgba(5,150,105,0.35)]", inactive: "text-gray-500 hover:bg-emerald-50/70 hover:text-emerald-700" },
+  violet: { active: "bg-violet-100 text-violet-700 shadow-[0_2px_8px_-2px_rgba(124,58,237,0.35)]", inactive: "text-gray-500 hover:bg-violet-50/70 hover:text-violet-700" },
 };
 
 const ICONS: Record<string, JSX.Element> = {
