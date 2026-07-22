@@ -76,7 +76,7 @@ export default function AdminPage() {
 
   if (authLoading || !isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -87,7 +87,7 @@ export default function AdminPage() {
   const rejectedUsers = users.filter((u) => u.status === "rejected");
 
   return (
-    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/admin" />
 
       <main className="max-w-5xl mx-auto px-5 py-8">
@@ -104,24 +104,24 @@ export default function AdminPage() {
           <div className="space-y-8">
             {/* Summary cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-50">👥</div>
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Total Users</div>
+              <div className="bg-blue-50/70 rounded-2xl p-5 neu-card">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-100">👥</div>
+                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Total Users</div>
                 <div className="text-3xl font-extrabold text-gray-900">{users.length}</div>
               </div>
-              <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-amber-50">⏳</div>
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Pending</div>
+              <div className="bg-amber-50/70 rounded-2xl p-5 neu-card">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-amber-100">⏳</div>
+                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Pending</div>
                 <div className="text-3xl font-extrabold text-amber-500">{pendingUsers.length}</div>
               </div>
-              <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-green-50">✅</div>
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Approved</div>
+              <div className="bg-green-50/70 rounded-2xl p-5 neu-card">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-green-100">✅</div>
+                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Approved</div>
                 <div className="text-3xl font-extrabold text-green-600">{approvedUsers.length}</div>
               </div>
-              <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-violet-50">👑</div>
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Admins</div>
+              <div className="bg-violet-50/70 rounded-2xl p-5 neu-card">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-violet-100">👑</div>
+                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Admins</div>
                 <div className="text-3xl font-extrabold text-violet-600">{users.filter((u) => u.role === "admin").length}</div>
               </div>
             </div>
@@ -198,7 +198,7 @@ function UserRow({
   };
 
   return (
-    <div className="bg-[#f5f6f8] rounded-2xl neu-card p-4 flex items-center gap-4">
+    <div className="bg-white rounded-2xl neu-card p-4 flex items-center gap-4">
       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 via-pink-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold shrink-0 neu-raised-sm">
         {user.email[0].toUpperCase()}
       </div>
@@ -241,7 +241,7 @@ function UserRow({
               <select
                 value={user.role}
                 onChange={(e) => onUpdate(user.id, { role: e.target.value })}
-                className="px-2 py-1.5 text-[11px] font-semibold text-gray-600 rounded-lg neu-input outline-none bg-[#f5f6f8]"
+                className="px-2 py-1.5 text-[11px] font-semibold text-gray-600 rounded-lg neu-input outline-none bg-white"
               >
                 <option value="user">User</option>
                 <option value="content">Content</option>

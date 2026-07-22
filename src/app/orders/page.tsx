@@ -112,14 +112,14 @@ export default function OrdersPage() {
 
   if (authLoading || !isStaff) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/orders" />
       <main className="max-w-5xl mx-auto px-5 py-8">
         <div className="mb-6">
@@ -131,19 +131,19 @@ export default function OrdersPage() {
 
         {/* KPI cards */}
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-50">📦</div>
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Orders</div>
+          <div className="bg-blue-50/70 rounded-2xl p-5 neu-card">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-100">📦</div>
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Orders</div>
             <div className="text-3xl font-extrabold text-gray-900">{stats.total}</div>
           </div>
-          <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-amber-50">⏳</div>
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Awaiting payment</div>
+          <div className="bg-amber-50/70 rounded-2xl p-5 neu-card">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-amber-100">⏳</div>
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Awaiting payment</div>
             <div className="text-3xl font-extrabold text-amber-500">{stats.pending}</div>
           </div>
-          <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-emerald-50">💰</div>
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Confirmed revenue</div>
+          <div className="bg-emerald-50/70 rounded-2xl p-5 neu-card">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-emerald-100">💰</div>
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Confirmed revenue</div>
             <div className="text-3xl font-extrabold text-green-600">{money(stats.revenue)}</div>
           </div>
         </div>
@@ -168,7 +168,7 @@ export default function OrdersPage() {
             <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : visible.length === 0 ? (
-          <div className="bg-[#f5f6f8] rounded-2xl p-12 text-center neu-pressed">
+          <div className="bg-white rounded-2xl p-12 text-center neu-pressed">
             <p className="text-gray-400 text-sm">No orders here yet.</p>
           </div>
         ) : (
@@ -178,7 +178,7 @@ export default function OrdersPage() {
               const idx = FLOW.indexOf(o.status);
               const next = idx >= 0 && idx < FLOW.length - 1 ? FLOW[idx + 1] : null;
               return (
-                <div key={o.id} className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
+                <div key={o.id} className="bg-white rounded-2xl p-5 neu-card">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">

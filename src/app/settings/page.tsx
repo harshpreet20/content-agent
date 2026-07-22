@@ -70,7 +70,7 @@ export default function SettingsPage() {
 
   if (authLoading || !isStaff) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -80,7 +80,7 @@ export default function SettingsPage() {
   const labelCls = "block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1";
 
   return (
-    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/settings" />
       <main className="max-w-2xl mx-auto px-5 py-8">
         <div className="mb-6">

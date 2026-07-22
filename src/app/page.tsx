@@ -92,7 +92,7 @@ export default function Dashboard() {
 
   if (!authLoading && user && statusError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8] p-5">
+      <div className="min-h-screen flex items-center justify-center p-5">
         <div className="text-center">
           <p className="text-sm text-gray-500 mb-3">Couldn't verify your account status.</p>
           <button
@@ -108,14 +108,14 @@ export default function Dashboard() {
 
   if (authLoading || !user || status !== "approved") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/" />
 
       <main className="max-w-6xl mx-auto px-5 py-8">

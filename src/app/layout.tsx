@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-[#f5f6f8] text-gray-900 min-h-screen antialiased">
+      <body className="bg-gradient-to-br from-[#eef2ff] via-[#f6f7fb] to-[#fdf2f8] text-gray-900 min-h-screen antialiased">
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

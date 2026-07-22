@@ -68,7 +68,7 @@ export default function CustomersPage() {
 
   if (authLoading || !isStaff) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -87,7 +87,7 @@ export default function CustomersPage() {
   const totalSpend = customers.reduce((s, c) => s + (c.lifetime_spend || 0), 0);
 
   return (
-    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/customers" />
       <main className="max-w-5xl mx-auto px-5 py-8">
         <div className="mb-6">
@@ -96,19 +96,19 @@ export default function CustomersPage() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-          <div className="bg-white rounded-2xl p-5 neu-card">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-50">👤</div>
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Customers</div>
+          <div className="bg-blue-50/70 rounded-2xl p-5 neu-card">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-100">👤</div>
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Customers</div>
             <div className="text-2xl font-extrabold text-gray-900">{customers.length}</div>
           </div>
-          <div className="bg-white rounded-2xl p-5 neu-card">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-emerald-50">💰</div>
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Lifetime Revenue</div>
+          <div className="bg-emerald-50/70 rounded-2xl p-5 neu-card">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-emerald-100">💰</div>
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Lifetime Revenue</div>
             <div className="text-2xl font-extrabold text-gray-900">{money(totalSpend)}</div>
           </div>
-          <div className="bg-white rounded-2xl p-5 neu-card">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-pink-50">🔁</div>
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Repeat Customers</div>
+          <div className="bg-pink-50/70 rounded-2xl p-5 neu-card">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-pink-100">🔁</div>
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Repeat Customers</div>
             <div className="text-2xl font-extrabold text-gray-900">{customers.filter((c) => c.order_count > 1).length}</div>
           </div>
         </div>
