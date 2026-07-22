@@ -13,6 +13,11 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true, service: "rewards-service", status: "up" });
 });
 
+app.get("/rewards/leaderboard", (req, res) => {
+  // TODO: Get the leaderboard
+  res.status(501).json({ ok: false, error: "Not implemented", route: "GET /rewards/leaderboard" });
+});
+
 app.get("/rewards/:customerId", (req, res) => {
   // TODO: Get a customer's balance and achievements
   res.status(501).json({ ok: false, error: "Not implemented", route: "GET /rewards/:customerId" });
@@ -26,11 +31,6 @@ app.post("/rewards/earn", (req, res) => {
 app.post("/rewards/redeem", (req, res) => {
   // TODO: Redeem points
   res.status(501).json({ ok: false, error: "Not implemented", route: "POST /rewards/redeem" });
-});
-
-app.get("/rewards/leaderboard", (req, res) => {
-  // TODO: Get the leaderboard
-  res.status(501).json({ ok: false, error: "Not implemented", route: "GET /rewards/leaderboard" });
 });
 
 eventBus.subscribe("OrderPaid", (event) => {

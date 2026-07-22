@@ -14,6 +14,7 @@
     "lint": "next lint",
     "scrape": "npx tsx scripts/scrape.ts",
     "report": "npx tsx scripts/telegram-report.ts",
+    "postinstall": "npm run build -w packages/shared-types -w packages/event-bus",
     "dev:services": "concurrently -n auth,product,inventory,pricing,membership,rewards,cart,order,payment,shipping,notification,analytics,subscription,media \"npm run dev -w services/auth-service\" \"npm run dev -w services/product-service\" \"npm run dev -w services/inventory-service\" \"npm run dev -w services/pricing-service\" \"npm run dev -w services/membership-service\" \"npm run dev -w services/rewards-service\" \"npm run dev -w services/cart-service\" \"npm run dev -w services/order-service\" \"npm run dev -w services/payment-service\" \"npm run dev -w services/shipping-service\" \"npm run dev -w services/notification-service\" \"npm run dev -w services/analytics-service\" \"npm run dev -w services/subscription-service\" \"npm run dev -w services/media-service\"",
     "dev:website": "npm run dev -w apps/website",
     "dev:store": "npm run dev -w apps/store",
