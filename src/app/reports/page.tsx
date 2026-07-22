@@ -141,14 +141,14 @@ export default function ReportsPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/reports" />
 
       <main className="max-w-4xl mx-auto px-5 py-8">
@@ -178,7 +178,7 @@ export default function ReportsPage() {
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               filter === "all"
                 ? "bg-gray-900 text-white neu-pressed"
-                : "bg-[#f5f6f8] text-gray-500 neu-btn"
+                : "bg-white text-gray-500 neu-btn"
             }`}
           >
             All
@@ -190,7 +190,7 @@ export default function ReportsPage() {
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                 filter === key
                   ? "text-white neu-pressed"
-                  : "bg-[#f5f6f8] text-gray-500 neu-btn"
+                  : "bg-white text-gray-500 neu-btn"
               }`}
               style={filter === key ? { backgroundColor: meta.color } : {}}
             >
@@ -226,7 +226,7 @@ export default function ReportsPage() {
               return (
                 <div
                   key={report.id}
-                  className="bg-[#f5f6f8] rounded-2xl neu-card overflow-hidden"
+                  className="bg-white rounded-2xl neu-card overflow-hidden"
                 >
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : report.id)}
@@ -259,7 +259,7 @@ export default function ReportsPage() {
                   {isExpanded && (
                     <div className="px-5 pb-5">
                       <div
-                        className="mt-4 text-sm text-gray-700 leading-relaxed bg-[#f5f6f8] rounded-xl p-4 max-h-[600px] overflow-y-auto report-html neu-pressed"
+                        className="mt-4 text-sm text-gray-700 leading-relaxed bg-white rounded-xl p-4 max-h-[600px] overflow-y-auto report-html neu-pressed"
                         dangerouslySetInnerHTML={{ __html: sanitizeReport(report.result) }}
                       />
                       <div className="mt-3 flex justify-end gap-2">

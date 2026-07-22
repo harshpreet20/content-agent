@@ -66,22 +66,23 @@ export default function StatsBar({ stats }: StatsBarProps) {
   if (!stats) return null;
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
       {STATS_CONFIG.map((cfg, i) => {
         const value = stats[cfg.key as keyof typeof stats] as number;
         const color = COLORS[i];
         return (
           <div
             key={cfg.key}
-            className="bg-[#f5f6f8] rounded-2xl p-5 neu-card"
+            className="rounded-2xl p-7 neu-card"
+            style={{ backgroundColor: color + "0f" }}
           >
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: color + "14" }}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: color + "26" }}>
                 <StatIcon type={cfg.icon} color={color} />
               </div>
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">{cfg.label}</span>
+              <span className="text-sm font-medium text-gray-400 uppercase tracking-wide">{cfg.label}</span>
             </div>
-            <div className="text-2xl font-extrabold text-gray-900">{cfg.format(value)}</div>
+            <div className="text-4xl font-extrabold text-gray-900">{cfg.format(value)}</div>
           </div>
         );
       })}

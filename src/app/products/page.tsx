@@ -2,8 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "@/components/AuthProvider";
 import Sidebar from "@/components/Sidebar";
+import { uploadProductImage, uploadProductVideo, deleteProductMedia } from "@/lib/product-media";
+import { recognizeText, parseProductInfo } from "@/lib/ocr";
 
 interface Product {
   id: string;
@@ -14,11 +17,14 @@ interface Product {
   price: number;
   category: string | null;
   sizes: string[];
+  size_chart_slugs: string[];
   personalization: unknown[];
   highlights: string[];
   accent: string;
   emoji: string;
   image: string | null;
+  images: string[];
+  videos: string[];
   stock: number | null;
   badge: string | null;
   sold_out: boolean;
@@ -34,8 +40,33 @@ interface Product {
 
 const money = (n: number) => `₹${(n || 0).toLocaleString("en-IN")}`;
 
+/**
+ * Some products still carry the legacy `image` column as a relative path
+ * (e.g. "/products/tee.png") meant for the storefront's own public/ folder
+ * -- that 404s here since this dashboard has no such file. Only ever try
+ * to render an absolute URL (a real Supabase Storage photo), and fall back
+ * to the emoji tile on any load failure too, so a broken/relative value
+ * never surfaces as broken-image alt text.
+ */
+function ProductThumb({ src, alt, accent, emoji }: { src: string | null; alt: string; accent: string; emoji: string }) {
+  const [failed, setFailed] = useState(false);
+  if (!src || !/^https?:\/\//.test(src) || failed) {
+    return (
+      <div className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl neu-raised-sm flex-none" style={{ background: `${accent}22` }}>
+        {emoji}
+      </div>
+    );
+  }
+  return (
+    <div className="relative w-14 h-14 rounded-xl overflow-hidden neu-raised-sm flex-none">
+      <Image src={src} alt={alt} fill sizes="56px" className="object-cover" onError={() => setFailed(true)} />
+    </div>
+  );
+}
+
 type Draft = Partial<Product> & {
   sizesText?: string;
+  sizeChartSlugsText?: string;
   highlightsText?: string;
   personalizationJson?: string;
   seoKeywordsText?: string;
@@ -55,7 +86,10 @@ const emptyDraft: Draft = {
   sort_order: 0,
   active: true,
   sold_out: false,
+  images: [],
+  videos: [],
   sizesText: "",
+  sizeChartSlugsText: "",
   highlightsText: "",
   personalizationJson: "[]",
   seo_title: "",
@@ -67,7 +101,7 @@ const emptyDraft: Draft = {
 };
 
 export default function ProductsPage() {
-  const { user, loading: authLoading, isStaff, session } = useAuth();
+  const { user, loading: authLoading, isStaff, session, supabase } = useAuth();
   const router = useRouter();
   const token = session?.access_token;
 
@@ -76,6 +110,10 @@ export default function ProductsPage() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [ocrHint, setOcrHint] = useState("");
+  const [sizeChartSlugs, setSizeChartSlugs] = useState<string[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
@@ -99,14 +137,103 @@ export default function ProductsPage() {
     if (isStaff && token) load();
   }, [isStaff, token, load]);
 
+  useEffect(() => {
+    if (!isStaff || !token) return;
+    fetch("/api/store/size-charts", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((json) => setSizeChartSlugs((json.sizeCharts || []).map((c: { slug: string }) => c.slug)))
+      .catch(() => {});
+  }, [isStaff, token]);
+
   function edit(p: Product) {
     setError("");
     setDraft({
       ...p,
+      images: p.images || (p.image ? [p.image] : []),
+      videos: p.videos || [],
       sizesText: (p.sizes || []).join(", "),
+      sizeChartSlugsText: (p.size_chart_slugs || []).join(", "),
       highlightsText: (p.highlights || []).join("\n"),
       personalizationJson: JSON.stringify(p.personalization || [], null, 2),
       seoKeywordsText: (p.seo_keywords || []).join(", "),
+    });
+  }
+
+  async function handleImageFiles(files: FileList | null) {
+    if (!files || !files.length || !draft || !supabase) return;
+    setError("");
+    setOcrHint("");
+    setUploadingImage(true);
+    // Scanning a blank product's first photo for a printed name/price is
+    // useful; running it on every photo of an already-filled-out product
+    // would just clobber the hint field with noise from later shots.
+    const shouldScan = !draft.name?.trim() && !draft.price && !(draft.images || []).length;
+    const firstFile = files[0];
+    try {
+      for (const file of Array.from(files)) {
+        const { url } = await uploadProductImage(supabase, draft.slug || "unfiled", file);
+        // Commit each upload as it lands, so a later file failing doesn't
+        // discard the ones that already succeeded.
+        setDraft((d) => (d ? { ...d, images: [...(d.images || []), url] } : d));
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Image upload failed");
+    } finally {
+      setUploadingImage(false);
+    }
+
+    if (shouldScan) {
+      try {
+        const text = await recognizeText(firstFile);
+        const info = parseProductInfo(text);
+        if (info.name || info.price != null) {
+          setDraft((d) => (d ? {
+            ...d,
+            name: d.name?.trim() ? d.name : info.name || d.name,
+            price: d.price ? d.price : info.price ?? d.price,
+          } : d));
+          setOcrHint("Filled name/price from the photo — double-check before saving.");
+        }
+      } catch {
+        // OCR is a bonus on top of the upload, which already succeeded — stay silent on failure.
+      }
+    }
+  }
+
+  async function handleVideoFiles(files: FileList | null) {
+    if (!files || !files.length || !draft || !supabase) return;
+    setError("");
+    setUploadingVideo(true);
+    try {
+      for (const file of Array.from(files)) {
+        const url = await uploadProductVideo(supabase, draft.slug || "unfiled", file);
+        setDraft((d) => (d ? { ...d, videos: [...(d.videos || []), url] } : d));
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Video upload failed");
+    } finally {
+      setUploadingVideo(false);
+    }
+  }
+
+  function removeImage(url: string) {
+    setDraft((d) => (d ? { ...d, images: (d.images || []).filter((u) => u !== url) } : d));
+    if (supabase) deleteProductMedia(supabase, url);
+  }
+
+  function removeVideo(url: string) {
+    setDraft((d) => (d ? { ...d, videos: (d.videos || []).filter((u) => u !== url) } : d));
+    if (supabase) deleteProductMedia(supabase, url);
+  }
+
+  function moveImage(index: number, dir: -1 | 1) {
+    setDraft((d) => {
+      if (!d?.images) return d;
+      const next = [...d.images];
+      const target = index + dir;
+      if (target < 0 || target >= next.length) return d;
+      [next[index], next[target]] = [next[target], next[index]];
+      return { ...d, images: next };
     });
   }
 
@@ -132,10 +259,17 @@ export default function ProductsPage() {
       badge: draft.badge || null,
       emoji: draft.emoji || "🎾",
       accent: draft.accent || "#0e5a62",
+      images: draft.images || [],
+      videos: draft.videos || [],
+      // Keep the legacy single-image column in sync so any consumer still
+      // reading `products.image` (e.g. an external storefront) sees the
+      // cover photo without needing to switch to `images[]` first.
+      image: draft.images?.[0] || null,
       sort_order: Number(draft.sort_order) || 0,
       active: !!draft.active,
       sold_out: !!draft.sold_out,
       sizes: (draft.sizesText || "").split(",").map((s) => s.trim()).filter(Boolean),
+      size_chart_slugs: (draft.sizeChartSlugsText || "").split(",").map((s) => s.trim()).filter(Boolean),
       highlights: (draft.highlightsText || "").split("\n").map((s) => s.trim()).filter(Boolean),
       personalization,
       seo_title: draft.seo_title || null,
@@ -181,17 +315,17 @@ export default function ProductsPage() {
 
   if (authLoading || !isStaff) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  const field = "w-full px-3 py-2 rounded-xl bg-[#f5f6f8] neu-input outline-none text-sm text-gray-800";
+  const field = "w-full px-3 py-2 rounded-xl bg-white neu-input outline-none text-sm text-gray-800";
   const labelCls = "block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1";
 
   return (
-    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/products" />
       <main className="max-w-5xl mx-auto px-5 py-8">
         <div className="flex items-center justify-between mb-6">
@@ -214,13 +348,8 @@ export default function ProductsPage() {
         ) : (
           <div className="grid gap-3">
             {products.map((p) => (
-              <div key={p.id} className="bg-[#f5f6f8] rounded-2xl p-4 neu-card flex items-center gap-4">
-                <div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl neu-raised-sm flex-none"
-                  style={{ background: `${p.accent}22` }}
-                >
-                  {p.emoji}
-                </div>
+              <div key={p.id} className="bg-white rounded-2xl p-4 neu-card flex items-center gap-4">
+                <ProductThumb src={p.images?.[0] || p.image} alt={p.name} accent={p.accent} emoji={p.emoji} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-bold text-gray-800 truncate">{p.name}</p>
@@ -241,7 +370,7 @@ export default function ProductsPage() {
               </div>
             ))}
             {products.length === 0 && (
-              <div className="bg-[#f5f6f8] rounded-2xl p-12 text-center neu-pressed">
+              <div className="bg-white rounded-2xl p-12 text-center neu-pressed">
                 <p className="text-gray-400 text-sm">No products yet. Add your first one.</p>
               </div>
             )}
@@ -249,11 +378,11 @@ export default function ProductsPage() {
         )}
       </main>
 
-      {/* Editor drawer */}
+      {/* Editor window */}
       {draft && (
-        <div className="fixed inset-0 z-50 flex justify-end">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setDraft(null)} />
-          <div className="relative w-full max-w-lg h-full bg-[#f5f6f8] shadow-2xl overflow-y-auto p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setDraft(null)} />
+          <div className="relative w-full max-w-lg max-h-full bg-white rounded-3xl shadow-2xl overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-extrabold text-gray-900">{draft.id ? "Edit product" : "New product"}</h3>
               <button onClick={() => setDraft(null)} className="w-9 h-9 rounded-xl neu-btn text-gray-500">✕</button>
@@ -274,6 +403,87 @@ export default function ProductsPage() {
                 <label className={labelCls}>Category</label>
                 <input className={field} value={draft.category || ""} onChange={(e) => setDraft({ ...draft, category: e.target.value })} />
               </div>
+              <div className="col-span-2">
+                <label className={labelCls}>Photos</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {(draft.images || []).map((url, i) => (
+                    <div key={url} className="relative w-16 h-16 rounded-xl overflow-hidden neu-raised-sm group">
+                      <Image src={url} alt="" fill sizes="64px" className="object-cover" />
+                      {i === 0 && (
+                        <span className="absolute bottom-0 inset-x-0 text-center text-[8px] font-bold uppercase text-white bg-black/50 py-0.5">Cover</span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeImage(url)}
+                        className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 text-white text-[10px] leading-4 text-center opacity-0 group-hover:opacity-100 transition"
+                      >
+                        ✕
+                      </button>
+                      {i > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImage(i, -1)}
+                          className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-black/60 text-white text-[10px] leading-4 text-center opacity-0 group-hover:opacity-100 transition"
+                        >
+                          ←
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <label className="w-16 h-16 rounded-xl flex items-center justify-center text-gray-400 neu-flat cursor-pointer text-xs font-semibold">
+                    {uploadingImage ? (
+                      <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      "+ Add"
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      disabled={uploadingImage}
+                      onChange={(e) => { handleImageFiles(e.target.files); e.target.value = ""; }}
+                    />
+                  </label>
+                </div>
+                <p className="text-[11px] text-gray-400">Compressed to WebP in your browser before upload. First photo is the storefront cover image. For a blank product, the first photo is also scanned (OCR) for a printed name/price.</p>
+                {ocrHint && <p className="text-[11px] text-violet-600 font-semibold mt-1">📷 {ocrHint}</p>}
+              </div>
+
+              <div className="col-span-2">
+                <label className={labelCls}>Video (optional)</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {(draft.videos || []).map((url) => (
+                    <div key={url} className="relative w-28 h-16 rounded-xl overflow-hidden neu-raised-sm group bg-gray-900">
+                      <video src={url} className="w-full h-full object-cover" muted />
+                      <button
+                        type="button"
+                        onClick={() => removeVideo(url)}
+                        className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 text-white text-[10px] leading-4 text-center opacity-0 group-hover:opacity-100 transition"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                  <label className="w-28 h-16 rounded-xl flex items-center justify-center text-gray-400 neu-flat cursor-pointer text-xs font-semibold">
+                    {uploadingVideo ? (
+                      <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      "+ Add video"
+                    )}
+                    <input
+                      type="file"
+                      accept="video/mp4,video/webm,video/quicktime"
+                      multiple
+                      className="hidden"
+                      disabled={uploadingVideo}
+                      onChange={(e) => { handleVideoFiles(e.target.files); e.target.value = ""; }}
+                    />
+                  </label>
+                </div>
+                <p className="text-[11px] text-gray-400">Uploaded as-is (MP4/WebM/MOV, up to 100MB) — compress before uploading if it's larger.</p>
+              </div>
+
               <div className="col-span-2">
                 <label className={labelCls}>Type</label>
                 <select className={field} value={draft.kind || "physical"} onChange={(e) => setDraft({ ...draft, kind: e.target.value })}>
@@ -300,6 +510,13 @@ export default function ProductsPage() {
               <div className="col-span-2">
                 <label className={labelCls}>Sizes (comma separated)</label>
                 <input className={field} value={draft.sizesText || ""} onChange={(e) => setDraft({ ...draft, sizesText: e.target.value })} placeholder="S, M, L, XL" />
+              </div>
+              <div className="col-span-2">
+                <label className={labelCls}>Size chart(s) (comma separated slugs)</label>
+                <input className={field} value={draft.sizeChartSlugsText || ""} onChange={(e) => setDraft({ ...draft, sizeChartSlugsText: e.target.value })} placeholder="jersey, shorts" />
+                <p className="text-[11px] text-gray-400 mt-1">
+                  {sizeChartSlugs.length > 0 ? `Available: ${sizeChartSlugs.join(", ")}` : "No size charts yet — add one under Size Charts."}
+                </p>
               </div>
               <div className="col-span-2">
                 <label className={labelCls}>Highlights (one per line)</label>

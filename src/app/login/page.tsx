@@ -16,13 +16,13 @@ export default function LoginPage() {
 
   if (user && status === "pending") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8] p-5">
+      <div className="min-h-screen flex items-center justify-center p-5">
         <div className="w-full max-w-sm text-center">
           <img src="/rcc-crest.webp" alt="Racquets Club Community" className="w-20 h-20 rounded-full object-cover mx-auto mb-3 neu-raised-sm" />
           <h1 className="text-2xl font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent mb-4">
             ContentAgent
           </h1>
-          <div className="bg-[#f5f6f8] rounded-2xl neu-raised p-8">
+          <div className="bg-white rounded-2xl neu-raised p-8">
             <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center text-3xl neu-pressed">
               {"⏳"}
             </div>
@@ -48,13 +48,13 @@ export default function LoginPage() {
 
   if (user && status === "rejected") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8] p-5">
+      <div className="min-h-screen flex items-center justify-center p-5">
         <div className="w-full max-w-sm text-center">
           <img src="/rcc-crest.webp" alt="Racquets Club Community" className="w-20 h-20 rounded-full object-cover mx-auto mb-3 neu-raised-sm" />
           <h1 className="text-2xl font-extrabold bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 bg-clip-text text-transparent mb-4">
             ContentAgent
           </h1>
-          <div className="bg-[#f5f6f8] rounded-2xl neu-raised p-8">
+          <div className="bg-white rounded-2xl neu-raised p-8">
             <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center text-3xl neu-pressed">
               {"🚫"}
             </div>
@@ -100,7 +100,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8] p-5">
+    <div className="min-h-screen flex items-center justify-center p-5">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <img src="/rcc-crest.webp" alt="Racquets Club Community" className="w-20 h-20 rounded-full object-cover mx-auto mb-3 neu-raised-sm" />
@@ -112,14 +112,14 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-[#f5f6f8] rounded-2xl neu-raised p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl neu-raised p-6 space-y-4">
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-[#f5f6f8] neu-input outline-none transition text-sm text-gray-900 placeholder:text-gray-400"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white neu-input outline-none transition text-sm text-gray-900 placeholder:text-gray-400"
               placeholder="you@example.com"
               required
             />
@@ -130,7 +130,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-[#f5f6f8] neu-input outline-none transition text-sm text-gray-900 placeholder:text-gray-400"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white neu-input outline-none transition text-sm text-gray-900 placeholder:text-gray-400"
               placeholder="At least 6 characters"
               required
               minLength={6}

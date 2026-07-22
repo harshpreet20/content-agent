@@ -66,7 +66,7 @@ export default function ReviewsPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -77,7 +77,7 @@ export default function ReviewsPage() {
   const negative = reviews.filter((r) => r.rating <= 2).length;
 
   return (
-    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/reviews" />
 
       <main className="max-w-5xl mx-auto px-5 py-8">
@@ -100,7 +100,7 @@ export default function ReviewsPage() {
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 sourceFilter === tab.key
                   ? "bg-gray-900 text-white neu-pressed"
-                  : "bg-[#f5f6f8] text-gray-500 neu-btn"
+                  : "bg-white text-gray-500 neu-btn"
               }`}
             >
               {tab.label}
@@ -121,7 +121,7 @@ export default function ReviewsPage() {
             {/* Summary cards */}
             {summary && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
+                <div className="bg-white rounded-2xl p-5 neu-card">
                   <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-amber-50">⭐</div>
                   <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Average Rating</div>
                   <div className="flex items-center gap-2">
@@ -129,18 +129,18 @@ export default function ReviewsPage() {
                     <Stars rating={Math.round(summary.avgRating)} size="text-lg" />
                   </div>
                 </div>
-                <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
+                <div className="bg-white rounded-2xl p-5 neu-card">
                   <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-50">💬</div>
                   <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Total Reviews</div>
                   <div className="text-3xl font-extrabold text-gray-900">{summary.total}</div>
                 </div>
-                <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
+                <div className="bg-white rounded-2xl p-5 neu-card">
                   <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-emerald-50">👍</div>
                   <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Positive</div>
                   <div className="text-3xl font-extrabold text-green-600">{positive}</div>
                   <div className="text-[10px] text-gray-400 mt-0.5">4-5 stars</div>
                 </div>
-                <div className="bg-[#f5f6f8] rounded-2xl p-5 neu-card">
+                <div className="bg-white rounded-2xl p-5 neu-card">
                   <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-red-50">⚠️</div>
                   <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Needs Attention</div>
                   <div className="text-3xl font-extrabold text-red-500">{negative}</div>
@@ -151,7 +151,7 @@ export default function ReviewsPage() {
 
             {/* Rating distribution */}
             {summary?.distribution && (
-              <div className="bg-[#f5f6f8] rounded-2xl p-6 neu-raised">
+              <div className="bg-white rounded-2xl p-6 neu-raised">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Rating Distribution</h3>
                 <div className="space-y-2.5">
                   {[5, 4, 3, 2, 1].map((star) => {
@@ -184,7 +184,7 @@ export default function ReviewsPage() {
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">All Reviews</h3>
                 {reviews.map((review) => (
-                  <div key={review.id} className="bg-[#f5f6f8] rounded-2xl neu-card p-5">
+                  <div key={review.id} className="bg-white rounded-2xl neu-card p-5">
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <div className="flex items-center gap-2 mb-1">

@@ -9,9 +9,9 @@ type LinkItem = { href: string; label: string };
 type Section = { title: string; tone: Tone; links: LinkItem[] };
 
 const toneClasses: Record<Tone, { active: string; inactive: string }> = {
-  gray: { active: "bg-gray-100 text-gray-900", inactive: "text-gray-500 hover:bg-gray-50 hover:text-gray-700" },
-  emerald: { active: "bg-emerald-50 text-emerald-700", inactive: "text-gray-500 hover:bg-gray-50 hover:text-emerald-700" },
-  violet: { active: "bg-violet-50 text-violet-700", inactive: "text-gray-500 hover:bg-gray-50 hover:text-violet-700" },
+  gray: { active: "bg-blue-100 text-blue-700 shadow-[0_2px_8px_-2px_rgba(37,99,235,0.35)]", inactive: "text-gray-500 hover:bg-blue-50/70 hover:text-blue-700" },
+  emerald: { active: "bg-emerald-100 text-emerald-700 shadow-[0_2px_8px_-2px_rgba(5,150,105,0.35)]", inactive: "text-gray-500 hover:bg-emerald-50/70 hover:text-emerald-700" },
+  violet: { active: "bg-violet-100 text-violet-700 shadow-[0_2px_8px_-2px_rgba(124,58,237,0.35)]", inactive: "text-gray-500 hover:bg-violet-50/70 hover:text-violet-700" },
 };
 
 const ICONS: Record<string, JSX.Element> = {
@@ -47,6 +47,9 @@ const ICONS: Record<string, JSX.Element> = {
   ),
   "/discounts": (
     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v3.586a1 1 0 00.293.707l7.414 7.414a1 1 0 001.414 0l5.586-5.586a1 1 0 000-1.414L12.293 4.293A1 1 0 0011.586 4H9zM7 8h.01" />
+  ),
+  "/size-charts": (
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8h18M3 8v10a1 1 0 001 1h16a1 1 0 001-1V8M3 8l2-4h14l2 4M8 13v2m4-2v3m4-3v2" />
   ),
   "/settings": (
     <>
@@ -111,6 +114,7 @@ export default function Sidebar({ active }: { active: string }) {
           { href: "/orders", label: "Orders" },
           { href: "/products", label: "Store" },
           { href: "/categories", label: "Categories" },
+          { href: "/size-charts", label: "Size Charts" },
           { href: "/discounts", label: "Discounts" },
           { href: "/customers", label: "Customers" },
           { href: "/insights", label: "Insights" },

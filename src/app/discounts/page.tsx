@@ -118,7 +118,7 @@ export default function DiscountsPage() {
 
   if (authLoading || !isStaff) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f5f6f8]">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -128,14 +128,14 @@ export default function DiscountsPage() {
   const labelCls = "block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1";
 
   return (
-    <div className="min-h-screen bg-[#f5f6f8] pt-16 md:pt-0 md:pl-64">
+    <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/discounts" />
       <main className="max-w-3xl mx-auto px-5 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-extrabold text-gray-900">Discounts</h2>
             <p className="text-sm text-gray-400 mt-0.5">
-              Coupon codes staff can create here. Applying them at checkout requires wiring the storefront (rccecom) to call <code className="text-[11px]">validate_discount_code</code>.
+              Coupon codes staff can create here — live at checkout on the storefront (rccecom), which validates them via <code className="text-[11px]">validate_discount_code</code>.
             </p>
           </div>
           <button
@@ -182,9 +182,9 @@ export default function DiscountsPage() {
       </main>
 
       {draft && (
-        <div className="fixed inset-0 z-50 flex justify-end">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setDraft(null)} />
-          <div className="relative w-full max-w-md h-full bg-white shadow-2xl overflow-y-auto p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setDraft(null)} />
+          <div className="relative w-full max-w-md max-h-full bg-white rounded-3xl shadow-2xl overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-extrabold text-gray-900">{draft.id ? "Edit code" : "New code"}</h3>
               <button onClick={() => setDraft(null)} className="w-9 h-9 rounded-xl neu-btn text-gray-500">✕</button>
