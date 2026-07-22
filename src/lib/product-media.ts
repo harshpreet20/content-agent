@@ -1,7 +1,7 @@
 "use client";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { compressImage, makeThumbnail } from "./image-compress";
+import { compressImage } from "./image-compress";
 
 const BUCKET = "product-media";
 const MAX_VIDEO_BYTES = 100 * 1024 * 1024; // 100MB -- Supabase Storage direct upload, not routed through a serverless function, so this isn't limited by Vercel's request body cap.
@@ -15,36 +15,33 @@ function randomId(): string {
 
 export interface UploadedImage {
   url: string;
-  thumbUrl: string;
 }
 
-/** Compresses to WebP (full + thumbnail) client-side, then uploads both directly to Storage. */
+/**
+ * Compresses to WebP client-side, then uploads directly to Storage. A
+ * single full-size (max 2000px) image is enough -- next/image already
+ * serves it responsively/optimized wherever it's rendered, so a separate
+ * pre-generated thumbnail would just be a second unused copy to store and
+ * clean up.
+ */
 export async function uploadProductImage(
   supabase: SupabaseClient,
   productSlug: string,
   file: File,
 ): Promise<UploadedImage> {
-  const [full, thumb] = await Promise.all([compressImage(file), makeThumbnail(file)]);
+  const full = await compressImage(file);
   const id = randomId();
-  const basePath = `${productSlug || "unfiled"}/${id}`;
+  const path = `${productSlug || "unfiled"}/${id}.webp`;
 
-  const { error: fullErr } = await supabase.storage.from(BUCKET).upload(`${basePath}.webp`, full.blob, {
+  const { error } = await supabase.storage.from(BUCKET).upload(path, full.blob, {
     contentType: "image/webp",
     cacheControl: "31536000",
     upsert: false,
   });
-  if (fullErr) throw fullErr;
+  if (error) throw error;
 
-  const { error: thumbErr } = await supabase.storage.from(BUCKET).upload(`${basePath}-thumb.webp`, thumb.blob, {
-    contentType: "image/webp",
-    cacheControl: "31536000",
-    upsert: false,
-  });
-  if (thumbErr) throw thumbErr;
-
-  const { data: full_ } = supabase.storage.from(BUCKET).getPublicUrl(`${basePath}.webp`);
-  const { data: thumb_ } = supabase.storage.from(BUCKET).getPublicUrl(`${basePath}-thumb.webp`);
-  return { url: full_.publicUrl, thumbUrl: thumb_.publicUrl };
+  const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+  return { url: data.publicUrl };
 }
 
 /**

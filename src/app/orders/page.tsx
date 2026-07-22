@@ -121,7 +121,7 @@ export default function OrdersPage() {
   return (
     <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/orders" />
-      <main className="max-w-5xl mx-auto px-5 py-8">
+      <main className="max-w-6xl mx-auto px-6 py-8">
         <div className="mb-6">
           <h2 className="text-2xl font-extrabold text-gray-900">Orders</h2>
           <p className="text-sm text-gray-400 mt-0.5">
@@ -130,21 +130,21 @@ export default function OrdersPage() {
         </div>
 
         {/* KPI cards */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-blue-50/70 rounded-2xl p-5 neu-card">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-100">📦</div>
-            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Orders</div>
-            <div className="text-3xl font-extrabold text-gray-900">{stats.total}</div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div className="bg-blue-50/70 rounded-2xl p-7 neu-card">
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl mb-4 bg-blue-100">📦</div>
+            <div className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Orders</div>
+            <div className="text-4xl font-extrabold text-gray-900">{stats.total}</div>
           </div>
-          <div className="bg-amber-50/70 rounded-2xl p-5 neu-card">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-amber-100">⏳</div>
-            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Awaiting payment</div>
-            <div className="text-3xl font-extrabold text-amber-500">{stats.pending}</div>
+          <div className="bg-amber-50/70 rounded-2xl p-7 neu-card">
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl mb-4 bg-amber-100">⏳</div>
+            <div className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Awaiting payment</div>
+            <div className="text-4xl font-extrabold text-amber-500">{stats.pending}</div>
           </div>
-          <div className="bg-emerald-50/70 rounded-2xl p-5 neu-card">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-emerald-100">💰</div>
-            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Confirmed revenue</div>
-            <div className="text-3xl font-extrabold text-green-600">{money(stats.revenue)}</div>
+          <div className="bg-emerald-50/70 rounded-2xl p-7 neu-card">
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl mb-4 bg-emerald-100">💰</div>
+            <div className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Confirmed revenue</div>
+            <div className="text-4xl font-extrabold text-green-600">{money(stats.revenue)}</div>
           </div>
         </div>
 

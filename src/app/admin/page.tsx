@@ -90,7 +90,7 @@ export default function AdminPage() {
     <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/admin" />
 
-      <main className="max-w-5xl mx-auto px-5 py-8">
+      <main className="max-w-6xl mx-auto px-6 py-8">
         <div className="mb-8">
           <h2 className="text-2xl font-extrabold text-gray-900">User Management</h2>
           <p className="text-sm text-gray-400 mt-0.5">Approve, reject, or manage user access</p>
@@ -103,26 +103,26 @@ export default function AdminPage() {
         ) : (
           <div className="space-y-8">
             {/* Summary cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="bg-blue-50/70 rounded-2xl p-5 neu-card">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-blue-100">👥</div>
-                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Total Users</div>
-                <div className="text-3xl font-extrabold text-gray-900">{users.length}</div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-blue-50/70 rounded-2xl p-7 neu-card">
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl mb-4 bg-blue-100">👥</div>
+                <div className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Total Users</div>
+                <div className="text-4xl font-extrabold text-gray-900">{users.length}</div>
               </div>
-              <div className="bg-amber-50/70 rounded-2xl p-5 neu-card">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-amber-100">⏳</div>
-                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Pending</div>
-                <div className="text-3xl font-extrabold text-amber-500">{pendingUsers.length}</div>
+              <div className="bg-amber-50/70 rounded-2xl p-7 neu-card">
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl mb-4 bg-amber-100">⏳</div>
+                <div className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Pending</div>
+                <div className="text-4xl font-extrabold text-amber-500">{pendingUsers.length}</div>
               </div>
-              <div className="bg-green-50/70 rounded-2xl p-5 neu-card">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-green-100">✅</div>
-                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Approved</div>
-                <div className="text-3xl font-extrabold text-green-600">{approvedUsers.length}</div>
+              <div className="bg-green-50/70 rounded-2xl p-7 neu-card">
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl mb-4 bg-green-100">✅</div>
+                <div className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Approved</div>
+                <div className="text-4xl font-extrabold text-green-600">{approvedUsers.length}</div>
               </div>
-              <div className="bg-violet-50/70 rounded-2xl p-5 neu-card">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3 bg-violet-100">👑</div>
-                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Admins</div>
-                <div className="text-3xl font-extrabold text-violet-600">{users.filter((u) => u.role === "admin").length}</div>
+              <div className="bg-violet-50/70 rounded-2xl p-7 neu-card">
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl mb-4 bg-violet-100">👑</div>
+                <div className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Admins</div>
+                <div className="text-4xl font-extrabold text-violet-600">{users.filter((u) => u.role === "admin").length}</div>
               </div>
             </div>
 

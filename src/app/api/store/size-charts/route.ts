@@ -3,35 +3,7 @@ import { authedClient, getBearer } from "@/lib/supabase-authed";
 
 export const dynamic = "force-dynamic";
 
-/** Whitelist of columns the CRM may write, so unexpected keys are ignored. */
-const FIELDS = [
-  "slug",
-  "name",
-  "blurb",
-  "description",
-  "price",
-  "category",
-  "sizes",
-  "size_chart_slugs",
-  "personalization",
-  "highlights",
-  "accent",
-  "emoji",
-  "image",
-  "images",
-  "videos",
-  "stock",
-  "badge",
-  "sold_out",
-  "active",
-  "sort_order",
-  "seo_title",
-  "seo_description",
-  "seo_keywords",
-  "kind",
-  "amazon_url",
-  "flipkart_url",
-] as const;
+const FIELDS = ["name", "slug", "sizes", "nominal", "rows", "active", "sort_order"] as const;
 
 function pick(body: Record<string, unknown>) {
   const out: Record<string, unknown> = {};
@@ -41,23 +13,22 @@ function pick(body: Record<string, unknown>) {
   return out;
 }
 
-/** GET /api/store/products — full catalogue incl. inactive (staff only). */
+/** GET /api/store/size-charts — full list incl. inactive (staff only). */
 export async function GET(request: Request) {
   const token = getBearer(request);
   if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const supabase = authedClient(token);
   const { data, error } = await supabase
-    .from("products")
+    .from("size_charts")
     .select("*")
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: false });
+    .order("sort_order", { ascending: true });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 403 });
-  return NextResponse.json({ products: data || [] });
+  return NextResponse.json({ sizeCharts: data || [] });
 }
 
-/** POST /api/store/products — create a product. */
+/** POST /api/store/size-charts — create a size chart. */
 export async function POST(request: Request) {
   const token = getBearer(request);
   if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -70,31 +41,24 @@ export async function POST(request: Request) {
   }
 
   const row = pick(body);
-  if (!row.slug || !row.name || row.price == null) {
-    return NextResponse.json(
-      { error: "slug, name and price are required" },
-      { status: 400 },
-    );
+  if (!row.name || !row.slug) {
+    return NextResponse.json({ error: "name and slug are required" }, { status: 400 });
   }
 
   const supabase = authedClient(token);
-  const { data, error } = await supabase
-    .from("products")
-    .insert(row)
-    .select("*")
-    .maybeSingle();
+  const { data, error } = await supabase.from("size_charts").insert(row).select("*").maybeSingle();
 
   if (error) {
     const conflict = error.code === "23505";
     return NextResponse.json(
-      { error: conflict ? "A product with that slug already exists." : error.message },
+      { error: conflict ? "A size chart with that slug already exists." : error.message },
       { status: conflict ? 409 : 403 },
     );
   }
-  return NextResponse.json({ ok: true, product: data });
+  return NextResponse.json({ ok: true, sizeChart: data });
 }
 
-/** PATCH /api/store/products — update a product by id. */
+/** PATCH /api/store/size-charts — update a size chart by id. */
 export async function PATCH(request: Request) {
   const token = getBearer(request);
   if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -113,18 +77,18 @@ export async function PATCH(request: Request) {
 
   const supabase = authedClient(token);
   const { data, error } = await supabase
-    .from("products")
+    .from("size_charts")
     .update(pick(body))
     .eq("id", id)
     .select("*")
     .maybeSingle();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 403 });
-  if (!data) return NextResponse.json({ error: "Product not found" }, { status: 404 });
-  return NextResponse.json({ ok: true, product: data });
+  if (!data) return NextResponse.json({ error: "Size chart not found" }, { status: 404 });
+  return NextResponse.json({ ok: true, sizeChart: data });
 }
 
-/** DELETE /api/store/products?id=... — remove a product. */
+/** DELETE /api/store/size-charts?id=... */
 export async function DELETE(request: Request) {
   const token = getBearer(request);
   if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -133,7 +97,7 @@ export async function DELETE(request: Request) {
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
   const supabase = authedClient(token);
-  const { error } = await supabase.from("products").delete().eq("id", id);
+  const { error } = await supabase.from("size_charts").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 403 });
   return NextResponse.json({ ok: true });
 }

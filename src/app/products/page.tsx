@@ -16,6 +16,7 @@ interface Product {
   price: number;
   category: string | null;
   sizes: string[];
+  size_chart_slugs: string[];
   personalization: unknown[];
   highlights: string[];
   accent: string;
@@ -40,6 +41,7 @@ const money = (n: number) => `₹${(n || 0).toLocaleString("en-IN")}`;
 
 type Draft = Partial<Product> & {
   sizesText?: string;
+  sizeChartSlugsText?: string;
   highlightsText?: string;
   personalizationJson?: string;
   seoKeywordsText?: string;
@@ -62,6 +64,7 @@ const emptyDraft: Draft = {
   images: [],
   videos: [],
   sizesText: "",
+  sizeChartSlugsText: "",
   highlightsText: "",
   personalizationJson: "[]",
   seo_title: "",
@@ -84,6 +87,7 @@ export default function ProductsPage() {
   const [error, setError] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [sizeChartSlugs, setSizeChartSlugs] = useState<string[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
@@ -107,6 +111,14 @@ export default function ProductsPage() {
     if (isStaff && token) load();
   }, [isStaff, token, load]);
 
+  useEffect(() => {
+    if (!isStaff || !token) return;
+    fetch("/api/store/size-charts", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((json) => setSizeChartSlugs((json.sizeCharts || []).map((c: { slug: string }) => c.slug)))
+      .catch(() => {});
+  }, [isStaff, token]);
+
   function edit(p: Product) {
     setError("");
     setDraft({
@@ -114,6 +126,7 @@ export default function ProductsPage() {
       images: p.images || (p.image ? [p.image] : []),
       videos: p.videos || [],
       sizesText: (p.sizes || []).join(", "),
+      sizeChartSlugsText: (p.size_chart_slugs || []).join(", "),
       highlightsText: (p.highlights || []).join("\n"),
       personalizationJson: JSON.stringify(p.personalization || [], null, 2),
       seoKeywordsText: (p.seo_keywords || []).join(", "),
@@ -125,12 +138,12 @@ export default function ProductsPage() {
     setError("");
     setUploadingImage(true);
     try {
-      const uploaded: string[] = [];
       for (const file of Array.from(files)) {
         const { url } = await uploadProductImage(supabase, draft.slug || "unfiled", file);
-        uploaded.push(url);
+        // Commit each upload as it lands, so a later file failing doesn't
+        // discard the ones that already succeeded.
+        setDraft((d) => (d ? { ...d, images: [...(d.images || []), url] } : d));
       }
-      setDraft((d) => (d ? { ...d, images: [...(d.images || []), ...uploaded] } : d));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Image upload failed");
     } finally {
@@ -143,11 +156,10 @@ export default function ProductsPage() {
     setError("");
     setUploadingVideo(true);
     try {
-      const uploaded: string[] = [];
       for (const file of Array.from(files)) {
-        uploaded.push(await uploadProductVideo(supabase, draft.slug || "unfiled", file));
+        const url = await uploadProductVideo(supabase, draft.slug || "unfiled", file);
+        setDraft((d) => (d ? { ...d, videos: [...(d.videos || []), url] } : d));
       }
-      setDraft((d) => (d ? { ...d, videos: [...(d.videos || []), ...uploaded] } : d));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Video upload failed");
     } finally {
@@ -208,6 +220,7 @@ export default function ProductsPage() {
       active: !!draft.active,
       sold_out: !!draft.sold_out,
       sizes: (draft.sizesText || "").split(",").map((s) => s.trim()).filter(Boolean),
+      size_chart_slugs: (draft.sizeChartSlugsText || "").split(",").map((s) => s.trim()).filter(Boolean),
       highlights: (draft.highlightsText || "").split("\n").map((s) => s.trim()).filter(Boolean),
       personalization,
       seo_title: draft.seo_title || null,
@@ -458,6 +471,13 @@ export default function ProductsPage() {
               <div className="col-span-2">
                 <label className={labelCls}>Sizes (comma separated)</label>
                 <input className={field} value={draft.sizesText || ""} onChange={(e) => setDraft({ ...draft, sizesText: e.target.value })} placeholder="S, M, L, XL" />
+              </div>
+              <div className="col-span-2">
+                <label className={labelCls}>Size chart(s) (comma separated slugs)</label>
+                <input className={field} value={draft.sizeChartSlugsText || ""} onChange={(e) => setDraft({ ...draft, sizeChartSlugsText: e.target.value })} placeholder="jersey, shorts" />
+                <p className="text-[11px] text-gray-400 mt-1">
+                  {sizeChartSlugs.length > 0 ? `Available: ${sizeChartSlugs.join(", ")}` : "No size charts yet — add one under Size Charts."}
+                </p>
               </div>
               <div className="col-span-2">
                 <label className={labelCls}>Highlights (one per line)</label>

@@ -123,7 +123,7 @@ export default function AnalyticsPage() {
     <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/analytics" />
 
-      <main className="max-w-6xl mx-auto px-5 py-8">
+      <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex items-start justify-between mb-8">
           <div>
             <h2 className="text-2xl font-extrabold text-gray-900">Analytics</h2>
@@ -156,7 +156,7 @@ export default function AnalyticsPage() {
           <div className="space-y-8">
             {/* Account overview */}
             {account && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {[
                   { label: "Posts", value: account.posts, color: "#F59E0B" },
                   { label: "Avg Likes", value: account.avgLikes, color: "#EC4899" },
@@ -165,9 +165,9 @@ export default function AnalyticsPage() {
                   { label: "Total Views", value: account.totalViews >= 1000 ? `${(account.totalViews / 1000).toFixed(1)}K` : account.totalViews, color: "#3B82F6" },
                   { label: "Engagement", value: insights.engagement?.toLocaleString() || "0", color: "#6366F1" },
                 ].map((stat) => (
-                  <div key={stat.label} className="rounded-2xl p-5 neu-card" style={{ backgroundColor: stat.color + "0f" }}>
-                    <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">{stat.label}</div>
-                    <div className="text-2xl font-extrabold text-gray-900" style={{ color: stat.color }}>{stat.value}</div>
+                  <div key={stat.label} className="rounded-2xl p-7 neu-card" style={{ backgroundColor: stat.color + "0f" }}>
+                    <div className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">{stat.label}</div>
+                    <div className="text-4xl font-extrabold text-gray-900" style={{ color: stat.color }}>{stat.value}</div>
                   </div>
                 ))}
               </div>

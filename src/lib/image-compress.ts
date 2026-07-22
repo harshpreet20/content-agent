@@ -35,7 +35,3 @@ export async function compressImage(file: File, maxDimension = 2000, quality = 0
   const blob = await canvasToBlob(canvas, "image/webp", quality);
   return { blob, width, height };
 }
-
-export function makeThumbnail(file: File, maxDimension = 480, quality = 0.75): Promise<CompressedImage> {
-  return compressImage(file, maxDimension, quality);
-}

@@ -48,6 +48,9 @@ const ICONS: Record<string, JSX.Element> = {
   "/discounts": (
     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v3.586a1 1 0 00.293.707l7.414 7.414a1 1 0 001.414 0l5.586-5.586a1 1 0 000-1.414L12.293 4.293A1 1 0 0011.586 4H9zM7 8h.01" />
   ),
+  "/size-charts": (
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8h18M3 8v10a1 1 0 001 1h16a1 1 0 001-1V8M3 8l2-4h14l2 4M8 13v2m4-2v3m4-3v2" />
+  ),
   "/settings": (
     <>
       <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -111,6 +114,7 @@ export default function Sidebar({ active }: { active: string }) {
           { href: "/orders", label: "Orders" },
           { href: "/products", label: "Store" },
           { href: "/categories", label: "Categories" },
+          { href: "/size-charts", label: "Size Charts" },
           { href: "/discounts", label: "Discounts" },
           { href: "/customers", label: "Customers" },
           { href: "/insights", label: "Insights" },

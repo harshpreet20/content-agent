@@ -118,7 +118,7 @@ export default function Dashboard() {
     <div className="min-h-screen pt-16 md:pt-0 md:pl-64">
       <Sidebar active="/" />
 
-      <main className="max-w-6xl mx-auto px-5 py-8">
+      <main className="max-w-7xl mx-auto px-6 py-8">
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
