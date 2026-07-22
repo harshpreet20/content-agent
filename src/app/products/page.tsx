@@ -2,8 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "@/components/AuthProvider";
 import Sidebar from "@/components/Sidebar";
+import { uploadProductImage, uploadProductVideo, deleteProductMedia } from "@/lib/product-media";
 
 interface Product {
   id: string;
@@ -19,6 +21,8 @@ interface Product {
   accent: string;
   emoji: string;
   image: string | null;
+  images: string[];
+  videos: string[];
   stock: number | null;
   badge: string | null;
   sold_out: boolean;
@@ -55,6 +59,8 @@ const emptyDraft: Draft = {
   sort_order: 0,
   active: true,
   sold_out: false,
+  images: [],
+  videos: [],
   sizesText: "",
   highlightsText: "",
   personalizationJson: "[]",
@@ -67,7 +73,7 @@ const emptyDraft: Draft = {
 };
 
 export default function ProductsPage() {
-  const { user, loading: authLoading, isStaff, session } = useAuth();
+  const { user, loading: authLoading, isStaff, session, supabase } = useAuth();
   const router = useRouter();
   const token = session?.access_token;
 
@@ -76,6 +82,8 @@ export default function ProductsPage() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
@@ -103,10 +111,68 @@ export default function ProductsPage() {
     setError("");
     setDraft({
       ...p,
+      images: p.images || (p.image ? [p.image] : []),
+      videos: p.videos || [],
       sizesText: (p.sizes || []).join(", "),
       highlightsText: (p.highlights || []).join("\n"),
       personalizationJson: JSON.stringify(p.personalization || [], null, 2),
       seoKeywordsText: (p.seo_keywords || []).join(", "),
+    });
+  }
+
+  async function handleImageFiles(files: FileList | null) {
+    if (!files || !files.length || !draft || !supabase) return;
+    setError("");
+    setUploadingImage(true);
+    try {
+      const uploaded: string[] = [];
+      for (const file of Array.from(files)) {
+        const { url } = await uploadProductImage(supabase, draft.slug || "unfiled", file);
+        uploaded.push(url);
+      }
+      setDraft((d) => (d ? { ...d, images: [...(d.images || []), ...uploaded] } : d));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Image upload failed");
+    } finally {
+      setUploadingImage(false);
+    }
+  }
+
+  async function handleVideoFiles(files: FileList | null) {
+    if (!files || !files.length || !draft || !supabase) return;
+    setError("");
+    setUploadingVideo(true);
+    try {
+      const uploaded: string[] = [];
+      for (const file of Array.from(files)) {
+        uploaded.push(await uploadProductVideo(supabase, draft.slug || "unfiled", file));
+      }
+      setDraft((d) => (d ? { ...d, videos: [...(d.videos || []), ...uploaded] } : d));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Video upload failed");
+    } finally {
+      setUploadingVideo(false);
+    }
+  }
+
+  function removeImage(url: string) {
+    setDraft((d) => (d ? { ...d, images: (d.images || []).filter((u) => u !== url) } : d));
+    if (supabase) deleteProductMedia(supabase, url);
+  }
+
+  function removeVideo(url: string) {
+    setDraft((d) => (d ? { ...d, videos: (d.videos || []).filter((u) => u !== url) } : d));
+    if (supabase) deleteProductMedia(supabase, url);
+  }
+
+  function moveImage(index: number, dir: -1 | 1) {
+    setDraft((d) => {
+      if (!d?.images) return d;
+      const next = [...d.images];
+      const target = index + dir;
+      if (target < 0 || target >= next.length) return d;
+      [next[index], next[target]] = [next[target], next[index]];
+      return { ...d, images: next };
     });
   }
 
@@ -132,6 +198,12 @@ export default function ProductsPage() {
       badge: draft.badge || null,
       emoji: draft.emoji || "🎾",
       accent: draft.accent || "#0e5a62",
+      images: draft.images || [],
+      videos: draft.videos || [],
+      // Keep the legacy single-image column in sync so any consumer still
+      // reading `products.image` (e.g. an external storefront) sees the
+      // cover photo without needing to switch to `images[]` first.
+      image: draft.images?.[0] || null,
       sort_order: Number(draft.sort_order) || 0,
       active: !!draft.active,
       sold_out: !!draft.sold_out,
@@ -215,12 +287,18 @@ export default function ProductsPage() {
           <div className="grid gap-3">
             {products.map((p) => (
               <div key={p.id} className="bg-white rounded-2xl p-4 neu-card flex items-center gap-4">
-                <div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl neu-raised-sm flex-none"
-                  style={{ background: `${p.accent}22` }}
-                >
-                  {p.emoji}
-                </div>
+                {p.images?.[0] || p.image ? (
+                  <div className="relative w-14 h-14 rounded-xl overflow-hidden neu-raised-sm flex-none">
+                    <Image src={p.images?.[0] || p.image || ""} alt={p.name} fill sizes="56px" className="object-cover" />
+                  </div>
+                ) : (
+                  <div
+                    className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl neu-raised-sm flex-none"
+                    style={{ background: `${p.accent}22` }}
+                  >
+                    {p.emoji}
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-bold text-gray-800 truncate">{p.name}</p>
@@ -274,6 +352,86 @@ export default function ProductsPage() {
                 <label className={labelCls}>Category</label>
                 <input className={field} value={draft.category || ""} onChange={(e) => setDraft({ ...draft, category: e.target.value })} />
               </div>
+              <div className="col-span-2">
+                <label className={labelCls}>Photos</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {(draft.images || []).map((url, i) => (
+                    <div key={url} className="relative w-16 h-16 rounded-xl overflow-hidden neu-raised-sm group">
+                      <Image src={url} alt="" fill sizes="64px" className="object-cover" />
+                      {i === 0 && (
+                        <span className="absolute bottom-0 inset-x-0 text-center text-[8px] font-bold uppercase text-white bg-black/50 py-0.5">Cover</span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeImage(url)}
+                        className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 text-white text-[10px] leading-4 text-center opacity-0 group-hover:opacity-100 transition"
+                      >
+                        ✕
+                      </button>
+                      {i > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImage(i, -1)}
+                          className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-black/60 text-white text-[10px] leading-4 text-center opacity-0 group-hover:opacity-100 transition"
+                        >
+                          ←
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <label className="w-16 h-16 rounded-xl flex items-center justify-center text-gray-400 neu-flat cursor-pointer text-xs font-semibold">
+                    {uploadingImage ? (
+                      <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      "+ Add"
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      disabled={uploadingImage}
+                      onChange={(e) => { handleImageFiles(e.target.files); e.target.value = ""; }}
+                    />
+                  </label>
+                </div>
+                <p className="text-[11px] text-gray-400">Compressed to WebP in your browser before upload. First photo is the storefront cover image.</p>
+              </div>
+
+              <div className="col-span-2">
+                <label className={labelCls}>Video (optional)</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {(draft.videos || []).map((url) => (
+                    <div key={url} className="relative w-28 h-16 rounded-xl overflow-hidden neu-raised-sm group bg-gray-900">
+                      <video src={url} className="w-full h-full object-cover" muted />
+                      <button
+                        type="button"
+                        onClick={() => removeVideo(url)}
+                        className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 text-white text-[10px] leading-4 text-center opacity-0 group-hover:opacity-100 transition"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                  <label className="w-28 h-16 rounded-xl flex items-center justify-center text-gray-400 neu-flat cursor-pointer text-xs font-semibold">
+                    {uploadingVideo ? (
+                      <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      "+ Add video"
+                    )}
+                    <input
+                      type="file"
+                      accept="video/mp4,video/webm,video/quicktime"
+                      multiple
+                      className="hidden"
+                      disabled={uploadingVideo}
+                      onChange={(e) => { handleVideoFiles(e.target.files); e.target.value = ""; }}
+                    />
+                  </label>
+                </div>
+                <p className="text-[11px] text-gray-400">Uploaded as-is (MP4/WebM/MOV, up to 100MB) — compress before uploading if it's larger.</p>
+              </div>
+
               <div className="col-span-2">
                 <label className={labelCls}>Type</label>
                 <select className={field} value={draft.kind || "physical"} onChange={(e) => setDraft({ ...draft, kind: e.target.value })}>

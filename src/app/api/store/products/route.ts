@@ -17,6 +17,8 @@ const FIELDS = [
   "accent",
   "emoji",
   "image",
+  "images",
+  "videos",
   "stock",
   "badge",
   "sold_out",
