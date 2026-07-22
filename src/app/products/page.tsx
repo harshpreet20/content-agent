@@ -40,6 +40,30 @@ interface Product {
 
 const money = (n: number) => `₹${(n || 0).toLocaleString("en-IN")}`;
 
+/**
+ * Some products still carry the legacy `image` column as a relative path
+ * (e.g. "/products/tee.png") meant for the storefront's own public/ folder
+ * -- that 404s here since this dashboard has no such file. Only ever try
+ * to render an absolute URL (a real Supabase Storage photo), and fall back
+ * to the emoji tile on any load failure too, so a broken/relative value
+ * never surfaces as broken-image alt text.
+ */
+function ProductThumb({ src, alt, accent, emoji }: { src: string | null; alt: string; accent: string; emoji: string }) {
+  const [failed, setFailed] = useState(false);
+  if (!src || !/^https?:\/\//.test(src) || failed) {
+    return (
+      <div className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl neu-raised-sm flex-none" style={{ background: `${accent}22` }}>
+        {emoji}
+      </div>
+    );
+  }
+  return (
+    <div className="relative w-14 h-14 rounded-xl overflow-hidden neu-raised-sm flex-none">
+      <Image src={src} alt={alt} fill sizes="56px" className="object-cover" onError={() => setFailed(true)} />
+    </div>
+  );
+}
+
 type Draft = Partial<Product> & {
   sizesText?: string;
   sizeChartSlugsText?: string;
@@ -325,18 +349,7 @@ export default function ProductsPage() {
           <div className="grid gap-3">
             {products.map((p) => (
               <div key={p.id} className="bg-white rounded-2xl p-4 neu-card flex items-center gap-4">
-                {p.images?.[0] || p.image ? (
-                  <div className="relative w-14 h-14 rounded-xl overflow-hidden neu-raised-sm flex-none">
-                    <Image src={p.images?.[0] || p.image || ""} alt={p.name} fill sizes="56px" className="object-cover" />
-                  </div>
-                ) : (
-                  <div
-                    className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl neu-raised-sm flex-none"
-                    style={{ background: `${p.accent}22` }}
-                  >
-                    {p.emoji}
-                  </div>
-                )}
+                <ProductThumb src={p.images?.[0] || p.image} alt={p.name} accent={p.accent} emoji={p.emoji} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-bold text-gray-800 truncate">{p.name}</p>
